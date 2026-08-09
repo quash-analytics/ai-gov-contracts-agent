@@ -6,10 +6,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from waku.memory.procedural import installer
-from waku.memory.procedural.loader import SkillLoader
-from waku.ops.dashboard import memory_action
-from waku.tools.memory_admin import make_create_skill_tool
+from jarvis.memory.procedural import installer
+from jarvis.memory.procedural.loader import SkillLoader
+from jarvis.ops.dashboard import memory_action
+from jarvis.tools.memory_admin import make_create_skill_tool
 
 DESCRIPTION = "\u5904\u7406\u4e2d\u6587\u5468\u62a5"
 BODY = "\u7b2c\u4e00\u6b65\uff1a\u603b\u7ed3\u672c\u5468\u3002 \U0001f680"

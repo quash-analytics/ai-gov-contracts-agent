@@ -30,7 +30,7 @@ import sys
 
 import pytest
 
-from waku.tools import apple
+from jarvis.tools import apple
 
 # _osa short-circuits with "Apple tools are macOS-only" before it ever spawns
 # osascript, so the timeout and refusal cases can only be observed on a Mac.

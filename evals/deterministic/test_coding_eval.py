@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import shutil
 
-from waku.ops import coding_eval as ce
+from jarvis.ops import coding_eval as ce
 
 _TRUE = shutil.which("true") or "/usr/bin/true"   # a real no-op binary, exits 0
 

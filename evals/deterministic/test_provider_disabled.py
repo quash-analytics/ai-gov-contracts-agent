@@ -5,9 +5,9 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from waku import integrations
-from waku.config import Settings
-from waku.loop.models import PROVIDERS
+from jarvis import integrations
+from jarvis.config import Settings
+from jarvis.loop.models import PROVIDERS
 
 
 def _isolate(monkeypatch, tmp_path):
@@ -52,7 +52,7 @@ def test_toggle_rejects_unknown_and_current(monkeypatch, tmp_path):
 def test_settings_info_reports_disabled(monkeypatch, tmp_path):
     _isolate(monkeypatch, tmp_path)
     monkeypatch.setenv("WAKU_DISABLED_PROVIDERS", "glm")
-    from waku.ops.settings_api import settings_info
+    from jarvis.ops.settings_api import settings_info
 
     assert settings_info()["disabled_providers"] == ["glm"]
 

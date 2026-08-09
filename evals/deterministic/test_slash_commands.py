@@ -14,7 +14,7 @@ parser is that an ordinary message mentioning a path silently runs something.
 
 from __future__ import annotations
 
-from waku.ops import commands
+from jarvis.ops import commands
 
 
 def test_gather_is_discovered():
@@ -42,7 +42,7 @@ def test_discovery_requires_both_halves():
     waku/ops/ is what makes it runnable, so that is what earns the command."""
     import pkgutil
 
-    import waku.graph.workflows as pkg
+    import jarvis.graph.workflows as pkg
 
     modules = {m.name for m in pkgutil.iter_modules(pkg.__path__) if not m.name.startswith("_")}
     assert modules >= {"triage", "gather"}
@@ -55,7 +55,7 @@ def test_the_runner_table_and_the_commands_cannot_drift():
     """/api/graph/stream and the slash commands are two doors to one set of
     workflows. Two hand-maintained lists of the same fact drift; one function
     cannot."""
-    from waku.ops import dashboard
+    from jarvis.ops import dashboard
 
     assert dashboard.WORKFLOW_RUNNERS() == commands.discover()
 

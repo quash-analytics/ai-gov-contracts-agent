@@ -6,7 +6,7 @@ judge hiccup must degrade to None (no score), never crash a race."""
 
 from __future__ import annotations
 
-from waku.ops import judge as J
+from jarvis.ops import judge as J
 
 
 class _Block:

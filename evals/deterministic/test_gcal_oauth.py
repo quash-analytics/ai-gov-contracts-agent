@@ -8,7 +8,7 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 
-from waku.tools import calendar, google_calendar
+from jarvis.tools import calendar, google_calendar
 
 
 def _install_fake_oauth_modules(monkeypatch, *, execute_error: Exception | None = None):

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from waku.tools import workspace as ws
+from jarvis.tools import workspace as ws
 
 
 def test_run_folder_is_dated_and_named(tmp_path, monkeypatch):

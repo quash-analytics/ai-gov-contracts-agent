@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-from waku.config import Settings
-from waku.ops.dashboard import collect, events_since
-from waku.ops.tracing import TraceEncodingError, Tracer
+from jarvis.config import Settings
+from jarvis.ops.dashboard import collect, events_since
+from jarvis.ops.tracing import TraceEncodingError, Tracer
 
 MESSAGE = "处理中文日程 " + chr(0x1F680)
 

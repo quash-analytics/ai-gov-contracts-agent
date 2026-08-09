@@ -18,8 +18,8 @@ import json
 
 import pytest
 
-from waku.graph import END, START, Graph, Node
-from waku.ops import dashboard
+from jarvis.graph import END, START, Graph, Node
+from jarvis.ops import dashboard
 
 
 def _emitter():
@@ -61,11 +61,11 @@ def scripted(monkeypatch):
             g.add_edge(START, n)
             g.add_edge(n, "c")
         g.add_edge("c", END)
-        from waku.graph import run_graph
+        from jarvis.graph import run_graph
 
         return run_graph(g, {}, observer=observer)
 
-    import waku.ops.gather as gather_mod
+    import jarvis.ops.gather as gather_mod
 
     monkeypatch.setattr(gather_mod, "run_gather", fake_run)
     return fake_run
@@ -126,11 +126,11 @@ def test_a_raising_node_still_finishes_the_stream(monkeypatch):
         g.add_node(Node("a", boom, kind="tool"))
         g.add_edge(START, "a")
         g.add_edge("a", END)
-        from waku.graph import run_graph
+        from jarvis.graph import run_graph
 
         return run_graph(g, {}, observer=observer)
 
-    import waku.ops.gather as gather_mod
+    import jarvis.ops.gather as gather_mod
 
     monkeypatch.setattr(gather_mod, "run_gather", fake_run)
     out = _run(None)
@@ -144,7 +144,7 @@ def test_a_runner_that_explodes_reports_instead_of_500ing(monkeypatch):
     def boom(**kw):
         raise RuntimeError("collision")
 
-    import waku.ops.gather as gather_mod
+    import jarvis.ops.gather as gather_mod
 
     monkeypatch.setattr(gather_mod, "run_gather", boom)
     out = _run(None)

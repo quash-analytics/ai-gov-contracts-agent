@@ -29,7 +29,7 @@ import subprocess
 
 import pytest
 
-from waku.tools import github
+from jarvis.tools import github
 
 
 class Boom(Exception):

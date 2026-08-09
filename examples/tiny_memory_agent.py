@@ -37,11 +37,11 @@ from __future__ import annotations
 import sys
 from dataclasses import replace
 
-from waku.config import load_settings
-from waku.db import connect
-from waku.loop.models import get_client
-from waku.memory import Memory
-from waku.memory.retrieval_gate import should_retrieve
+from jarvis.config import load_settings
+from jarvis.db import connect
+from jarvis.loop.models import get_client
+from jarvis.memory import Memory
+from jarvis.memory.retrieval_gate import should_retrieve
 
 PROMPT = """You are a personal assistant answering from your memory of this user.
 

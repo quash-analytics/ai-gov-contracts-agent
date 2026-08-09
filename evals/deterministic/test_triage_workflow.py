@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 
 from evals.helpers import ScriptedClient, make_waku, response, text_block, tool_block
-from waku.graph.workflows.triage import classify_message, todays_events
+from jarvis.graph.workflows.triage import classify_message, todays_events
 
 
 def last_meta(app) -> dict:
@@ -131,7 +131,7 @@ def test_broken_classifier_fails_open_to_the_full_loop(tmp_path):
 
 def test_broken_graph_engine_fails_open_to_the_plain_loop(tmp_path, monkeypatch):
     """Layer two: even if graph construction itself explodes, respond() answers."""
-    from waku.graph.workflows import triage
+    from jarvis.graph.workflows import triage
 
     def explode(**kwargs):
         raise RuntimeError("graph machinery on fire")

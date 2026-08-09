@@ -10,11 +10,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from waku import integrations
-from waku.config import Settings
-from waku.loop import models
-from waku.loop.models import PROVIDERS
-from waku.ops import catalog
+from jarvis import integrations
+from jarvis.config import Settings
+from jarvis.loop import models
+from jarvis.loop.models import PROVIDERS
+from jarvis.ops import catalog
 
 EXPECTED_ENDPOINTS = {
     "minimax": [
@@ -145,7 +145,7 @@ def test_apply_provider_persists_scoped_base_url_and_clears_legacy_override(
     monkeypatch.delenv("MINIMAX_BASE_URL", raising=False)
     monkeypatch.setattr(integrations, "_provider_probe", lambda values: None)
 
-    from waku.ops import browser_agent
+    from jarvis.ops import browser_agent
 
     monkeypatch.setattr(browser_agent, "rebuild", lambda: None)
     tracer = SimpleNamespace(event=lambda *args: None)
@@ -188,7 +188,7 @@ def test_reusing_saved_provider_endpoint_skips_remote_probe_and_noop_rebuild(
     probes = []
     monkeypatch.setattr(integrations, "_provider_probe", lambda values: probes.append(values))
 
-    from waku.ops import browser_agent
+    from jarvis.ops import browser_agent
 
     rebuilds = []
     monkeypatch.setattr(browser_agent, "rebuild", lambda: rebuilds.append(True))
@@ -213,7 +213,7 @@ def test_saving_noncurrent_provider_does_not_activate_or_rebuild(monkeypatch, tm
     monkeypatch.delenv("WAKU_BASE_URL", raising=False)
     monkeypatch.setattr(integrations, "_provider_probe", lambda values: None)
 
-    from waku.ops import browser_agent
+    from jarvis.ops import browser_agent
 
     rebuilds = []
     monkeypatch.setattr(browser_agent, "rebuild", lambda: rebuilds.append(True))

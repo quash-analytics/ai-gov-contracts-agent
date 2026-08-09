@@ -6,9 +6,9 @@ import sys
 from types import ModuleType
 
 from evals.helpers import ScriptedClient, make_waku
-from waku.config import Settings
-from waku.db import connect
-from waku.tools import calendar
+from jarvis.config import Settings
+from jarvis.db import connect
+from jarvis.tools import calendar
 
 
 def _install_fake_google_modules(monkeypatch, *, execute_error: Exception | None = None):

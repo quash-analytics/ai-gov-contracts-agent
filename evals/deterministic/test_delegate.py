@@ -13,8 +13,8 @@ from types import SimpleNamespace
 import pytest
 
 from evals.helpers import ScriptedClient, make_waku, response, text_block, tool_block
-from waku.config import Settings
-from waku.tools import experimental
+from jarvis.config import Settings
+from jarvis.tools import experimental
 
 
 @pytest.fixture(autouse=True)

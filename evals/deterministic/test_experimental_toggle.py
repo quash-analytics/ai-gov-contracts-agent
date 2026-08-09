@@ -11,12 +11,12 @@ from __future__ import annotations
 
 import os
 
-from waku.config import Settings, load_settings
-from waku.tools import build_registry
+from jarvis.config import Settings, load_settings
+from jarvis.tools import build_registry
 
 
 def test_settings_exposes_the_flag_so_the_ui_can_render_a_toggle(monkeypatch):
-    from waku.ops import settings_api
+    from jarvis.ops import settings_api
 
     monkeypatch.delenv("WAKU_EXPERIMENTAL", raising=False)
     assert settings_api.settings_info()["experimental"] is False
@@ -56,7 +56,7 @@ def test_an_explicit_setting_beats_the_global_env_switch(tmp_path, monkeypatch):
     off.ensure_home()
     on.ensure_home()
 
-    from waku.db import connect
+    from jarvis.db import connect
 
     conn = connect(off.home)
     assert "delegate_task" not in build_registry(conn, off, None)._tools

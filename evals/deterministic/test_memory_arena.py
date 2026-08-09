@@ -21,8 +21,8 @@ import json
 
 import pytest
 
-from waku.ops import memory_arena as arena
-from waku.ops.memory_arena import INVENTED, MISS, PASS, STALE
+from jarvis.ops import memory_arena as arena
+from jarvis.ops.memory_arena import INVENTED, MISS, PASS, STALE
 
 # --- the four outcomes -------------------------------------------------------
 
@@ -222,7 +222,7 @@ def test_the_arena_and_the_ledger_writer_agree_on_field_names():
     fixture alone — the fixture would just encode whatever mistake was made."""
     import inspect
 
-    from waku.ops import tracing
+    from jarvis.ops import tracing
 
     writer = inspect.getsource(tracing)
     assert 'usage.jsonl' in writer, "the ledger moved — find its new writer"
@@ -276,7 +276,7 @@ def _arena_fixture(tmp_path):
 
 
 def _run(monkeypatch, tmp_path, script, gate=False, backends=("sqlite",)):
-    import waku.app
+    import jarvis.app
     _FakeWaku.script = script
     _FakeWaku.gate = gate
     monkeypatch.setattr(waku.app, "Waku", _FakeWaku)
@@ -312,7 +312,7 @@ def test_tokens_are_per_probe_not_a_running_total(monkeypatch, tmp_path):
 def test_a_backend_that_blows_up_does_not_take_the_others_with_it(monkeypatch, tmp_path):
     """A missing key or a service outage is a fact about that contestant, not a
     reason to lose everyone else's results."""
-    import waku.app
+    import jarvis.app
     _FakeWaku.script = {"q1?": "alpha", "q2?": "the new one"}
     _FakeWaku.gate = False
     real_init = _FakeWaku.__init__
@@ -340,7 +340,7 @@ def test_the_gate_decision_reaches_the_scorer(monkeypatch, tmp_path):
     fx = _arena_fixture(tmp_path)
     fx["tracks"]["t"]["probes"] = [{"id": "p-gate", "test": "restraint", "question": "q1?",
                                     "expect_any": ["68"], "expect_retrieval": False, "note": "n"}]
-    import waku.app
+    import jarvis.app
     _FakeWaku.script = {"q1?": "68"}
     _FakeWaku.gate = True          # it retrieved when it should not have
     monkeypatch.setattr(waku.app, "Waku", _FakeWaku)
@@ -358,5 +358,5 @@ def test_the_live_store_is_never_switched(monkeypatch, tmp_path):
                   backends=("sqlite", "mem0"))
     homes = {e["contestant"] for k, e in events if k == "start"}
     assert homes == {"sqlite", "mem0"}
-    from waku.config import load_settings
+    from jarvis.config import load_settings
     assert load_settings().semantic_store == "sqlite", "the real config must be untouched"

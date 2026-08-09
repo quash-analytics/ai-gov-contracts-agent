@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from waku.db import connect
-from waku.gateway.cli import _memory_snapshot
+from jarvis.db import connect
+from jarvis.gateway.cli import _memory_snapshot
 
 
 def test_memory_snapshot_reads_seeded_home(tmp_path):

@@ -27,8 +27,8 @@ import subprocess
 import sys
 import textwrap
 
-from waku import config
-from waku.loop import models
+from jarvis import config
+from jarvis.loop import models
 
 
 def test_dotenv_is_found_from_the_working_directory():

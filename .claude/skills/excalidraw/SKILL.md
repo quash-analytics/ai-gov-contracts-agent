@@ -25,7 +25,7 @@ style engine, which locks the values that a from-scratch board always gets wrong
 ## How to build one
 
 ```python
-from waku.ops.whiteboard import style as S
+from jarvis.ops.whiteboard import style as S
 
 e = []
 e.append(S.text(60, 40, "Title", size=S.FS_TITLE))

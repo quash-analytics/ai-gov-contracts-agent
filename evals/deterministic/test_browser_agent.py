@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import pytest
 
-from waku.ops import browser_agent
+from jarvis.ops import browser_agent
 
 
 @pytest.fixture

@@ -12,16 +12,16 @@ from types import SimpleNamespace
 import pytest
 
 from evals.helpers import ScriptedClient, make_waku, response, text_block
-from waku.gateway import discord as discord_gateway
-from waku.gateway import telegram as telegram_gateway
-from waku.gateway.discord import DiscordHandle
-from waku.gateway.runner import (
+from jarvis.gateway import discord as discord_gateway
+from jarvis.gateway import telegram as telegram_gateway
+from jarvis.gateway.discord import DiscordHandle
+from jarvis.gateway.runner import (
     GATEWAY_ERROR_REPLY,
     GatewayAgentRunner,
     run_gateway_turn,
 )
-from waku.gateway.telegram import TelegramHandle
-from waku.integrations import IntegrationState
+from jarvis.gateway.telegram import TelegramHandle
+from jarvis.integrations import IntegrationState
 
 
 class _Connection:

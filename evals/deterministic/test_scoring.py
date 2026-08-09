@@ -6,7 +6,7 @@ contract: the checklist logic, and matching a free-text prompt to its case."""
 
 from __future__ import annotations
 
-from waku.ops import scoring
+from jarvis.ops import scoring
 
 
 def _tc(*names):

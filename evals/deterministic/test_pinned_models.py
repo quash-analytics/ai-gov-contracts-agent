@@ -16,8 +16,8 @@ import os
 
 import pytest
 
-from waku.ops import catalog
-from waku.ops import settings_api as d
+from jarvis.ops import catalog
+from jarvis.ops import settings_api as d
 
 PROVIDER_KEYS = ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY", "DEEPSEEK_API_KEY",
                  "MINIMAX_API_KEY", "MOONSHOT_API_KEY", "ZHIPU_API_KEY", "OPENROUTER_API_KEY",
@@ -86,8 +86,8 @@ def test_switching_provider_adopts_its_pinned_default(home, monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY", "g")
     monkeypatch.setenv("MOONSHOT_API_KEY", "k")
     (home / "models.json").write_text(json.dumps({"pinned": ["kimi:kimi-k3"]}))
-    from waku import integrations
-    from waku.ops import browser_agent
+    from jarvis import integrations
+    from jarvis.ops import browser_agent
 
     monkeypatch.setattr(browser_agent, "rebuild", lambda: None)
     monkeypatch.setattr(browser_agent, "current", lambda: type("A", (), {"tracer": type("T", (), {"event": lambda *args: None})()})())
@@ -123,7 +123,7 @@ def test_no_pins_is_empty_not_error(home):
 
 def test_default_pair_is_flagship_then_fast(home):
     """Each provider ships a flagship + fast default pair for the switcher."""
-    from waku.loop.models import PROVIDERS
+    from jarvis.loop.models import PROVIDERS
 
     assert PROVIDERS["anthropic"].default_pair() == ["claude-opus-4-8", "claude-sonnet-5"]
     assert PROVIDERS["gemini"].default_pair() == ["gemini-3.1-pro-preview", "gemini-3.5-flash"]
@@ -166,7 +166,7 @@ def test_known_catalog_providers_can_list(home):
 
     glm is anthropic-wire with no verified public /models endpoint, so it
     intentionally shows its curated defaults until we wire and verify one."""
-    from waku.loop.models import PROVIDERS
+    from jarvis.loop.models import PROVIDERS
 
     CAN_LIST = {"anthropic", "openai", "openrouter", "gemini", "deepseek", "minimax",
                 "kimi", "xai", "opencode_zen", "opencode_go"}
@@ -181,7 +181,7 @@ def test_list_models_honors_provider_override(home, monkeypatch):
     THAT provider's catalog, not the active one. Cache-seeded to avoid network."""
     import time
 
-    from waku.loop.models import PROVIDERS
+    from jarvis.loop.models import PROVIDERS
 
     monkeypatch.delenv("MOONSHOT_BASE_URL", raising=False)
     monkeypatch.delenv("WAKU_BASE_URL", raising=False)

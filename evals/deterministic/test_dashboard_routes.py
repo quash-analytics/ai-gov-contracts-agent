@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import inspect
 
-from waku.ops import dashboard
+from jarvis.ops import dashboard
 
 # Every path the POST router accepts. `/api/compare` (non-streaming) was removed
 # on 2026-07-26: nothing called it, and its implementation had drifted behind the
@@ -92,7 +92,7 @@ def test_api_models_returns_picker_contract(monkeypatch):
     import json
     import urllib.request
 
-    from waku.ops import catalog
+    from jarvis.ops import catalog
 
     monkeypatch.setenv("WAKU_PROVIDER", "openrouter")
     monkeypatch.setenv("OPENROUTER_API_KEY", "fake-key")

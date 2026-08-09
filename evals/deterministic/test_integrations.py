@@ -7,11 +7,11 @@ import socket
 
 import pytest
 
-from waku import integrations
-from waku.integrations import IntegrationState, IntegrationStatus
-from waku.loop.models import PROVIDERS
-from waku.ops import browser_agent
-from waku.tools import apple, calendar
+from jarvis import integrations
+from jarvis.integrations import IntegrationState, IntegrationStatus
+from jarvis.loop.models import PROVIDERS
+from jarvis.ops import browser_agent
+from jarvis.tools import apple, calendar
 
 
 def _isolate(monkeypatch, tmp_path):

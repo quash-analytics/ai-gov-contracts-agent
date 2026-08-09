@@ -27,8 +27,8 @@ from pathlib import Path
 
 import pytest
 
-from waku.memory import bundled_skill_dirs
-from waku.memory.procedural.loader import SkillLoader
+from jarvis.memory import bundled_skill_dirs
+from jarvis.memory.procedural.loader import SkillLoader
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -68,7 +68,7 @@ def test_lookup_covers_both_install_shapes():
     both — checking only one is how this broke."""
     import inspect
 
-    from waku import memory
+    from jarvis import memory
 
     src = inspect.getsource(memory.bundled_skill_dirs)
     assert 'parents[1] / "skills"' in src, "lost the installed-wheel location"
@@ -108,7 +108,7 @@ def test_a_scripted_turn_ignores_the_graph_flag(tmp_path, monkeypatch):
     import dataclasses
 
     from evals.helpers import ScriptedClient, make_waku, response, text_block
-    from waku.config import Settings
+    from jarvis.config import Settings
 
     if "graph_workflows" not in {f.name for f in dataclasses.fields(Settings)}:
         pytest.skip("graph workflows not built on this branch")

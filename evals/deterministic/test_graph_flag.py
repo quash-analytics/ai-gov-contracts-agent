@@ -7,11 +7,11 @@ load_settings reads the env var.
 
 from __future__ import annotations
 
-from waku.config import Settings, load_settings
+from jarvis.config import Settings, load_settings
 
 
 def test_settings_exposes_the_flag_so_the_ui_can_render_a_toggle(monkeypatch):
-    from waku.ops import settings_api
+    from jarvis.ops import settings_api
 
     monkeypatch.delenv("WAKU_GRAPH_WORKFLOWS", raising=False)
     assert settings_api.settings_info()["graph_workflows"] is False

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import os
 
-from waku.gateway.supervisor import GatewaySupervisor
-from waku.integrations import IntegrationState, IntegrationStatus
+from jarvis.gateway.supervisor import GatewaySupervisor
+from jarvis.integrations import IntegrationState, IntegrationStatus
 
 
 class Handle:

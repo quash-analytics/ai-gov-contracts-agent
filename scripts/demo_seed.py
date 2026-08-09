@@ -24,11 +24,11 @@ import argparse
 import shutil
 from datetime import datetime
 
-from waku.config import load_settings
-from waku.db import connect
-from waku.memory.episodic.store import SqliteEpisodeStore
-from waku.memory.semantic.store import SqliteFactStore
-from waku.tools.calendar import make_tool
+from jarvis.config import load_settings
+from jarvis.db import connect
+from jarvis.memory.episodic.store import SqliteEpisodeStore
+from jarvis.memory.semantic.store import SqliteFactStore
+from jarvis.tools.calendar import make_tool
 
 # Curated seed — clean, no duplicates. Edit these to taste before recording.
 FACTS = [
@@ -89,7 +89,7 @@ def main(reset_spend: bool = False) -> None:
     print(create_event(**EVENT))
 
     # regenerate the human-readable MEMORY.md mirror for the fresh state
-    from waku.memory import Memory
+    from jarvis.memory import Memory
 
     Memory(conn, settings, None).export_markdown()
 

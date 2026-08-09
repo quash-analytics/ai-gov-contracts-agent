@@ -12,8 +12,8 @@ from __future__ import annotations
 import anthropic
 import pytest
 
-from waku.config import Settings
-from waku.loop.models import PROVIDERS, OpenAICompatClient, get_client
+from jarvis.config import Settings
+from jarvis.loop.models import PROVIDERS, OpenAICompatClient, get_client
 
 
 @pytest.fixture(autouse=True)
@@ -54,7 +54,7 @@ def test_unknown_provider_names_the_choices():
 
 @pytest.mark.parametrize("name", list(PROVIDERS))
 def test_dashboard_pricing_covers_every_provider(name):
-    from waku.ops.pricing import PRICING
+    from jarvis.ops.pricing import PRICING
 
     assert name in PRICING
 
@@ -65,7 +65,7 @@ def test_dashboard_pricing_covers_every_provider(name):
 def test_model_listing_falls_back_without_a_catalog(name, monkeypatch):
     """Providers with no listable catalog still give the picker their defaults
     (and never make a network call to get them)."""
-    from waku.ops import catalog
+    from jarvis.ops import catalog
 
     monkeypatch.setenv("WAKU_PROVIDER", name)
     monkeypatch.delenv("WAKU_MODEL", raising=False)
@@ -85,7 +85,7 @@ def test_bad_key_gives_a_fixable_error_not_a_codec_crash(monkeypatch):
     fixable message AND still offer the flagship so opus-4.8/fable-5 aren't lost.
     (Regression: a cloned repo whose ANTHROPIC_API_KEY had a '→' dropped the
     picker to two defaults with a 'latin-1 codec' error.)"""
-    from waku.ops import catalog
+    from jarvis.ops import catalog
 
     monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-" + "x" * 100 + "→bad")
@@ -105,7 +105,7 @@ def test_catalog_url_is_used_with_both_auth_styles(monkeypatch):
     import json
     import urllib.request
 
-    from waku.ops import catalog
+    from jarvis.ops import catalog
 
     captured = {}
 
@@ -140,7 +140,7 @@ def test_price_for_layers_model_over_provider():
     """Receipts correctness: a kimi-k3 run must be priced at K3's $3/$15, not
     the kimi provider's K2.7 rate — and unknown models still fall back to the
     provider estimate. (Live-catalog and :free paths are covered above.)"""
-    from waku.ops.pricing import MODEL_PRICING, PRICING, price_for
+    from jarvis.ops.pricing import MODEL_PRICING, PRICING, price_for
 
     assert price_for("kimi", "kimi-k3") == MODEL_PRICING["kimi-k3"] == (3.0, 15.0)
     assert price_for("kimi", "kimi-k2.7") == (0.95, 4.0)
@@ -166,7 +166,7 @@ def test_every_priced_model_has_a_knowledge_cutoff():
     means someone added a model without deciding, which is what this catches."""
     import re
 
-    from waku.ops.pricing import MODEL_CUTOFF, MODEL_PRICING, cutoff_for
+    from jarvis.ops.pricing import MODEL_CUTOFF, MODEL_PRICING, cutoff_for
 
     missing = set(MODEL_PRICING) - set(MODEL_CUTOFF)
     assert not missing, f"models priced but missing a MODEL_CUTOFF entry: {sorted(missing)}"
@@ -190,8 +190,8 @@ def test_every_priced_model_has_a_knowledge_cutoff():
 # arena. These pin the rule that stops it.
 
 def test_env_model_names_do_not_leak_into_another_provider(monkeypatch):
-    from waku.config import Settings
-    from waku.loop.models import get_client
+    from jarvis.config import Settings
+    from jarvis.loop.models import get_client
 
     monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
     monkeypatch.setenv("WAKU_MODEL", "claude-fable-5")
@@ -211,8 +211,8 @@ def test_env_model_names_do_not_leak_into_another_provider(monkeypatch):
 def test_an_explicit_model_survives_the_provider_switch(monkeypatch):
     """The rule drops INHERITED env values, not deliberate ones. Without this
     the fix would quietly override the arena's own model picker."""
-    from waku.config import Settings
-    from waku.loop.models import get_client
+    from jarvis.config import Settings
+    from jarvis.loop.models import get_client
 
     monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
     monkeypatch.setenv("WAKU_MODEL", "claude-fable-5")
@@ -227,8 +227,8 @@ def test_an_explicit_model_survives_the_provider_switch(monkeypatch):
 def test_the_env_still_wins_for_its_own_provider(monkeypatch):
     """The whole point of WAKU_MODEL is to override the default — the fix must
     not break the ordinary single-provider case."""
-    from waku.config import Settings
-    from waku.loop.models import get_client
+    from jarvis.config import Settings
+    from jarvis.loop.models import get_client
 
     monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
     monkeypatch.setenv("WAKU_MODEL", "claude-fable-5")
@@ -247,8 +247,8 @@ def test_a_foreign_gate_model_is_dropped_even_when_the_env_names_the_provider(mo
     WAKU_SMALL_MODEL still holding anthropic's gate model. Scoping by "did the
     caller switch provider" missed this one — the env agreed with itself and was
     still wrong."""
-    from waku.config import Settings
-    from waku.loop.models import get_client
+    from jarvis.config import Settings
+    from jarvis.loop.models import get_client
 
     monkeypatch.setenv("WAKU_PROVIDER", "xai")
     monkeypatch.setenv("WAKU_SMALL_MODEL", "claude-haiku-4-5-20251001")
@@ -264,8 +264,8 @@ def test_an_unfamiliar_model_name_is_left_alone(monkeypatch):
     """The check asks "is this positively someone else's?", not "does it look
     like ours?". The second question would silently downgrade any id we don't
     recognise — a preview name, a model released after this code was written."""
-    from waku.config import Settings
-    from waku.loop.models import get_client
+    from jarvis.config import Settings
+    from jarvis.loop.models import get_client
 
     monkeypatch.setenv("WAKU_PROVIDER", "kimi")
     monkeypatch.setenv("WAKU_SMALL_MODEL", "moonshot-v1-8k")

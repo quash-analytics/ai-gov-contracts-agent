@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 
 from evals.helpers import ScriptedClient, make_waku
-from waku.ops.dashboard import _thread_history, session_action
+from jarvis.ops.dashboard import _thread_history, session_action
 
 
 def _seed(app, session_id, user, assistant):

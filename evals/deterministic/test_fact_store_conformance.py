@@ -32,9 +32,9 @@ import os
 
 import pytest
 
-from waku.db import connect
-from waku.memory.semantic.base import FactStore
-from waku.memory.semantic.store import SqliteFactStore
+from jarvis.db import connect
+from jarvis.memory.semantic.base import FactStore
+from jarvis.memory.semantic.store import SqliteFactStore
 
 
 def _sqlite_store(tmp_path):
@@ -48,8 +48,8 @@ def _supabase_store(tmp_path):
     should not start paying for embeddings by running the test suite."""
     if os.getenv("WAKU_TEST_SUPABASE") != "1":
         pytest.skip("set WAKU_TEST_SUPABASE=1 (plus SUPABASE_* and OPENAI_API_KEY) to include it")
-    from waku.config import Settings
-    from waku.memory.semantic.supabase_store import SupabaseFactStore
+    from jarvis.config import Settings
+    from jarvis.memory.semantic.supabase_store import SupabaseFactStore
 
     return SupabaseFactStore(Settings(home=tmp_path))
 
@@ -61,8 +61,8 @@ def _mem0_store(tmp_path):
     about Priya's meeting preferences."""
     if os.getenv("WAKU_TEST_MEM0") != "1":
         pytest.skip("set WAKU_TEST_MEM0=1 (plus MEM0_API_KEY) to include it")
-    from waku.config import Settings
-    from waku.memory.semantic.mem0_store import Mem0FactStore
+    from jarvis.config import Settings
+    from jarvis.memory.semantic.mem0_store import Mem0FactStore
 
     return Mem0FactStore(Settings(home=tmp_path))
 
@@ -70,8 +70,8 @@ def _mem0_store(tmp_path):
 def _zep_store(tmp_path):
     if os.getenv("WAKU_TEST_ZEP") != "1":
         pytest.skip("set WAKU_TEST_ZEP=1 (plus ZEP_API_KEY) to include it")
-    from waku.config import Settings
-    from waku.memory.semantic.zep_store import ZepFactStore
+    from jarvis.config import Settings
+    from jarvis.memory.semantic.zep_store import ZepFactStore
 
     return ZepFactStore(Settings(home=tmp_path))
 
@@ -83,8 +83,8 @@ def _langmem_store(tmp_path):
     measuring nothing."""
     if os.getenv("WAKU_TEST_LANGMEM") != "1":
         pytest.skip("set WAKU_TEST_LANGMEM=1 (plus OPENAI_API_KEY) to include it")
-    from waku.config import Settings
-    from waku.memory.semantic.langmem_store import LangMemFactStore
+    from jarvis.config import Settings
+    from jarvis.memory.semantic.langmem_store import LangMemFactStore
 
     return LangMemFactStore(Settings(home=tmp_path))
 
@@ -202,7 +202,7 @@ def test_a_blank_optional_field_falls_back_to_its_default(monkeypatch):
     "User id" would have silently scoped the graph to "" instead of "waku" —
     which is the worse half, because nothing would have errored.
     """
-    from waku.memory.semantic.base import env_or
+    from jarvis.memory.semantic.base import env_or
 
     monkeypatch.setenv("WAKU_TEST_BLANK", "")
     assert env_or("WAKU_TEST_BLANK", "fallback") == "fallback"

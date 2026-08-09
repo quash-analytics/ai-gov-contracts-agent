@@ -9,7 +9,7 @@ thread if its last message is still within the idle window; else start fresh."""
 from __future__ import annotations
 
 from evals.helpers import ScriptedClient, make_waku
-from waku.ops.browser_agent import resume_or_new_session
+from jarvis.ops.browser_agent import resume_or_new_session
 
 
 def _seed(app, session_id, age_minutes, source="dashboard"):

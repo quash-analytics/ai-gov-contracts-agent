@@ -11,8 +11,8 @@ import json
 
 from deepeval.models import DeepEvalBaseLLM
 
-from waku.config import load_settings
-from waku.loop.models import get_client
+from jarvis.config import load_settings
+from jarvis.loop.models import get_client
 
 
 class AnthropicJudge(DeepEvalBaseLLM):

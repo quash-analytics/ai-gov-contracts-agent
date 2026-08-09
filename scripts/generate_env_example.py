@@ -6,7 +6,7 @@ import argparse
 import difflib
 from pathlib import Path
 
-from waku.integrations import render_env_example_block
+from jarvis.integrations import render_env_example_block
 
 BEGIN = "# BEGIN GENERATED CONNECTIONS"
 END = "# END GENERATED CONNECTIONS"

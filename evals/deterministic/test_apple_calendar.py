@@ -8,10 +8,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from waku import integrations
-from waku.integrations import IntegrationState
-from waku.tools import calendar
-from waku.tools.calendar import _applescript_date, sync_to_apple_calendar
+from jarvis import integrations
+from jarvis.integrations import IntegrationState
+from jarvis.tools import calendar
+from jarvis.tools.calendar import _applescript_date, sync_to_apple_calendar
 
 
 def _completed(stdout: str = "") -> SimpleNamespace:
@@ -143,7 +143,7 @@ def test_create_event_handles_empty_call_gracefully():
     # TypeError. The tool must return a helpful message instead of crashing.
     import sqlite3
 
-    from waku.tools.calendar import make_tool
+    from jarvis.tools.calendar import make_tool
 
     conn = sqlite3.connect(":memory:")
     conn.executescript(

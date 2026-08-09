@@ -3,7 +3,7 @@ Whisper mangles phrases in predictable ways; these cases pin the fuzziness."""
 
 import pytest
 
-from waku.gateway.voice import matches_wake
+from jarvis.gateway.voice import matches_wake
 
 SHOULD_WAKE = [
     ("waku waku", "waku waku"),

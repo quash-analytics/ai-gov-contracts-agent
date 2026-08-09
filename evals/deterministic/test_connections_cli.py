@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from waku import integrations
-from waku.integrations import IntegrationState, IntegrationStatus
+from jarvis import integrations
+from jarvis.integrations import IntegrationState, IntegrationStatus
 
 
 def test_cli_returns_failure_for_configured_error(monkeypatch, tmp_path):

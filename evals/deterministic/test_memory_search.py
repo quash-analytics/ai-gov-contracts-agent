@@ -29,9 +29,9 @@ from __future__ import annotations
 
 import pytest
 
-from waku.db import connect
-from waku.memory.episodic.store import SqliteEpisodeStore
-from waku.memory.semantic.store import SqliteFactStore, _fts_query
+from jarvis.db import connect
+from jarvis.memory.episodic.store import SqliteEpisodeStore
+from jarvis.memory.semantic.store import SqliteFactStore, _fts_query
 
 
 @pytest.fixture

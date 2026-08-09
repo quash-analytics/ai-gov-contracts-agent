@@ -13,8 +13,8 @@ def _has_key() -> bool:
     """True when the ACTIVE provider (WAKU_PROVIDER) has its key set, so live
     evals run on whatever the user actually configured (anthropic, openrouter,
     gemini, ...), not only on ANTHROPIC_API_KEY."""
-    from waku.config import load_settings
-    from waku.loop.models import PROVIDERS
+    from jarvis.config import load_settings
+    from jarvis.loop.models import PROVIDERS
 
     settings = load_settings()
     provider = PROVIDERS.get(settings.provider)
@@ -53,8 +53,8 @@ class ScriptedClient:
 
 def make_waku(home: Path, client=None, **settings_overrides):
     """Build a Waku with an isolated home dir; optionally swap in a fake client."""
-    from waku.app import Waku
-    from waku.config import Settings
+    from jarvis.app import Waku
+    from jarvis.config import Settings
 
     # A test must describe its own world. `waku/config.py` calls load_dotenv()
     # at import, so every Settings() default is quietly seeded from whatever is

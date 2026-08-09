@@ -13,7 +13,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from waku.integrations import INTEGRATIONS
+from jarvis.integrations import INTEGRATIONS
 
 STATIC = Path(__file__).resolve().parents[2] / "waku" / "ops" / "static"
 INDEX = (STATIC / "index.html").read_text()
@@ -68,7 +68,7 @@ def test_every_registry_group_has_a_display_name():
     new registry group would not error — it would quietly file itself under the
     wrong heading and nobody would notice. Pin the mapping instead of trusting
     the fallback."""
-    from waku import integrations
+    from jarvis import integrations
 
     mapped = set(re.findall(r'^\s*"([^"]+)":\s*"[^"]+",\s*$', JS_SRC, re.MULTILINE))
     # AI Providers has its own page (Models), so it is deliberately not here.

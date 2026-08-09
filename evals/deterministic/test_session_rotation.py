@@ -8,7 +8,7 @@ is older than WAKU_SESSION_IDLE_MINUTES, the next chat starts a new thread
 from __future__ import annotations
 
 from evals.helpers import ScriptedClient, make_waku
-from waku.ops.browser_agent import maybe_rotate_session
+from jarvis.ops.browser_agent import maybe_rotate_session
 
 
 def _seed(app, session_id, age_minutes):
@@ -61,7 +61,7 @@ def test_provider_switch_resets_stale_model_overrides(tmp_path, monkeypatch):
     """Live bug: kimi -> gemini kept gate model kimi-k3; every turn then 404'd
     against Gemini. A provider change must reset any model field the user
     didn't newly type."""
-    from waku.ops import settings_api
+    from jarvis.ops import settings_api
 
     captured = {}
     monkeypatch.setenv("WAKU_PROVIDER", "kimi")

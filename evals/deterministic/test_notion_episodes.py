@@ -11,7 +11,7 @@ import types
 
 import pytest
 
-from waku.memory.episodic.notion_store import (
+from jarvis.memory.episodic.notion_store import (
     NotionEpisodeStore,
     normalize_database_id,
 )
@@ -185,7 +185,7 @@ def test_module_imports_without_notion_client_installed():
     code = """
 import sys
 assert "notion_client" not in sys.modules
-from waku.memory.episodic.notion_store import NotionEpisodeStore
+from jarvis.memory.episodic.notion_store import NotionEpisodeStore
 assert "notion_client" not in sys.modules
 print("ok")
 """
