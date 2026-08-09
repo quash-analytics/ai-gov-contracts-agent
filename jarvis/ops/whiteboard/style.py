@@ -1,6 +1,6 @@
 """Sean's Excalidraw whiteboard style, locked in code.
 
-Every board Waku generates should be indistinguishable from Sean's hand-drawn
+Every board Jarvis generates should be indistinguishable from Sean's hand-drawn
 masters (~/Developer/Excalidraw) so he can film with it directly. The values
 here were reverse-engineered from those masters, not invented:
 
@@ -361,7 +361,7 @@ def socials_logos(x, y, *, size=44, row=58, text_dx=64):
 
 def document(elements):
     return {
-        "type": "excalidraw", "version": 2, "source": "waku/ops/whiteboard",
+        "type": "excalidraw", "version": 2, "source": "jarvis/ops/whiteboard",
         "elements": elements,
         "appState": {"gridSize": None, "viewBackgroundColor": "#ffffff"},
         "files": {fid: dict(f) for fid, f in _FILES.items()},

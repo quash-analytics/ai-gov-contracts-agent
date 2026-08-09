@@ -3,7 +3,7 @@
 pi (via delegate_task) writes REAL files. Without a home they vanish in a temp
 dir — so each scratch delegation instead lands in
 
-    <WAKU_WORKSPACE>/<YYYY-MM-DD>/<HHMMSS>-<model>-<slug>/
+    <JARVIS_WORKSPACE>/<YYYY-MM-DD>/<HHMMSS>-<model>-<slug>/
         <the files pi wrote>
         MANIFEST.md      date, model, the task, files created, the auto-run result
         run.log          stdout/exit of the auto-run
@@ -11,7 +11,7 @@ dir — so each scratch delegation instead lands in
 
 so a coding run is traceable, not a mystery temp dir. Code artifacts are
 DELIVERABLES, not agent state (memory / calendar / db), so this deliberately
-lives OUTSIDE .waku and is git-ignored — it never pollutes the agent's real
+lives OUTSIDE .jarvis and is git-ignored — it never pollutes the agent's real
 state or the repo.
 
 Auto-run: after pi finishes, the entry script is run (headless, captured, with a
@@ -29,15 +29,15 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-WORKSPACE_ENV = "WAKU_WORKSPACE"          # root dir; default ./waku_workspace
-AUTORUN_ENV = "WAKU_DELEGATE_AUTORUN"     # "0"/"false"/"no" to disable auto-run
-RUN_TIMEOUT = int(os.getenv("WAKU_AUTORUN_TIMEOUT", "30"))
+WORKSPACE_ENV = "JARVIS_WORKSPACE"          # root dir; default ./jarvis_workspace
+AUTORUN_ENV = "JARVIS_DELEGATE_AUTORUN"     # "0"/"false"/"no" to disable auto-run
+RUN_TIMEOUT = int(os.getenv("JARVIS_AUTORUN_TIMEOUT", "30"))
 _OURS = {"MANIFEST.md", "run.log", "pi-transcript.log"}
 _ENTRY_PREFS = ("main.py", "app.py", "run.py", "game.py")
 
 
 def workspace_root() -> Path:
-    return Path(os.getenv(WORKSPACE_ENV, "waku_workspace")).expanduser().resolve()
+    return Path(os.getenv(WORKSPACE_ENV, "jarvis_workspace")).expanduser().resolve()
 
 
 def _slug(text: str, n: int = 4) -> str:

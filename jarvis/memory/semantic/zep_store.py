@@ -1,10 +1,10 @@
 """Semantic memory, as a temporal graph — Zep behind the same six methods.
 
-    pip install 'waku-agent[arena]'
-    WAKU_SEMANTIC_STORE=zep   ZEP_API_KEY=z_...
+    pip install 'jarvis-agent[arena]'
+    JARVIS_SEMANTIC_STORE=zep   ZEP_API_KEY=z_...
 
 This is the most architecturally different backend in the arena, and it is the
-one worth watching. Waku's FTS5 store and Mem0 both hold facts as rows: writing
+one worth watching. Jarvis's FTS5 store and Mem0 both hold facts as rows: writing
 a newer fact leaves the older one sitting there, equally retrievable, and
 "which is true now" is left to whatever ranks higher. Zep builds a temporal
 knowledge graph instead — entities and relationships with validity intervals,
@@ -12,7 +12,7 @@ so a fact can be marked superseded AT A POINT IN TIME rather than merely
 outranked.
 
 That is exactly the update test ("the design review moved to Wednesday"), which
-is the probe waku is most likely to lose. Losing it to a system that was built
+is the probe jarvis is most likely to lose. Losing it to a system that was built
 for it is a real finding and belongs in the results, not in a footnote.
 
 WHAT DOESN'T MAP CLEANLY, STATED PLAINLY
@@ -22,7 +22,7 @@ put in is not the row you get back. So:
 
   * `add()` is a graph ingest, not an insert. Zep decides how to decompose it.
   * `search()` returns graph results whose text is Zep's rendering of an edge or
-    node, not the sentence Waku wrote. Answers will read differently from the
+    node, not the sentence Jarvis wrote. Answers will read differently from the
     other backends even when they are equally correct — that is the product
     working, not a bug, and a scoreboard reporting it should say so.
   * `update()` has no counterpart. A graph does not edit a fact in place; you
@@ -47,7 +47,7 @@ import time
 from jarvis.config import Settings
 from jarvis.memory.semantic.base import env_or
 
-_DEFAULT_USER = "waku"
+_DEFAULT_USER = "jarvis"
 
 # graph.add() is async: it returns an Episode with processed=False in ~0.2s,
 # and the text only becomes searchable once Zep has decomposed it into nodes

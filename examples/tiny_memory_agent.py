@@ -3,16 +3,16 @@
     .venv/bin/python examples/tiny_memory_agent.py "When is the design review?"
 
 The explicit interpreter is not pedantry: on macOS `python` is usually aliased
-to /usr/bin/python3, which does not have waku installed, and the failure is a
+to /usr/bin/python3, which does not have jarvis installed, and the failure is a
 bare ModuleNotFoundError that looks like a broken example rather than a shell
 pointing somewhere else. `source .venv/bin/activate` first if you prefer.
 
-Your keys are picked up automatically — waku/config.py calls find_dotenv from
+Your keys are picked up automatically — jarvis/config.py calls find_dotenv from
 the working directory, so no exports are needed.
 
 WHY THIS FILE EXISTS
 
-The full Waku loop sends every registered tool schema on every turn. Measured on
+The full Jarvis loop sends every registered tool schema on every turn. Measured on
 a real probe, that is ~65% of the prompt — the model is handed a calendar, a web
 search and a shell tool to answer "what does Jensen always wear?". For an agent
 whose only job is to recall, all of it is waste you pay for on every question.
@@ -24,7 +24,7 @@ frame:
     2. retrieve  — if yes, search the store for the facts that matter
     3. answer    — one call, those facts, no tools
 
-It reads the SAME store as your live agent (`WAKU_SEMANTIC_STORE` picks the
+It reads the SAME store as your live agent (`JARVIS_SEMANTIC_STORE` picks the
 backend: sqlite, mem0, zep, supabase, langmem). It only ever reads — nothing
 here writes, consolidates, or deletes.
 
@@ -59,7 +59,7 @@ def demo_store(settings, client):
     where they sleep, who they meet, colleagues by name. That is fine at a
     terminal and not fine in a video, and "remember to close that window" is
     not a safety mechanism. --demo builds a fresh sqlite in a temp directory,
-    seeds it from evals/memory_arena.json, and never opens .waku at all.
+    seeds it from evals/memory_arena.json, and never opens .jarvis at all.
     """
     import json
     import tempfile

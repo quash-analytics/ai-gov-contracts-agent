@@ -15,7 +15,7 @@ from pathlib import Path
 
 from jarvis.integrations import INTEGRATIONS
 
-STATIC = Path(__file__).resolve().parents[2] / "waku" / "ops" / "static"
+STATIC = Path(__file__).resolve().parents[2] / "jarvis" / "ops" / "static"
 INDEX = (STATIC / "index.html").read_text()
 JS_FILES = sorted((STATIC / "js").glob("*.js"))
 JS_SRC = "\n".join(f.read_text() for f in JS_FILES)

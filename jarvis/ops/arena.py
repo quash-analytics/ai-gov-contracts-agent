@@ -4,7 +4,7 @@ This is the Eval/LLM-Ops pillar made visible. One message goes to N models at
 once; each contestant runs the REAL loop — retrieval gate, tools, memory — in
 its own throwaway home, so a race can create events and save notes without ever
 touching your actual data. That isolation is the whole reason this is safe to
-demo: `.waku/` is never opened here.
+demo: `.jarvis/` is never opened here.
 
     prompt ──┬─→ model A ─→ own temp home ─→ gate · tools · reply ─┐
              ├─→ model B ─→ own temp home ─→ gate · tools · reply ─┼─→ SSE
@@ -12,11 +12,11 @@ demo: `.waku/` is never opened here.
 
 Two scores, deliberately separate:
   Completion  deterministic — did the right tool fire, with the right args?
-              (waku.ops.scoring, only for prompts in the battery)
-  Quality     an LLM referee's grade (waku.ops.judge), run AFTER the race as one
+              (jarvis.ops.scoring, only for prompts in the battery)
+  Quality     an LLM referee's grade (jarvis.ops.judge), run AFTER the race as one
               gentle pass so a burst of concurrent calls can't 429 half of them.
 
-Results land in the arena's own JSONL scoreboard (waku.ops.compare_history) —
+Results land in the arena's own JSONL scoreboard (jarvis.ops.compare_history) —
 never state.db. dashboard.py owns the HTTP/SSE plumbing; this module owns the
 race.
 """
@@ -46,7 +46,7 @@ def compare_stream(message: str, specs: list, emit, judge: bool = False,
     import time
     from concurrent.futures import ThreadPoolExecutor
 
-    from jarvis.app import Waku
+    from jarvis.app import Jarvis
     from jarvis.config import Settings
 
     if not message or not specs:
@@ -98,7 +98,7 @@ def compare_stream(message: str, specs: list, emit, judge: bool = False,
             # can hand real programming work to pi — running the FULL harness
             # (gate, memory, tools), not a bypass. pi runs on this card's model.
             # apple_calendar defaults OFF (isolation), opt-in per race — when on,
-            # EACH model writes its own event to the real 'Waku' calendar.
+            # EACH model writes its own event to the real 'Jarvis' calendar.
             settings = Settings(
                 provider=provider,
                 model=model,
@@ -108,7 +108,7 @@ def compare_stream(message: str, specs: list, emit, judge: bool = False,
                 google_calendar=False,
                 experimental=coding,
             )
-            app = Waku(settings=settings)
+            app = Jarvis(settings=settings)
             # A scored case may pre-load a fact (e.g. "applies memory") so every
             # model starts from the same state the checklist assumes.
             if case and case.get("setup_fact"):

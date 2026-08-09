@@ -1,4 +1,4 @@
-"""CLI gateway — the zero-setup way to talk to your Waku.
+"""CLI gateway — the zero-setup way to talk to your Jarvis.
 
 The Gateway Interface box: a gateway only moves text in and out; everything
 interesting happens in the loop. The Telegram gateway is the same ~60 lines
@@ -13,13 +13,13 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-from jarvis.app import Waku
+from jarvis.app import Jarvis
 
 console = Console()
 
 
 def _memory_snapshot(conn: sqlite3.Connection) -> str:
-    """Render a bounded, read-only view of Waku's local memory."""
+    """Render a bounded, read-only view of Jarvis's local memory."""
     fact_count = conn.execute("SELECT COUNT(*) FROM facts").fetchone()[0]
     facts = conn.execute("SELECT subject, content FROM facts ORDER BY id DESC LIMIT 8").fetchall()
     episode_count = conn.execute("SELECT COUNT(*) FROM episodes").fetchone()[0]
@@ -53,11 +53,11 @@ def _observer(kind: str, event: dict) -> None:
 
 
 def main() -> None:
-    waku = Waku()
-    waku.session.session_id = "terminal"   # its own conversation thread in the inbox
+    jarvis = Jarvis()
+    jarvis.session.session_id = "terminal"   # its own conversation thread in the inbox
     console.print(Panel.fit(
-        "[bold]Waku[/bold] — local, yours, transparent.\n"
-        f"home: {waku.settings.home.resolve()}   model: {waku.settings.model}\n"
+        "[bold]Jarvis[/bold] — local, yours, transparent.\n"
+        f"home: {jarvis.settings.home.resolve()}   model: {jarvis.settings.model}\n"
         "Commands: /memory · /quit",
         border_style="cyan",
     ))
@@ -73,14 +73,14 @@ def main() -> None:
         if user_message == "/memory":
             console.print(
                 Panel(
-                    Text(_memory_snapshot(waku.conn)),
+                    Text(_memory_snapshot(jarvis.conn)),
                     title="Memory snapshot",
                     border_style="cyan",
                 )
             )
             continue
-        result = waku.respond(user_message, observer=_observer, source="cli")
-        console.print(f"[bold green]waku ›[/bold green] {result.reply}\n")
+        result = jarvis.respond(user_message, observer=_observer, source="cli")
+        console.print(f"[bold green]jarvis ›[/bold green] {result.reply}\n")
     console.print("[dim]bye — your memory stays in state.db[/dim]")
 
 

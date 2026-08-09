@@ -46,7 +46,7 @@ def _parse(path: Path) -> Skill | None:
 
 class SkillLoader:
     """Scans skill directories: the repo's skills/ (built-in + community) and
-    WAKU_HOME/skills (installed or agent-authored). Re-scans automatically
+    JARVIS_HOME/skills (installed or agent-authored). Re-scans automatically
     when any SKILL.md changes, so a skill created mid-session is live next turn."""
 
     def __init__(self, dirs: list[Path]):

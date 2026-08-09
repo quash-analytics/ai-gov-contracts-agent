@@ -1,4 +1,4 @@
-// waku dashboard — subtab/db helpers, SQL console, Memory/Tools sub-views, VIEWS.
+// jarvis dashboard — subtab/db helpers, SQL console, Memory/Tools sub-views, VIEWS.
 // Split out of app.js: classic <script>, shared global scope (no build
 // step, no modules). Load order + rules: static/README.md.
 
@@ -71,11 +71,11 @@ function memOverview(d){
       <b>${t} <span class="meta" style="font-weight:400">· ${n}</span></b><span>${desc}</span></div>`).join("");
   return `<div class="card" style="border-color:var(--accent);background:var(--accent-soft)">
       <b>Memory vs Database — two views of one file.</b>
-      <div class="r">This tab is the curated, per-pillar view of what Waku remembers. The
+      <div class="r">This tab is the curated, per-pillar view of what Jarvis remembers. The
       <a class="reveal" onclick="location.hash='database'">Database tab</a> shows the exact same
       thing as raw SQLite tables (plus the FTS5 keyword index). Same
-      <code>.waku/state.db</code> — different altitude.
-      <br><br>Some assistants (Hermes) keep memory as a single <code>MEMORY.md</code> file. Waku keeps
+      <code>.jarvis/state.db</code> — different altitude.
+      <br><br>Some assistants (Hermes) keep memory as a single <code>MEMORY.md</code> file. Jarvis keeps
       the queryable source in <code>state.db</code> (facts + episodes, FTS5-searchable) <b>and</b> writes a
       human-readable ${reveal("MEMORY.md","MEMORY.md")} mirror after every turn — so you get both: a real file
       you can open, backed by a sturdy database.</div></div>
@@ -88,7 +88,7 @@ function memOverview(d){
     <div class="meta" style="margin-top:14px">Files: ${reveal("state.db","state.db")} · ${reveal("MEMORY.md","MEMORY.md")} · ${reveal("SOUL.md","SOUL.md")} · ${reveal("skills","skills/")}</div>`;
 }
 function memSemantic(d){
-  let h = `<div class="meta" style="margin-bottom:12px">Durable facts distilled from what you tell Waku —
+  let h = `<div class="meta" style="margin-bottom:12px">Durable facts distilled from what you tell Jarvis —
     the smallest, most-reused store. Edit or forget any of them; changes are live next turn.</div>`;
   h += `<div class="card" style="padding:4px 8px"><table><tr><th>subject</th><th>fact</th><th>source</th><th></th></tr>${
     d.facts.map(f => `<tr id="fact-${f.id}">
@@ -115,7 +115,7 @@ function memEpisodic(d){
 }
 function memSkills(d){
   let h = `<div class="meta" style="margin-bottom:12px">Procedural memory — markdown instructions loaded
-    only when a message matches. Add your own three ways: teach Waku in chat (it calls
+    only when a message matches. Add your own three ways: teach Jarvis in chat (it calls
     <code>create_skill</code>), edit a skill below, or drop a <code>SKILL.md</code> into ${reveal("skills","the skills folder")}.</div>`;
   h += d.skills.map((sk,i) => {
     const full = `---
@@ -135,8 +135,8 @@ ${sk.body}`;
   return h;
 }
 function memSoul(d){
-  return `<div class="meta" style="margin-bottom:12px">SOUL.md is Waku's persona — the system prompt it
-    loads every turn. Editing it changes who your Waku is. Changes are live next turn.</div>
+  return `<div class="meta" style="margin-bottom:12px">SOUL.md is Jarvis's persona — the system prompt it
+    loads every turn. Editing it changes who your Jarvis is. Changes are live next turn.</div>
     <div class="card"><textarea id="soul" class="editor" style="min-height:260px"
       oninput="dirty('soul-save')" onfocus="markEditing()">${esc(d.soul||"")}</textarea>
     <div style="margin-top:8px"><button class="save" id="soul-save" disabled onclick="saveSoul()">Save SOUL.md</button>
@@ -181,13 +181,13 @@ function toolsMCP(t){
   const m = t.mcp;
   let h = `<div class="card ${m.configured?"":""}" style="border-color:${m.live?"var(--good)":"var(--line2)"}">
     <b>Model Context Protocol${m.live?" — connected":m.configured?" — configured":" — not set up"}.</b>
-    <div class="r">MCP lets Waku borrow tools from any external server (files, GitHub, a database, …),
+    <div class="r">MCP lets Jarvis borrow tools from any external server (files, GitHub, a database, …),
     namespaced <code>&lt;server&gt;_&lt;tool&gt;</code>. ${m.configured
       ? `Configured servers: ${m.servers.map(s=>`<code>${esc(s)}</code>`).join(" ")}${m.live?"":" — start a chat to connect them."}`
       : "None configured yet."}</div></div>`;
   h += `<h2>Connect one (30 seconds)</h2><div class="card">
     <div class="meta">1 — install the extra: <code>pip install -e '.[mcp]'</code></div>
-    <div class="meta" style="margin-top:6px">2 — create ${reveal("","the .waku folder")}<code>/mcp.json</code>:</div>
+    <div class="meta" style="margin-top:6px">2 — create ${reveal("","the .jarvis folder")}<code>/mcp.json</code>:</div>
     <pre style="font-family:var(--mono);font-size:11.5px;color:var(--ink2);white-space:pre-wrap;margin-top:8px">{"servers": [
   {"name": "fs", "command": "npx",
    "args": ["-y", "@modelcontextprotocol/server-filesystem", "${esc(D&&D.home||"")}"]}
@@ -195,7 +195,7 @@ function toolsMCP(t){
     <div class="meta" style="margin-top:8px">3 — restart the dashboard. The server's tools appear above under
       <a class="reveal" onclick="location.hash='tools/available'">Available ▸ MCP servers</a>, callable in chat.</div></div>`;
   h += `<div class="meta" style="margin-top:12px">The same pattern scales: any MCP server (yours or a vendor's)
-    plugs in the same way — no code changes to Waku. Skills work the same way — drop a <code>SKILL.md</code>
+    plugs in the same way — no code changes to Jarvis. Skills work the same way — drop a <code>SKILL.md</code>
     in ${reveal("skills","skills/")}.</div>`;
   return h;
 }
@@ -443,7 +443,7 @@ const VIEWS = {
     ${archSVG(d)}
     <h2>Graph workflows — when a turn needs shape</h2>
     ${graphPanel(d)}
-    <h2>Latest turn</h2>${d.turns.length?turnCard(d.turns[0]):'<div class="card empty">no turns yet — talk to Waku first</div>'}`;
+    <h2>Latest turn</h2>${d.turns.length?turnCard(d.turns[0]):'<div class="card empty">no turns yet — talk to Jarvis first</div>'}`;
   },
   loop(d){
     return d.turns.length ? d.turns.map(turnCard).join("") : `<div class="card empty">no turns yet</div>`;
@@ -464,7 +464,7 @@ const VIEWS = {
       h += `<div class="card"><b>Off</b> — every turn currently runs the classic loop.
         <div class="meta" style="margin-top:6px">Switch on <b>graph workflows</b> in
         <a class="reveal" onclick="location.hash='settings'">Behaviour</a>, or set
-        <code>WAKU_GRAPH_WORKFLOWS=1</code> in <code>.env</code>. Any failure anywhere fails open to the
+        <code>JARVIS_GRAPH_WORKFLOWS=1</code> in <code>.env</code>. Any failure anywhere fails open to the
         plain loop — this can never lose a reply, only save time and tokens.</div></div>`;
     // The two workflows are two different JOBS with different triggers, which is
     // the thing the page has to make obvious — otherwise two stacked charts read
@@ -551,7 +551,7 @@ const VIEWS = {
     // Available: what the agent CAN do (grouped by origin), not just what it did.
     h += `<div class="meta" style="margin-bottom:12px">The capabilities the agent can call this turn.
       A tool is a name + description the model reads, a JSON schema, and a Python function — that's it.
-      ${t.apple_on?"":"Apple tools are off (set <code>WAKU_APPLE_TOOLS=1</code>). "}Connect more via
+      ${t.apple_on?"":"Apple tools are off (set <code>JARVIS_APPLE_TOOLS=1</code>). "}Connect more via
       <a class="reveal" onclick="location.hash='tools/mcp'">MCP</a>.</div>`;
     const SRC = [["flagship","Flagship task — scheduling"],["web","Web search"],
       ["self-management","Self-management — it edits its own memory"],
@@ -566,7 +566,7 @@ const VIEWS = {
     });
     // Roadmap: whiteboard boxes not wired in yet — set expectations, don't over-promise.
     if ((t.planned||[]).length){
-      h += `<h2>Coming soon <span class="meta" style="font-weight:400">· on the architecture chart, not wired in yet (opt in with <code>WAKU_EXPERIMENTAL=1</code>)</span></h2>`;
+      h += `<h2>Coming soon <span class="meta" style="font-weight:400">· on the architecture chart, not wired in yet (opt in with <code>JARVIS_EXPERIMENTAL=1</code>)</span></h2>`;
       h += t.planned.map(p => `<div class="toolcard" style="opacity:.7">
         <div class="tn">${esc(p.name)}<span class="srcpill apple">soon · ${esc(p.box)}</span></div>
         <div class="td">${esc(p.description)}</div></div>`).join("");
@@ -599,12 +599,12 @@ const VIEWS = {
       <b>Database vs Memory.</b> <span class="r">This is the raw persistence layer — the literal SQLite
       tables. The <a class="reveal" onclick="location.hash='memory'">Memory tab</a> is the friendly
       view of the same rows (facts, episodes, skills, persona). One file, two altitudes. Where Hermes
-      uses a <code>MEMORY.md</code> file, Waku uses these queryable tables — and mirrors them to a
+      uses a <code>MEMORY.md</code> file, Jarvis uses these queryable tables — and mirrors them to a
       readable <code>MEMORY.md</code> too.</span></div>`;
     h += `<div class="card">
       <div class="u" style="font-family:var(--mono);font-size:12.5px;word-break:break-all">${esc(db.path)}</div>
-      <div class="meta">${kb} KB on disk · SQLite + FTS5 · open it yourself: <code>sqlite3 .waku/state.db</code></div>
-      <div class="meta" style="margin-top:8px">${reveal("state.db","reveal state.db in Finder")} &nbsp;·&nbsp; ${reveal("","open the .waku folder")}</div></div>`;
+      <div class="meta">${kb} KB on disk · SQLite + FTS5 · open it yourself: <code>sqlite3 .jarvis/state.db</code></div>
+      <div class="meta" style="margin-top:8px">${reveal("state.db","reveal state.db in Finder")} &nbsp;·&nbsp; ${reveal("","open the .jarvis folder")}</div></div>`;
     h += `<h2>Tables — click a tab above, or a row here</h2>`;
     h += table(["table","rows","what it holds"], tables.map(t =>
       `<tr><td><a class="reveal" onclick="location.hash='database/${esc(t.name)}'"><code>${esc(t.name)}</code></a></td>
@@ -626,7 +626,7 @@ const VIEWS = {
 
     h += `<h2>Spend <span class="meta" style="font-weight:400">· permanent ledger — survives a demo reset</span></h2>`;
     h += `<div class="card"><span class="r">Every LLM call's tokens are logged to
-      <code>.waku/usage.jsonl</code> (append-only, never wiped). Dollar cost is estimated from tokens
+      <code>.jarvis/usage.jsonl</code> (append-only, never wiped). Dollar cost is estimated from tokens
       × current pricing — the tokens are the ground truth. ${reveal("usage.jsonl","open usage.jsonl")}</span></div>`;
     if ((u.by_provider||[]).length){
       h += table(["provider","LLM calls","tokens in","tokens out","cost (est)"], u.by_provider.map(p =>
@@ -689,7 +689,7 @@ const VIEWS = {
     h += (d.trace_tail||[]).length ? table(["event","detail","when"], d.trace_tail.map(e =>
         `<tr><td><code>${esc(e.type)}</code></td><td class="meta">${esc(String(e.detail).slice(0,60))}</td>
           <td class="meta">${esc((e.ts||"").replace("T"," ").slice(0,19))}</td></tr>`))
-      : `<div class="card empty">no trace lines yet — talk to Waku</div>`;
+      : `<div class="card empty">no trace lines yet — talk to Jarvis</div>`;
     h += `<div class="meta" style="margin-top:8px">Span waterfalls: <code>make trace</code> + <code>OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317</code>.</div>`;
 
     if (d.wake_scans.length){

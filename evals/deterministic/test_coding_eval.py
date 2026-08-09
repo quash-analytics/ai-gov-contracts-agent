@@ -1,4 +1,4 @@
-"""DETERMINISTIC EVAL — the cross-model coding runner (waku.ops.coding_eval).
+"""DETERMINISTIC EVAL — the cross-model coding runner (jarvis.ops.coding_eval).
 
 We can't call a real model in a hermetic test, so we stub pi with /bin/true (a
 no-op that exits 0) and let the seeded files + the real `verify` command decide

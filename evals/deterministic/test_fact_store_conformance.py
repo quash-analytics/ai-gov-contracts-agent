@@ -2,7 +2,7 @@
 
 This suite exists because the contract was never written down, so the second
 backend silently didn't meet it. `SqliteFactStore` had six methods,
-`SupabaseFactStore` had two, and `WAKU_SEMANTIC_STORE=supabase` therefore
+`SupabaseFactStore` had two, and `JARVIS_SEMANTIC_STORE=supabase` therefore
 broke the dashboard's memory page, the manage_memory tool's update and delete
 — and worst of all made `search_with_ids` return `[]` through a
 `hasattr(...) else []` guard, so the agent told users a fact didn't exist while
@@ -11,7 +11,7 @@ it sat in the database.
 So the shape of this file matters more than any single assertion: it is
 parametrized over BACKENDS, and every backend runs every test. Adding a store
 is not "write a class"; it is "write a class that passes this". That is the
-whole point of waku/memory/semantic/base.py.
+whole point of jarvis/memory/semantic/base.py.
 
 The first test is the one that would have caught the original bug on the day it
 shipped, and it is one line: `isinstance(store, FactStore)`. A runtime
@@ -46,8 +46,8 @@ def _supabase_store(tmp_path):
     billed per call), so it is gated on an explicit env var rather than on the
     credentials happening to be present — a maintainer with a populated .env
     should not start paying for embeddings by running the test suite."""
-    if os.getenv("WAKU_TEST_SUPABASE") != "1":
-        pytest.skip("set WAKU_TEST_SUPABASE=1 (plus SUPABASE_* and OPENAI_API_KEY) to include it")
+    if os.getenv("JARVIS_TEST_SUPABASE") != "1":
+        pytest.skip("set JARVIS_TEST_SUPABASE=1 (plus SUPABASE_* and OPENAI_API_KEY) to include it")
     from jarvis.config import Settings
     from jarvis.memory.semantic.supabase_store import SupabaseFactStore
 
@@ -59,8 +59,8 @@ def _mem0_store(tmp_path):
     service and writes real memories into a real account. A maintainer running
     the suite must not start filling somebody's Mem0 workspace with test facts
     about Priya's meeting preferences."""
-    if os.getenv("WAKU_TEST_MEM0") != "1":
-        pytest.skip("set WAKU_TEST_MEM0=1 (plus MEM0_API_KEY) to include it")
+    if os.getenv("JARVIS_TEST_MEM0") != "1":
+        pytest.skip("set JARVIS_TEST_MEM0=1 (plus MEM0_API_KEY) to include it")
     from jarvis.config import Settings
     from jarvis.memory.semantic.mem0_store import Mem0FactStore
 
@@ -68,8 +68,8 @@ def _mem0_store(tmp_path):
 
 
 def _zep_store(tmp_path):
-    if os.getenv("WAKU_TEST_ZEP") != "1":
-        pytest.skip("set WAKU_TEST_ZEP=1 (plus ZEP_API_KEY) to include it")
+    if os.getenv("JARVIS_TEST_ZEP") != "1":
+        pytest.skip("set JARVIS_TEST_ZEP=1 (plus ZEP_API_KEY) to include it")
     from jarvis.config import Settings
     from jarvis.memory.semantic.zep_store import ZepFactStore
 
@@ -81,8 +81,8 @@ def _langmem_store(tmp_path):
     search still bills OpenAI for embeddings, so it stays opt-in like the rest.
     Without the index the store is a plain dict and the tests would pass while
     measuring nothing."""
-    if os.getenv("WAKU_TEST_LANGMEM") != "1":
-        pytest.skip("set WAKU_TEST_LANGMEM=1 (plus OPENAI_API_KEY) to include it")
+    if os.getenv("JARVIS_TEST_LANGMEM") != "1":
+        pytest.skip("set JARVIS_TEST_LANGMEM=1 (plus OPENAI_API_KEY) to include it")
     from jarvis.config import Settings
     from jarvis.memory.semantic.langmem_store import LangMemFactStore
 
@@ -199,23 +199,23 @@ def test_a_blank_optional_field_falls_back_to_its_default(monkeypatch):
     Found the first time a real key was saved through the dashboard, which is the
     only way to hit it: a hand-edited .env just leaves the line out. A blank
     "Settle seconds" box made float("") raise on every Zep call, and a blank
-    "User id" would have silently scoped the graph to "" instead of "waku" —
+    "User id" would have silently scoped the graph to "" instead of "jarvis" —
     which is the worse half, because nothing would have errored.
     """
     from jarvis.memory.semantic.base import env_or
 
-    monkeypatch.setenv("WAKU_TEST_BLANK", "")
-    assert env_or("WAKU_TEST_BLANK", "fallback") == "fallback"
-    assert float(env_or("WAKU_TEST_BLANK", "2.0")) == 2.0
+    monkeypatch.setenv("JARVIS_TEST_BLANK", "")
+    assert env_or("JARVIS_TEST_BLANK", "fallback") == "fallback"
+    assert float(env_or("JARVIS_TEST_BLANK", "2.0")) == 2.0
 
-    monkeypatch.setenv("WAKU_TEST_BLANK", "   ")
-    assert env_or("WAKU_TEST_BLANK", "fallback") == "fallback", "whitespace is blank too"
+    monkeypatch.setenv("JARVIS_TEST_BLANK", "   ")
+    assert env_or("JARVIS_TEST_BLANK", "fallback") == "fallback", "whitespace is blank too"
 
-    monkeypatch.setenv("WAKU_TEST_BLANK", "real")
-    assert env_or("WAKU_TEST_BLANK", "fallback") == "real"
+    monkeypatch.setenv("JARVIS_TEST_BLANK", "real")
+    assert env_or("JARVIS_TEST_BLANK", "fallback") == "real"
 
-    monkeypatch.delenv("WAKU_TEST_BLANK")
-    assert env_or("WAKU_TEST_BLANK", "fallback") == "fallback"
+    monkeypatch.delenv("JARVIS_TEST_BLANK")
+    assert env_or("JARVIS_TEST_BLANK", "fallback") == "fallback"
 
 
 def test_no_backend_reads_an_optional_setting_with_bare_os_getenv():
@@ -225,7 +225,7 @@ def test_no_backend_reads_an_optional_setting_with_bare_os_getenv():
     import re
     from pathlib import Path
 
-    semantic = Path(__file__).resolve().parents[2] / "waku" / "memory" / "semantic"
+    semantic = Path(__file__).resolve().parents[2] / "jarvis" / "memory" / "semantic"
     offenders = []
     for path in semantic.glob("*_store.py"):
         for num, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):

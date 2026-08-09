@@ -70,7 +70,7 @@ def test_inventing_a_deadline_that_was_never_given_is_invented():
 
     Written against an inline probe on purpose: the scorer's behaviour must not
     depend on which fixture happens to be loaded, since the interesting probe
-    sets live outside this repo (see WAKU_MEMORY_PROBES)."""
+    sets live outside this repo (see JARVIS_MEMORY_PROBES)."""
     probe = {"expect_refusal": True}
     assert arena.score("The filing deadline is 14 October.", probe)[0] == INVENTED
     assert arena.score("You never gave me a deadline for that.", probe)[0] == PASS
@@ -80,7 +80,7 @@ def test_inventing_a_deadline_that_was_never_given_is_invented():
 
 def test_retrieving_for_arithmetic_fails_even_with_the_right_number():
     """Getting 68 right while quietly searching memory is still wrong
-    behaviour, and only waku can be graded on it — the gate is observable."""
+    behaviour, and only jarvis can be graded on it — the gate is observable."""
     probe = {"expect_any": ["68"], "expect_retrieval": False}
     assert arena.score("68", probe, retrieved=True)[0] == MISS
     assert arena.score("68", probe, retrieved=False)[0] == PASS
@@ -121,7 +121,7 @@ def test_the_table_flags_how_many_verdicts_rest_on_the_heuristic():
 
 def test_the_table_has_no_emojis():
     """CLAUDE.md: no emojis in any UI surface, and this one ends up on screen."""
-    rows = arena.scoreboard([{"contestant": "waku", "outcome": PASS}])
+    rows = arena.scoreboard([{"contestant": "jarvis", "outcome": PASS}])
     assert all(ord(c) < 0x2190 for c in arena.render(rows))
 
 
@@ -174,7 +174,7 @@ def test_the_superseded_fact_was_actually_said_during_seeding():
 # --- where the probes come from ----------------------------------------------
 
 def test_the_shipped_fixture_is_only_an_example():
-    """waku ships the mechanism, not the questions. The bundled probes exist to
+    """jarvis ships the mechanism, not the questions. The bundled probes exist to
     document the format and give this file something to grade; a real benchmark
     is against facts the maintainer's own users store. If this ever stops being
     an example, the repo has started carrying somebody's content."""
@@ -238,10 +238,10 @@ def test_a_ledger_that_is_missing_is_zero_not_a_crash(tmp_path):
 # --- the runner --------------------------------------------------------------
 # run_arena() spends real money, so it was only ever verified by running it and
 # looking — which is exactly the gap that let the token bug ship. These drive
-# the whole seed -> probe -> score path with a fake Waku: no model, no keys, no
+# the whole seed -> probe -> score path with a fake Jarvis: no model, no keys, no
 # network, and no spend.
 
-class _FakeWaku:
+class _FakeJarvis:
     """Records what it was told, answers what the script says, and writes the
     same usage.jsonl the real app does — so token accounting is exercised too."""
 
@@ -250,7 +250,7 @@ class _FakeWaku:
         self.seen: list[str] = []
         self.home = settings.home
         self.home.mkdir(parents=True, exist_ok=True)
-        self._answers = dict(_FakeWaku.script)
+        self._answers = dict(_FakeJarvis.script)
 
     def respond(self, message, source="cli", observer=None, **kw):
         from types import SimpleNamespace
@@ -259,7 +259,7 @@ class _FakeWaku:
         with (self.home / "usage.jsonl").open("a", encoding="utf-8") as f:
             f.write(json.dumps({"in": 100, "out": 10}) + "\n")
         if observer:
-            observer("gate", {"decision": _FakeWaku.gate})
+            observer("gate", {"decision": _FakeJarvis.gate})
         return SimpleNamespace(reply=self._answers.get(message, "I don't know."))
 
 
@@ -277,9 +277,9 @@ def _arena_fixture(tmp_path):
 
 def _run(monkeypatch, tmp_path, script, gate=False, backends=("sqlite",)):
     import jarvis.app
-    _FakeWaku.script = script
-    _FakeWaku.gate = gate
-    monkeypatch.setattr(waku.app, "Waku", _FakeWaku)
+    _FakeJarvis.script = script
+    _FakeJarvis.gate = gate
+    monkeypatch.setattr(jarvis.app, "Jarvis", _FakeJarvis)
     events = []
     arena.run_arena(list(backends), "t", lambda k, e: events.append((k, e)),
                     fixture=_arena_fixture(tmp_path))
@@ -313,17 +313,17 @@ def test_a_backend_that_blows_up_does_not_take_the_others_with_it(monkeypatch, t
     """A missing key or a service outage is a fact about that contestant, not a
     reason to lose everyone else's results."""
     import jarvis.app
-    _FakeWaku.script = {"q1?": "alpha", "q2?": "the new one"}
-    _FakeWaku.gate = False
-    real_init = _FakeWaku.__init__
+    _FakeJarvis.script = {"q1?": "alpha", "q2?": "the new one"}
+    _FakeJarvis.gate = False
+    real_init = _FakeJarvis.__init__
 
     def explode(self, settings=None, **kw):
         if settings.semantic_store == "boom":
             raise RuntimeError("no api key")
         real_init(self, settings=settings, **kw)
 
-    monkeypatch.setattr(_FakeWaku, "__init__", explode)
-    monkeypatch.setattr(waku.app, "Waku", _FakeWaku)
+    monkeypatch.setattr(_FakeJarvis, "__init__", explode)
+    monkeypatch.setattr(jarvis.app, "Jarvis", _FakeJarvis)
     events = []
     arena.run_arena(["boom", "sqlite"], "t", lambda k, e: events.append((k, e)),
                     fixture=_arena_fixture(tmp_path))
@@ -335,15 +335,15 @@ def test_a_backend_that_blows_up_does_not_take_the_others_with_it(monkeypatch, t
 
 
 def test_the_gate_decision_reaches_the_scorer(monkeypatch, tmp_path):
-    """Only waku can be graded on 'did you search memory for arithmetic', and
+    """Only jarvis can be graded on 'did you search memory for arithmetic', and
     that only works if the observer's gate event actually gets through."""
     fx = _arena_fixture(tmp_path)
     fx["tracks"]["t"]["probes"] = [{"id": "p-gate", "test": "restraint", "question": "q1?",
                                     "expect_any": ["68"], "expect_retrieval": False, "note": "n"}]
     import jarvis.app
-    _FakeWaku.script = {"q1?": "68"}
-    _FakeWaku.gate = True          # it retrieved when it should not have
-    monkeypatch.setattr(waku.app, "Waku", _FakeWaku)
+    _FakeJarvis.script = {"q1?": "68"}
+    _FakeJarvis.gate = True          # it retrieved when it should not have
+    monkeypatch.setattr(jarvis.app, "Jarvis", _FakeJarvis)
     events = []
     arena.run_arena(["sqlite"], "t", lambda k, e: events.append((k, e)), fixture=fx)
 

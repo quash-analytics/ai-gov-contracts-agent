@@ -1,4 +1,4 @@
-"""Background gateways keep each Waku on one dedicated worker thread."""
+"""Background gateways keep each Jarvis on one dedicated worker thread."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from evals.helpers import ScriptedClient, make_waku, response, text_block
+from evals.helpers import ScriptedClient, make_jarvis, response, text_block
 from jarvis.gateway import discord as discord_gateway
 from jarvis.gateway import telegram as telegram_gateway
 from jarvis.gateway.discord import DiscordHandle
@@ -100,7 +100,7 @@ def test_runner_serializes_concurrent_turns():
     assert order == ["start:one", "end:one", "start:two", "end:two"]
 
 
-def test_real_waku_persists_two_telegram_turns_from_worker(tmp_path):
+def test_real_jarvis_persists_two_telegram_turns_from_worker(tmp_path):
     home = tmp_path / "home"
     client = ScriptedClient([
         response([text_block('{"retrieve": false, "query": "", "reason": "test"}')]),
@@ -109,7 +109,7 @@ def test_real_waku_persists_two_telegram_turns_from_worker(tmp_path):
         response([text_block("hello two")]),
     ])
     runner = GatewayAgentRunner(
-        lambda: make_waku(home, client=client, episodic_store="sqlite"),
+        lambda: make_jarvis(home, client=client, episodic_store="sqlite"),
         session_id="telegram",
         source="telegram",
     )

@@ -2,7 +2,7 @@
 
 Changed the prompt? Swapped the model? Tuned retrieval top-k? Run the gate:
 
-    python -m waku.ops.release_gate     (or: make gate)
+    python -m jarvis.ops.release_gate     (or: make gate)
 
 Deterministic evals must pass 100% — they are unit tests; one failure blocks.
 Judge evals run when a key is present and report scores. Exit code 0 = ship.

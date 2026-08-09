@@ -7,7 +7,7 @@ from jarvis.integrations import IntegrationState, IntegrationStatus
 
 
 def test_cli_returns_failure_for_configured_error(monkeypatch, tmp_path):
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path))
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path))
     monkeypatch.setenv("OPENAI_API_KEY", "key")
     integrations._HEALTH = None
     integrations.record_health("openai", IntegrationStatus(IntegrationState.ERROR, "bad key"))

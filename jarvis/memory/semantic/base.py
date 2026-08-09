@@ -1,13 +1,13 @@
 """The contract every semantic-memory backend has to honour.
 
-Waku is meant to be indifferent to *where* facts live — SQLite on your laptop,
+Jarvis is meant to be indifferent to *where* facts live — SQLite on your laptop,
 pgvector in Supabase, a hosted memory API. Everything upstream just says "store
 this" and "find that". That indifference only works if every backend can do the
 same six things, and until this file existed, nothing checked.
 
 It didn't check, so it broke. `SqliteFactStore` implemented six methods;
 `SupabaseFactStore` implemented two. Switching backends then produced three
-different failures, and the first one is the kind Waku keeps shipping:
+different failures, and the first one is the kind Jarvis keeps shipping:
 
   * `list()`      → AttributeError, dashboard memory page 500s
   * `update()`
@@ -47,7 +47,7 @@ def env_or(name: str, default: str) -> str:
     blank does not omit it — it stores `NAME=''`, and os.getenv only falls back
     to its default when the variable is MISSING. So a blank "Settle seconds" box
     produced `float("")` and took every Zep call down with it, while a blank
-    "User id" would have silently scoped the graph to "" instead of "waku".
+    "User id" would have silently scoped the graph to "" instead of "jarvis".
 
     Found the first time a real key was saved through the dashboard, which is
     the only way to hit it — a hand-edited .env just omits the line.

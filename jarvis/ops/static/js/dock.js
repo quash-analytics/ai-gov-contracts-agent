@@ -1,4 +1,4 @@
-// waku dashboard — chat sessions/history (loadThreadInto), model chip, stats toggle.
+// jarvis dashboard — chat sessions/history (loadThreadInto), model chip, stats toggle.
 // Split out of app.js: classic <script>, shared global scope (no build
 // step, no modules). Load order + rules: static/README.md.
 
@@ -102,14 +102,14 @@ function closeModelMenu(){ const m = document.getElementById("modelmenu"); if (m
 // default; the choice persists in localStorage. Hides the .tele blocks via a
 // body class so it applies to already-rendered turns too.
 function applyTele(){
-  const off = localStorage.getItem("waku_tele") === "0";
+  const off = localStorage.getItem("jarvis_tele") === "0";
   document.body.classList.toggle("no-tele", off);
   const b = document.getElementById("teletoggle");
   if (b) b.classList.toggle("on", !off);
 }
 function toggleTele(){
-  const off = localStorage.getItem("waku_tele") === "0";
-  localStorage.setItem("waku_tele", off ? "1" : "0");   // flip
+  const off = localStorage.getItem("jarvis_tele") === "0";
+  localStorage.setItem("jarvis_tele", off ? "1" : "0");   // flip
   applyTele();
 }
 function toggleModelMenu(ev){

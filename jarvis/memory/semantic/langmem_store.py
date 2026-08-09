@@ -1,8 +1,8 @@
 """Semantic memory via LangGraph's store — the LangMem backend.
 
-    pip install 'waku-agent[arena]'
-    WAKU_SEMANTIC_STORE=langmem   OPENAI_API_KEY=sk-...   # embeddings
-    WAKU_LANGMEM_POSTGRES=postgresql://...                # optional, see below
+    pip install 'jarvis-agent[arena]'
+    JARVIS_SEMANTIC_STORE=langmem   OPENAI_API_KEY=sk-...   # embeddings
+    JARVIS_LANGMEM_POSTGRES=postgresql://...                # optional, see below
 
 The odd one out, in a way worth saying on camera: LangMem is not a service. It
 is LangChain's memory toolkit over LangGraph's BaseStore, so "using LangMem" is
@@ -13,18 +13,18 @@ what it bills you for is embeddings.
 WHY IT IS IN THE ARENA ANYWAY, AND IT IS NOT FOR THE SCOREBOARD
 
 LangMem splits memory into semantic, episodic and procedural — the same three
-pillars Waku's whiteboard has taught since 2026-06-19, arrived at independently
+pillars Jarvis's whiteboard has taught since 2026-06-19, arrived at independently
 by another team. That agreement is worth more than whichever way its numbers
 land: a taxonomy two projects reach separately is a description of the problem,
 not a design opinion.
 
 THE DEFAULT IS EPHEMERAL, AND THAT IS DISCLOSED LOUDLY
 
-Without WAKU_LANGMEM_POSTGRES this uses InMemoryStore, which LangGraph's own
+Without JARVIS_LANGMEM_POSTGRES this uses InMemoryStore, which LangGraph's own
 docs describe as a reference implementation whose data dies with the process.
 For a benchmark run that is fine — seed and probe happen in one process — but
 it must never be mistaken for a persistence story, and `list()` after a restart
-returning nothing is the store working as documented, not a bug in Waku.
+returning nothing is the store working as documented, not a bug in Jarvis.
 
 Ids are the store's own string keys; `FactId = int | str` already allows them.
 """
@@ -37,7 +37,7 @@ import uuid
 from jarvis.config import Settings
 from jarvis.memory.semantic.base import env_or
 
-_NAMESPACE = ("waku", "facts")
+_NAMESPACE = ("jarvis", "facts")
 
 
 class LangMemFactStore:
@@ -52,7 +52,7 @@ class LangMemFactStore:
         is a plain key-value dict and every probe that rephrases a fact fails."""
         index = {"dims": 1536,
                  "embed": env_or("OPENAI_EMBED_MODEL", "openai:text-embedding-3-small")}
-        dsn = os.getenv("WAKU_LANGMEM_POSTGRES", "").strip()
+        dsn = os.getenv("JARVIS_LANGMEM_POSTGRES", "").strip()
         if dsn:
             from langgraph.store.postgres import PostgresStore
 

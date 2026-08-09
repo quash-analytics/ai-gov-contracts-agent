@@ -1,10 +1,10 @@
 """Ephemeral Agent Run — assembles working memory for each turn.
 
 The inner box on the whiteboard: everything here is rebuilt per run and thrown
-away. What persists lives in waku/memory. Working memory =
+away. What persists lives in jarvis/memory. Working memory =
 
-    system prompt (SOUL.md)            ← who Waku is
-  + durable facts & episodes           ← what Waku remembers (gated!)
+    system prompt (SOUL.md)            ← who Jarvis is
+  + durable facts & episodes           ← what Jarvis remembers (gated!)
   + current chat history               ← this conversation
   + the user's new message
 """
@@ -14,7 +14,7 @@ from __future__ import annotations
 from jarvis.config import Settings
 
 DEFAULT_SOUL = """\
-You are Waku, a personal assistant running locally on your user's laptop.
+You are Jarvis, a personal assistant running locally on your user's laptop.
 You are concise, warm, and proactive. You remember what your user tells you.
 
 Rules:
@@ -33,7 +33,7 @@ Rules:
   from that record instead.
 - Be honest about where things live. Every tool's output states exactly where
   its artifact landed (local calendar file, Apple Calendar, memory database at
-  .waku/state.db) — relay that truthfully, and never claim something synced
+  .jarvis/state.db) — relay that truthfully, and never claim something synced
   anywhere the tool output doesn't say.
 - You can manage your own memory: use manage_memory to correct or forget facts,
   update_soul to save a standing preference the user gives you, and create_skill
@@ -43,7 +43,7 @@ Rules:
 
 def load_soul(settings: Settings) -> str:
     """SOUL.md is the editable persona file, created on first run. Changing it
-    changes who your Waku is — that's procedural memory at its simplest."""
+    changes who your Jarvis is — that's procedural memory at its simplest."""
     soul_path = settings.home / "SOUL.md"
     if not soul_path.exists():
         soul_path.write_text(DEFAULT_SOUL, encoding="utf-8")
@@ -56,7 +56,7 @@ class Session:
 
     def __init__(self, settings: Settings, memory=None, session_id: str = "default"):
         self.settings = settings
-        self.memory = memory  # waku.memory.Memory (None until Phase-2 wiring)
+        self.memory = memory  # jarvis.memory.Memory (None until Phase-2 wiring)
         self.session_id = session_id
         self.history: list[dict] = []
 
@@ -71,8 +71,8 @@ class Session:
                  # the agent should know its own brain — "what model are you?"
                  # is the first question every curious user asks
                  (f"Your model: you are running on '{self.settings.model}' via the "
-                 f"'{self.settings.provider}' provider, inside Waku, a local-first "
-                 f"open-source agent harness (github.com/ShenSeanChen/waku-agent).")]
+                 f"'{self.settings.provider}' provider, inside Jarvis, a local-first "
+                 f"open-source agent harness (github.com/ShenSeanChen/jarvis-agent).")]
 
         if self.memory is not None:
             # Hero moment #1: a cheap judge decides IF we retrieve at all —

@@ -11,7 +11,7 @@ Two related jobs, both feeding the settings model picker:
    minute WITH the reason, so an unreachable catalog can't stall the
    dashboard's 5-second poll and still tells you why.
 
-2. **What you chose.** `.waku/models.json` holds an ordered `provider:model`
+2. **What you chose.** `.jarvis/models.json` holds an ordered `provider:model`
    shortlist. The chat switcher shows exactly these — the built-in defaults are
    a starting point, never the menu. The first pinned model for a provider is
    that provider's default when you switch to it.
@@ -51,7 +51,7 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
     provider's catalog (the "Your models" add-row picks a provider first);
     without it, the ACTIVE provider is used. Three sources: an explicit
     Provider.catalog_url (anthropic, kimi), GET {base_url}/models on
-    OpenAI-compatible endpoints (OpenRouter, Gemini, any WAKU_BASE_URL), or the
+    OpenAI-compatible endpoints (OpenRouter, Gemini, any JARVIS_BASE_URL), or the
     two known defaults when no catalog exists. OpenRouter entries carry free /
     tool-support / context metadata so the picker can surface the $0
     tool-capable models. Cached 5 minutes."""
@@ -62,7 +62,7 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
 
     s = load_settings()
     # An explicit provider overrides the active one (and its custom base_url:
-    # WAKU_BASE_URL only applies to the provider it was set for).
+    # JARVIS_BASE_URL only applies to the provider it was set for).
     name = provider or s.provider
     prov = PROVIDERS.get(name)
     base = ((s.base_url if name == s.provider else None)
@@ -115,7 +115,7 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
     req = urllib.request.Request(url, headers={
         "Authorization": f"Bearer {key}",
         "x-api-key": key, "anthropic-version": "2023-06-01",
-        "User-Agent": "Mozilla/5.0 (compatible; Waku)",
+        "User-Agent": "Mozilla/5.0 (compatible; Jarvis)",
     })
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -184,7 +184,7 @@ def default_pinned_specs() -> list[str]:
 
 def pinned_specs() -> list[str]:
     """The user's curated 'provider:model' shortlist (ordered), from
-    .waku/models.json. The chat switcher shows exactly these. Before they've
+    .jarvis/models.json. The chat switcher shows exactly these. Before they've
     saved anything, fall back to the flagship+fast defaults."""
     p = _models_json()
     if p.exists():

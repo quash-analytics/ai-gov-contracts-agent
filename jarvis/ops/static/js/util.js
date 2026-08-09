@@ -1,4 +1,4 @@
-// waku dashboard — escaping, markdown, core globals (D/editing), postJSON, reveal.
+// jarvis dashboard — escaping, markdown, core globals (D/editing), postJSON, reveal.
 // Split out of app.js: classic <script>, shared global scope (no build
 // step, no modules). Load order + rules: static/README.md.
 

@@ -1,15 +1,15 @@
 """The Memory Arena — race several MEMORY backends through the same harness.
 
-Sibling of waku/ops/arena.py. That one holds the harness constant and varies
+Sibling of jarvis/ops/arena.py. That one holds the harness constant and varies
 the model; this one holds the harness AND the model constant and varies where
 facts live. One dial each, so a result means something.
 
-    seed conversation ──┬─→ waku + FTS5   ──┐
-    (8 messages)        ├─→ waku + Mem0   ──┼─→ same 7 probes ─→ one scorer
-                        └─→ waku + Zep    ──┘
+    seed conversation ──┬─→ jarvis + FTS5   ──┐
+    (8 messages)        ├─→ jarvis + Mem0   ──┼─→ same 7 probes ─→ one scorer
+                        └─→ jarvis + Zep    ──┘
 
 Two things are deliberately borrowed from the model arena: every contestant
-runs in its own throwaway home, so `.waku/` is never opened; and the results
+runs in its own throwaway home, so `.jarvis/` is never opened; and the results
 land in their own JSONL, never state.db.
 
 WHY FOUR OUTCOMES INSTEAD OF PASS/FAIL
@@ -45,9 +45,9 @@ from pathlib import Path
 # The shipped fixture is four dull probes whose only job is to document the
 # format. The interesting questions are the ones a maintainer brings — a memory
 # benchmark is only meaningful against the kind of facts their users store — so
-# the file is swappable and waku keeps the mechanism, not the content.
+# the file is swappable and jarvis keeps the mechanism, not the content.
 _EXAMPLE = Path(__file__).resolve().parents[2] / "evals" / "memory_arena.json"
-PROBES_ENV = "WAKU_MEMORY_PROBES"
+PROBES_ENV = "JARVIS_MEMORY_PROBES"
 
 PASS, STALE, INVENTED, MISS = "pass", "stale", "invented", "miss"
 
@@ -75,7 +75,7 @@ _REFUSALS = (
 
 
 def fixture_path() -> Path:
-    """Where the probes are coming from. WAKU_MEMORY_PROBES wins, so a run can
+    """Where the probes are coming from. JARVIS_MEMORY_PROBES wins, so a run can
     be pointed at a real question set without editing anything in the repo."""
     override = os.getenv(PROBES_ENV, "").strip()
     return Path(override).expanduser() if override else _EXAMPLE
@@ -141,7 +141,7 @@ def probe_files() -> list[dict]:
     Scanned from a directory, never taken as a path from the browser. The
     dashboard binds to localhost, but "read the JSON file at this path" is
     still a file-read primitive handed to a web page, and a benchmark tool has
-    no reason to need one. Drop a file in `.waku/probes/` and it appears.
+    no reason to need one. Drop a file in `.jarvis/probes/` and it appears.
     """
     files = [{"name": "example (shipped)", "path": str(_EXAMPLE)}]
     from jarvis.config import load_settings
@@ -178,7 +178,7 @@ def score(answer: str, probe: dict, retrieved: bool | None = None) -> tuple[str,
     those are the probes worth spending a judge call on. Everything else is a
     substring check and needs no model at all.
 
-    `retrieved` is whether the backend went to memory for this probe. Only waku
+    `retrieved` is whether the backend went to memory for this probe. Only jarvis
     reports it (the retrieval gate is observable), so probes that assert on it
     are simply not graded for backends that cannot answer the question — which
     is more honest than scoring them as a failure for lacking a feature.
@@ -252,7 +252,7 @@ def render(rows: list[dict]) -> str:
 
 
 # --- the runner -------------------------------------------------------------
-# Everything above is pure. This part costs money: it stands up a real Waku per
+# Everything above is pure. This part costs money: it stands up a real Jarvis per
 # contestant and runs the real loop, because retrieval is only meaningful
 # through the thing that actually calls it — the gate decides whether to search
 # at all, and that decision is half of what separates these systems.
@@ -261,12 +261,12 @@ def run_arena(backends: list[str], track: str, emit, fixture: dict | None = None
               model: str = "") -> None:
     """Seed the same conversation into each backend, ask the same probes, score.
 
-    One agent, one model, one loop. The ONLY variable is `WAKU_SEMANTIC_STORE`.
+    One agent, one model, one loop. The ONLY variable is `JARVIS_SEMANTIC_STORE`.
     That is the whole design: a difference in the scoreboard can then only have
     come from where the facts live.
 
     Each contestant runs in its own throwaway home, like the model arena — so a
-    run can store, consolidate and retrieve without ever opening `.waku/`. The
+    run can store, consolidate and retrieve without ever opening `.jarvis/`. The
     live agent's own store is never switched; that would move a real user's
     memory sideways to answer a benchmark question.
 
@@ -281,7 +281,7 @@ def run_arena(backends: list[str], track: str, emit, fixture: dict | None = None
     import time
     from pathlib import Path
 
-    from jarvis.app import Waku
+    from jarvis.app import Jarvis
     from jarvis.config import Settings
 
     # `model` is "provider:model". The arena holds the model CONSTANT and varies
@@ -303,7 +303,7 @@ def run_arena(backends: list[str], track: str, emit, fixture: dict | None = None
         home = Path(tempfile.mkdtemp(prefix=f"memarena-{backend}-"))
         try:
             opts = {"provider": prov, "model": mod} if prov and mod else {}
-            app = Waku(settings=Settings(home=home, semantic_store=backend,
+            app = Jarvis(settings=Settings(home=home, semantic_store=backend,
                                          apple_calendar=False, google_calendar=False,
                                          apple_tools=False, graph_workflows=False, **opts))
             for line in spec["seed"]:
@@ -404,8 +404,8 @@ def store_contents(limit: int = 8, only: str = "") -> list[dict]:
         # `kind` is the label that stops this page misleading. sqlite here is the
         # LIVE agent's store — months of real use — while a hosted backend has
         # only ever received what the arena wrote to it. Side by side without
-        # saying so, "53 vs 17" reads as "waku remembers more", when it only
-        # means waku has been used and the others were connected yesterday.
+        # saying so, "53 vs 17" reads as "jarvis remembers more", when it only
+        # means jarvis has been used and the others were connected yesterday.
         row = {"store": key, "count": 0, "facts": [], "error": "", "span": "",
                "kind": "live" if key == "sqlite" else "connected",
                "note": _store_note(key)}
@@ -445,15 +445,15 @@ def _store_note(key: str) -> str:
     false statement about an empty store rather than a true one about an
     unreadable one, and the difference is the whole point of this page.
     """
-    if key == "langmem" and not os.getenv("WAKU_LANGMEM_POSTGRES", "").strip():
+    if key == "langmem" and not os.getenv("JARVIS_LANGMEM_POSTGRES", "").strip():
         return ("in-memory store — contents live inside the process that wrote them "
-                "and cannot be read back here. Set WAKU_LANGMEM_POSTGRES to persist.")
+                "and cannot be read back here. Set JARVIS_LANGMEM_POSTGRES to persist.")
     return ""
 
 
 def _conn_for(key: str, settings):
     """Only the sqlite store needs a connection; the hosted ones ignore it. The
-    live .waku/state.db is opened READ-ONLY here — this page reports, it never
+    live .jarvis/state.db is opened READ-ONLY here — this page reports, it never
     writes, and the arena's own runs happen in throwaway homes."""
     if key != "sqlite":
         return None

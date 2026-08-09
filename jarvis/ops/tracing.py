@@ -3,15 +3,15 @@
 Two outputs from the same events:
 
 1. JSONL, always on: every turn appends readable lines to
-   .waku/traces/<date>.jsonl. A trace is just "what happened, in order" —
+   .jarvis/traces/<date>.jsonl. A trace is just "what happened, in order" —
    open the file and read your agent's mind. Zero dependencies.
 
 2. OpenTelemetry spans, when OTEL_EXPORTER_OTLP_ENDPOINT is set: the same
    events as a span tree any OTel backend can render. For a local dashboard:
 
-       pip install 'waku-agent[tracing]'
+       pip install 'jarvis-agent[tracing]'
        phoenix serve                                # localhost:6006
-       OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317 python -m waku
+       OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317 python -m jarvis
 
    Langfuse cloud speaks OTel too — point the endpoint + auth headers there
    instead. The instrumentation below doesn't know or care which.
@@ -39,8 +39,8 @@ class TraceEncodingError(UnicodeError):
         self.path = path
         super().__init__(
             f"Trace file is not valid UTF-8: {path}. It may have been written by an older "
-            "Waku version using the Windows system encoding. Move it out of the traces directory "
-            "and keep it as a backup, then restart Waku if it is today's trace. The file "
+            "Jarvis version using the Windows system encoding. Move it out of the traces directory "
+            "and keep it as a backup, then restart Jarvis if it is today's trace. The file "
             "was not modified."
         )
 
@@ -75,16 +75,16 @@ class Tracer:
             from opentelemetry.sdk.trace import TracerProvider
             from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-            provider = TracerProvider(resource=Resource.create({"service.name": "waku-agent"}))
+            provider = TracerProvider(resource=Resource.create({"service.name": "jarvis-agent"}))
             provider.add_span_processor(
                 BatchSpanProcessor(OTLPSpanExporter(endpoint=settings.otel_endpoint, insecure=True))
             )
             trace.set_tracer_provider(provider)
             self._otel_provider = provider
-            return trace.get_tracer("waku")
+            return trace.get_tracer("jarvis")
         except ImportError:
             print("(tracing) OTEL endpoint set but opentelemetry not installed — "
-                  "pip install 'waku-agent[tracing]'. JSONL tracing still on.")
+                  "pip install 'jarvis-agent[tracing]'. JSONL tracing still on.")
             return None
 
     def _write(self, record: dict) -> None:
@@ -129,7 +129,7 @@ class Tracer:
                 f"{kind}.{event.get('tool', event.get('decision', ''))}".rstrip("."),
                 attributes={
                     "openinference.span.kind": {"llm": "LLM", "tool": "TOOL"}.get(kind, "CHAIN"),
-                    **{f"waku.{k}": json.dumps(v, default=str) for k, v in event.items()},
+                    **{f"jarvis.{k}": json.dumps(v, default=str) for k, v in event.items()},
                 },
             ):
                 pass
@@ -141,7 +141,7 @@ class Tracer:
         if self._otel_tracer:
             with self._otel_tracer.start_as_current_span(
                 "agent_run",
-                attributes={"openinference.span.kind": "AGENT", "waku.user_message": user_message},
+                attributes={"openinference.span.kind": "AGENT", "jarvis.user_message": user_message},
             ) as span:
                 self._span_ctx = span
                 try:

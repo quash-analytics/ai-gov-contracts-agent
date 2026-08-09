@@ -6,7 +6,7 @@ create_event once per match. Watch the LOOP box cycle on the dashboard.
 
 Zero new dependencies — just stdlib urllib. Two backends:
   default  DuckDuckGo HTML (no key, no setup — good enough to demo)
-  better   Tavily, if TAVILY_API_KEY (or WAKU_SEARCH_API_KEY) is set — an
+  better   Tavily, if TAVILY_API_KEY (or JARVIS_SEARCH_API_KEY) is set — an
            agent-friendly search API with cleaner results (free tier)
 
 The tool returns plain text the model reads; it never parses HTML for the model.
@@ -60,7 +60,7 @@ def _duckduckgo(query: str, max_results: int) -> list[tuple[str, str, str]]:
 
 def make_tool() -> Tool:
     def search_web(query: str, max_results: int = 5) -> str:
-        key = os.getenv("TAVILY_API_KEY") or os.getenv("WAKU_SEARCH_API_KEY")
+        key = os.getenv("TAVILY_API_KEY") or os.getenv("JARVIS_SEARCH_API_KEY")
         try:
             results = _tavily(query, key, max_results) if key else _duckduckgo(query, max_results)
         except Exception as exc:

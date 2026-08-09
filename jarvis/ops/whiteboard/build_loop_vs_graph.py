@@ -23,7 +23,7 @@ COLOUR — the masters are 96% black strokes (354 of 368 shapes) with transparen
 or white fills; colour lands maybe fifteen times on a whole board. The first
 version of this one was 3% black. Ink by default; a fill has to earn its place.
 
-    python -m waku.ops.whiteboard.build_loop_vs_graph
+    python -m jarvis.ops.whiteboard.build_loop_vs_graph
 """
 
 from __future__ import annotations
@@ -207,7 +207,7 @@ def build() -> list:
     e.append(S.text(1190, 1552, "Old shape. New contents.", size=S.FS_HEADER,
                     color=S.PAL["red"][1]))
 
-    e.append(S.source_label(70, 1600, "measured on waku-agent, 2026-07-31 — docs/loop-vs-graph.md"))
+    e.append(S.source_label(70, 1600, "measured on jarvis-agent, 2026-07-31 — docs/loop-vs-graph.md"))
     e += S.socials_block(1980, 44)
     e.append(S.watermark(70, 1640))
     return e

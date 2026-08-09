@@ -1,17 +1,17 @@
-"""MCP connector — plug any Model Context Protocol server into Waku's tools.
+"""MCP connector — plug any Model Context Protocol server into Jarvis's tools.
 
-Waku's loop is synchronous; the MCP SDK is async. The bridge below runs one
+Jarvis's loop is synchronous; the MCP SDK is async. The bridge below runs one
 asyncio event loop on a daemon thread, holds every server's session on that loop
 via a single AsyncExitStack (anyio requires the stack be entered/exited on the
 same task), and lets the sync loop call tools via run_coroutine_threadsafe.
 
-Config: WAKU_HOME/mcp.json
+Config: JARVIS_HOME/mcp.json
   {"servers": [{"name": "fs", "command": "npx",
                 "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"],
                 "env": {}}]}
 
 Each server's tools register as `<server>_<tool>` on the ToolRegistry. A server
-that fails to connect is skipped with a warning — Waku still starts.
+that fails to connect is skipped with a warning — Jarvis still starts.
 """
 
 from __future__ import annotations

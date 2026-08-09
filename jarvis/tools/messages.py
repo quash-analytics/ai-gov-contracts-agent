@@ -1,7 +1,7 @@
 """send_message — drafts a message into a local outbox.
 
 Local-first: nothing is actually sent. Each message becomes a file in
-.waku/outbox/ that you can read, edit, and send yourself. Wiring a real
+.jarvis/outbox/ that you can read, edit, and send yourself. Wiring a real
 channel (email, Telegram, Slack) is a great community contribution.
 """
 

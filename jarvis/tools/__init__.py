@@ -1,6 +1,6 @@
 """The agent's tools. Flagship-task tools (calendar/notes/messages), memory
 self-management (manage_memory/update_soul/create_skill), and opt-in adapters:
-Apple ecosystem (WAKU_APPLE_TOOLS=1) and MCP servers (.waku/mcp.json)."""
+Apple ecosystem (JARVIS_APPLE_TOOLS=1) and MCP servers (.jarvis/mcp.json)."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ def build_registry(conn: sqlite3.Connection, settings: Settings, memory=None) ->
         )
     )
     # Read side: "what's on my calendar?" — one tool across every connected
-    # source (Google when signed in, plus waku's own), so the model never has
+    # source (Google when signed in, plus jarvis's own), so the model never has
     # to guess which calendar the user meant.
     registry.register(calendar.make_list_tool(conn, settings.home))
     registry.register(notes.make_tool(conn))
@@ -39,14 +39,14 @@ def build_registry(conn: sqlite3.Connection, settings: Settings, memory=None) ->
         registry.register(memory_admin.make_update_soul_tool(settings))
         registry.register(memory_admin.make_create_skill_tool(settings, memory))
 
-    # Experimental tools — off by default; opt in with WAKU_EXPERIMENTAL=1.
+    # Experimental tools — off by default; opt in with JARVIS_EXPERIMENTAL=1.
     # delegate_task (sub-agents via pi) is live; terminal/browser/cron are
     # still skeletons that report "coming soon".
     #
     # Trust settings.experimental ALONE. load_settings() already defaults it from
-    # WAKU_EXPERIMENTAL, so re-checking the env here would let the global switch
+    # JARVIS_EXPERIMENTAL, so re-checking the env here would let the global switch
     # override an explicit False — and the arena passes experimental=False for
-    # every non-coding race. Once the dashboard could write WAKU_EXPERIMENTAL=1,
+    # every non-coding race. Once the dashboard could write JARVIS_EXPERIMENTAL=1,
     # that OR silently forced delegate_task into races that never asked for it.
     if getattr(settings, "experimental", False):
         from jarvis.tools import experimental
@@ -67,7 +67,7 @@ def build_registry(conn: sqlite3.Connection, settings: Settings, memory=None) ->
 
         registry.register(github.make_tool(default_repo=getattr(settings, "gh_repo", "")))
 
-    # MCP servers (opt-in via .waku/mcp.json).
+    # MCP servers (opt-in via .jarvis/mcp.json).
     mcp_config = settings.home / "mcp.json"
     if mcp_config.exists():
         try:
@@ -76,8 +76,8 @@ def build_registry(conn: sqlite3.Connection, settings: Settings, memory=None) ->
             bridge = MCPBridge(mcp_config)
             for t in bridge.start():
                 registry.register(t)
-            registry.mcp_bridge = bridge  # so Waku.close() can stop the servers
+            registry.mcp_bridge = bridge  # so Jarvis.close() can stop the servers
         except ImportError:
-            print("mcp.json found but the 'mcp' package is missing — pip install 'waku-agent[mcp]'")
+            print("mcp.json found but the 'mcp' package is missing — pip install 'jarvis-agent[mcp]'")
 
     return registry

@@ -3,10 +3,10 @@
 One of them is now ALIVE: `delegate_task` (the Sub-Agents box) hands a coding
 job to pi (https://github.com/earendil-works/pi) — a minimal open-source coding
 agent by Mario Zechner — through its headless print mode (`pi -p "task"`).
-The division of labor is the teaching point: Waku is the orchestrator (memory,
+The division of labor is the teaching point: Jarvis is the orchestrator (memory,
 working-memory assembly, evals, the human's context) and pi is the specialist
-contractor (read/bash/edit/write, pure coding craft). Waku hires; pi codes;
-Waku's release gate can then inspect the work.
+contractor (read/bash/edit/write, pure coding craft). Jarvis hires; pi codes;
+Jarvis's release gate can then inspect the work.
 
 v2 is now wired: when pi supports `--mode json` we run it that way and get its
 native event stream on stdout — one JSON object per line. Two things fall out:
@@ -25,7 +25,7 @@ Older pi builds without --mode json fall back to the plain `-p` text path.
 The other three boxes are still SKELETONS on purpose: each shows the *shape* of
 a capability and returns an honest "coming soon" (terminal/browser tools need a
 real sandbox + safety surface first). Everything here is OFF by default; set
-`WAKU_EXPERIMENTAL=1` to register these tools.
+`JARVIS_EXPERIMENTAL=1` to register these tools.
 """
 
 from __future__ import annotations
@@ -65,9 +65,9 @@ def _pi_supports_json(pi_bin: str) -> bool:
 def _project_pi_flags() -> list[str]:
     """Hand the delegated pi this repo's own extensions and skills.
 
-    This is the "pi x waku" payoff: waku upgrades its coding contractor without
+    This is the "pi x jarvis" payoff: jarvis upgrades its coding contractor without
     touching pi's source. pi auto-discovers project resources from cwd upward,
-    but delegated runs happen in waku_workspace/ (outside the repo), so we pass
+    but delegated runs happen in jarvis_workspace/ (outside the repo), so we pass
     explicit --extension / --skill flags with absolute paths. Any *.ts under
     .pi/extensions/ and every skill under .agents/skills/ rides along — drop a
     file in, and the next delegated run is stronger. No-op if the dirs are empty.
@@ -184,7 +184,7 @@ PLANNED = [
 def make_delegate_tool(settings: Settings) -> Tool:
     """The Sub-Agents box, wired for real: delegate a coding task to pi.
 
-    Same honesty contract as every Waku tool — the return string says exactly
+    Same honesty contract as every Jarvis tool — the return string says exactly
     what happened (done / failed / timed out / pi not installed), short enough
     for the voice gateway to speak. The full pi transcript goes to the outbox.
     """
@@ -211,7 +211,7 @@ def make_delegate_tool(settings: Settings) -> Tool:
             workdir = workspace.new_run_folder(settings.model or settings.provider, task)
             in_workspace = True
 
-        timeout = int(timeout_seconds) or int(os.getenv("WAKU_DELEGATE_TIMEOUT", "300"))
+        timeout = int(timeout_seconds) or int(os.getenv("JARVIS_DELEGATE_TIMEOUT", "300"))
         # Run pi on the SAME brain the loop is using, so the sub-agent's coding is
         # this model's coding (that's the point of a per-model comparison). pi
         # natively speaks every provider we pin; fall back to pi's own default if
@@ -242,7 +242,7 @@ def make_delegate_tool(settings: Settings) -> Tool:
             _record_subagent_usage(settings, tin, tout)   # the arena's cost now sees pi
             if code is None:
                 return (f"pi was still working after {timeout}s so I stopped it — try a smaller "
-                        f"task, or raise WAKU_DELEGATE_TIMEOUT.")
+                        f"task, or raise JARVIS_DELEGATE_TIMEOUT.")
             stdout_text = reply
         else:
             try:
@@ -250,7 +250,7 @@ def make_delegate_tool(settings: Settings) -> Tool:
                                         capture_output=True, text=True, timeout=timeout, check=False)
             except subprocess.TimeoutExpired:
                 return (f"pi was still working after {timeout}s so I stopped it — try a smaller "
-                        f"task, or raise WAKU_DELEGATE_TIMEOUT.")
+                        f"task, or raise JARVIS_DELEGATE_TIMEOUT.")
             except OSError as exc:
                 return f"Couldn't launch pi: {exc}"
             code, stdout_text, stderr = result.returncode, result.stdout, result.stderr
@@ -324,7 +324,7 @@ def _stub(name: str, description: str, box: str) -> Tool:
 
 
 def make_tools(settings: Settings) -> list[Tool]:
-    """Experimental tools, registered only when WAKU_EXPERIMENTAL=1: the live
+    """Experimental tools, registered only when JARVIS_EXPERIMENTAL=1: the live
     pi delegation plus the remaining skeletons."""
     return [make_delegate_tool(settings)] + [
         _stub(p["name"], p["description"], p["box"]) for p in PLANNED

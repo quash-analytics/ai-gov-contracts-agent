@@ -4,13 +4,13 @@ One tight landscape teaching board (companion to docs/whiteboards/pi-chart-promp
 
   TOP SPINE   faces -> context -> the loop -> two exits
   BAND        make pi strong: skills / extensions / packages / any CLI
-  FOOTERS     refused-on-purpose (red)  ·  waku x pi (blue)
+  FOOTERS     refused-on-purpose (red)  ·  jarvis x pi (blue)
 
 Design rule (why the earlier draft read wrong): every box is a TITLE + 2-3 short
 bullets, <=4 words each. Anything longer is something you SAY, not something you
 draw. Plugin family = yellow (the engine palette has no purple; legend states it).
 
-Run:  python -m waku.ops.whiteboard.build_pi_system
+Run:  python -m jarvis.ops.whiteboard.build_pi_system
 """
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ def build():
 
     # ============ TOP SPINE ===============================================
     # Boxes are BLACK by default (like the masters). Colour is spent only on the
-    # 3 container boundaries (loop / refused / waku), the pink model, the green
+    # 3 container boundaries (loop / refused / jarvis), the pink model, the green
     # reply chip, and a few one-line highlight notes. Widths hug the content.
 
     a(S.card(60, 250, 355, "FACES · one brain, 4 costumes",
@@ -48,7 +48,7 @@ def build():
              "pi -p           → run once\n"
              "pi --mode json  → event stream\n"
              "pi --mode rpc   → live pipe"))
-    a(S.text(78, 408, "↑ waku plugs in here", size=S.FS_SMALL, color=PAL["green"][1]))
+    a(S.text(78, 408, "↑ jarvis plugs in here", size=S.FS_SMALL, color=PAL["green"][1]))
 
     a(S.labeled_arrow(415, 320, 455, 320, "feeds"))
 
@@ -113,9 +113,9 @@ def build():
              "permissions  → a container",
              size=S.FS_BODY, color=INK))
 
-    a(S.boundary(660, 925, 900, 205, "waku × pi", color="blue"))
+    a(S.boundary(660, 925, 900, 205, "jarvis × pi", color="blue"))
     a(S.text(688, 985,
-             "waku → delegate_task → pi -p --mode json\n"
+             "jarvis → delegate_task → pi -p --mode json\n"
              "events → arena card\n"
              "tokens → usage ledger",
              size=S.FS_BODY, color=INK))

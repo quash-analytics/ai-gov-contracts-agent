@@ -45,7 +45,7 @@ doc = S.document(e)                 # wraps with appState + white bg
 ```
 
 Write `json.dumps(doc, indent=2)` to `docs/whiteboards/<name>.excalidraw`.
-See `waku/ops/whiteboard/build_k3_tutorial.py` for a full two-board example.
+See `jarvis/ops/whiteboard/build_k3_tutorial.py` for a full two-board example.
 
 ## Palette (name → fill/stroke), meaning follows Sean's color system
 

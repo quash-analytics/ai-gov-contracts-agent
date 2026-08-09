@@ -1,4 +1,4 @@
-// waku dashboard — model picker/catalog/pins, and the remaining Settings toggle.
+// jarvis dashboard — model picker/catalog/pins, and the remaining Settings toggle.
 // Split out of app.js: classic <script>, shared global scope (no build
 // step, no modules). Load order + rules: static/README.md.
 
@@ -13,7 +13,7 @@ function markEditing(){ editing = true; }
 
 // Model picker: fill the settings datalist from /api/models (the active
 // endpoint's live catalog; on OpenRouter each entry says free / tool support).
-// Waku's loop needs tool calling, so tool-less models are labelled as such.
+// Jarvis's loop needs tool calling, so tool-less models are labelled as such.
 let modelCatalog = null;
 async function loadModelList(){
   const dl = document.getElementById("model-list");
@@ -34,7 +34,7 @@ async function loadModelList(){
   if (modelCatalog.listed){
     const free = ms.filter(m=>m.free), freeTools = free.filter(m=>m.tools);
     msg.textContent = `${ms.length} models on ${modelCatalog.endpoint}` +
-      (free.length ? ` · ${free.length} free, ${freeTools.length} of those tool-capable (Waku needs tool calling)` : "") +
+      (free.length ? ` · ${free.length} free, ${freeTools.length} of those tool-capable (Jarvis needs tool calling)` : "") +
       ` · type in the field above to search`;
   } else {
     msg.textContent = modelCatalog.error ? `model list unavailable: ${modelCatalog.error}` : "";

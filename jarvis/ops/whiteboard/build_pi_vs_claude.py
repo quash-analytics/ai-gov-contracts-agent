@@ -1,11 +1,11 @@
 """Build docs/whiteboards/pi-vs-claude-code.excalidraw — the comparison board.
 
 One poster-tight landscape frame: two harness boundaries side by side, eight
-aligned rows each, then the waku punchline. Facts are sourced on the board
+aligned rows each, then the jarvis punchline. Facts are sourced on the board
 itself (standing rule); the architecture deep-dive lives in
 pi-architecture.excalidraw — this board only argues the philosophy split.
 
-Run:  python -m waku.ops.whiteboard.build_pi_vs_claude
+Run:  python -m jarvis.ops.whiteboard.build_pi_vs_claude
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ ROWS = [
      "green"),
     ("SUB-AGENTS",
      "built-in Task tool spawns workers\n(black box within a black box)",
-     "refused — spawn pi yourself: tmux,\nor waku's delegate_task (that's us)",
+     "refused — spawn pi yourself: tmux,\nor jarvis's delegate_task (that's us)",
      "plain"),
     ("MCP",
      "first-class: servers, connectors,\nschemas loaded into context",
@@ -78,7 +78,7 @@ def build() -> list:
 
     band = 190 + rows_h + 40
     e += S.labeled_box(80, band, 2410, 96,
-                       "waku uses BOTH: Claude Code writes waku's code - pi is waku's delegate_task sub-agent,\n"
+                       "jarvis uses BOTH: Claude Code writes jarvis's code - pi is jarvis's delegate_task sub-agent,\n"
                        "on whatever model the loop is running. pi refused to build sub-agents — which is exactly "
                        "what makes it embeddable as one.",
                        color="green")

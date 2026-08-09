@@ -1,4 +1,4 @@
-"""DETERMINISTIC EVAL — the K3-as-referee quality judge (waku.ops.judge).
+"""DETERMINISTIC EVAL — the K3-as-referee quality judge (jarvis.ops.judge).
 
 We can't call a real model hermetically, so we stub the client with a canned
 JSON reply and pin the parse/clamp behavior + graceful failure. The point: a

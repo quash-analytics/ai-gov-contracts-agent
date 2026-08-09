@@ -1,7 +1,7 @@
-"""`python -m waku.ops.show_trace` — read a JSONL trace as a terminal timeline.
+"""`python -m jarvis.ops.show_trace` — read a JSONL trace as a terminal timeline.
 
-Pass a trace file directly, or omit it to show the most recent trace in WAKU_HOME
-(the current directory's .waku/ by default). Trace records are printed one at a
+Pass a trace file directly, or omit it to show the most recent trace in JARVIS_HOME
+(the current directory's .jarvis/ by default). Trace records are printed one at a
 time, so long-running sessions do not need to fit in memory.
 """
 
@@ -141,7 +141,7 @@ def latest_trace(traces: Path) -> Path | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Render a Waku JSONL trace as a terminal timeline."
+        description="Render a Jarvis JSONL trace as a terminal timeline."
     )
     parser.add_argument(
         "traces", nargs="*", type=Path, help="trace JSONL file(s) (defaults to latest)"

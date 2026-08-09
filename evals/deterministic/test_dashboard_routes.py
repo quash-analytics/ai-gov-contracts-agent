@@ -94,10 +94,10 @@ def test_api_models_returns_picker_contract(monkeypatch):
 
     from jarvis.ops import catalog
 
-    monkeypatch.setenv("WAKU_PROVIDER", "openrouter")
+    monkeypatch.setenv("JARVIS_PROVIDER", "openrouter")
     monkeypatch.setenv("OPENROUTER_API_KEY", "fake-key")
-    monkeypatch.delenv("WAKU_MODEL", raising=False)
-    monkeypatch.delenv("WAKU_SMALL_MODEL", raising=False)
+    monkeypatch.delenv("JARVIS_MODEL", raising=False)
+    monkeypatch.delenv("JARVIS_SMALL_MODEL", raising=False)
 
     def fake_urlopen(req, timeout=10):
         return io.BytesIO(json.dumps(

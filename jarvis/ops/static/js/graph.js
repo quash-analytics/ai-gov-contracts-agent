@@ -1,4 +1,4 @@
-// waku dashboard — graph workflows: the topology chart + its live animation.
+// jarvis dashboard — graph workflows: the topology chart + its live animation.
 // Split out: classic <script>, shared global scope. Load order: static/README.md.
 //
 // The chart is DATA-DRIVEN: it renders Graph.describe() served in /api/data
@@ -112,7 +112,7 @@ function graphPanel(d){
         ${seg("seg-skip", g.stats.quick, "quick", Math.round(g.stats.quick / tot * 100))}
         ${seg("seg-ret", g.stats.full, "full", 100 - Math.round(g.stats.quick / tot * 100))}
       </div><div class="meta" style="margin:6px 0 10px">${g.stats.quick} answered by the small model alone — the loop never woke</div>`;
-  // The flag gates TRIAGE — the per-message door — and nothing else. `waku
+  // The flag gates TRIAGE — the per-message door — and nothing else. `jarvis
   // gather` is a routine you start yourself and runs regardless, so the old
   // copy ("off = every turn runs the classic loop") was quietly false the
   // moment a second workflow existed.

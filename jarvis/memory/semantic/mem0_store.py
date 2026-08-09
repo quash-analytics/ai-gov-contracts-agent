@@ -1,9 +1,9 @@
 """Semantic memory, hosted — Mem0 behind the same six methods as everything else.
 
-    pip install 'waku-agent[arena]'
-    WAKU_SEMANTIC_STORE=mem0   MEM0_API_KEY=m0-...
+    pip install 'jarvis-agent[arena]'
+    JARVIS_SEMANTIC_STORE=mem0   MEM0_API_KEY=m0-...
 
-Waku's own store is FTS5 keyword search; Supabase is embeddings you host. Mem0
+Jarvis's own store is FTS5 keyword search; Supabase is embeddings you host. Mem0
 is a memory service: you hand it text, it decides what is worth keeping, and it
 retrieves semantically. Having all three behind `FactStore` is what makes the
 Memory arena a fair fight — one agent, one model, one loop, and the only thing
@@ -35,10 +35,10 @@ import os
 from jarvis.config import Settings
 from jarvis.memory.semantic.base import env_or
 
-# Every fact Waku stores belongs to the one person running it, and Mem0 scopes
+# Every fact Jarvis stores belongs to the one person running it, and Mem0 scopes
 # by user_id. A stable default keeps a single-user install from scattering its
 # memory across generated ids; override when several people share a project.
-_DEFAULT_USER = "waku"
+_DEFAULT_USER = "jarvis"
 
 
 class Mem0FactStore:
@@ -49,7 +49,7 @@ class Mem0FactStore:
         self.user_id = env_or("MEM0_USER_ID", _DEFAULT_USER)
         self.top_k = settings.retrieval_top_k
 
-    # Waku keeps subject and content apart; Mem0 stores one blob. Round-tripping
+    # Jarvis keeps subject and content apart; Mem0 stores one blob. Round-tripping
     # through "subject: content" keeps `[subject] content` renderable on the way
     # out without a second field or a second call.
     @staticmethod

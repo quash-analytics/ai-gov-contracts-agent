@@ -6,9 +6,9 @@
     "scorer's tests something to grade — it is not the benchmark anyone should",
     "care about. Bring your own:",
     "",
-    "    WAKU_MEMORY_PROBES=/path/to/your/probes.json",
+    "    JARVIS_MEMORY_PROBES=/path/to/your/probes.json",
     "",
-    "waku ships the mechanism (waku/ops/memory_arena.py scores it, the Arena's",
+    "jarvis ships the mechanism (jarvis/ops/memory_arena.py scores it, the Arena's",
     "Memory tab renders whatever is loaded). The questions are yours, and they",
     "should be: a memory benchmark is only meaningful against the kind of facts",
     "your users actually store.",
@@ -21,7 +21,7 @@
     "",
     "Each probe declares what a right answer contains and — more usefully — what",
     "a WRONG one contains. That is what separates 'I don't know' (honest) from a",
-    "confidently superseded answer. See waku/ops/memory_arena.py for how the four",
+    "confidently superseded answer. See jarvis/ops/memory_arena.py for how the four",
     "outcomes are scored."
   ],
 

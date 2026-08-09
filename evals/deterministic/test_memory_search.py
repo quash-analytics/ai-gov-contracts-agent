@@ -133,6 +133,6 @@ def test_an_unsearchable_query_still_means_no_facts_not_all_facts(facts):
 
 
 def test_underscore_is_a_separator_here_because_it_is_one_in_the_index():
-    """unicode61 splits on `_`, so `waku_agent` is two terms in the index and
+    """unicode61 splits on `_`, so `jarvis_agent` is two terms in the index and
     has to be two terms here too, or it matches nothing."""
-    assert _fts_query("waku_agent") == "waku OR agent"
+    assert _fts_query("jarvis_agent") == "jarvis OR agent"

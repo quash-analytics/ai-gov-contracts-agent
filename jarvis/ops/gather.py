@@ -1,9 +1,9 @@
-"""`python -m waku gather` — the morning briefing, run as a graph.
+"""`python -m jarvis gather` — the morning briefing, run as a graph.
 
-    30 7 * * *  cd ~/waku-agent && make gather
+    30 7 * * *  cd ~/jarvis-agent && make gather
 
 This is the ONE place where real callables meet the pure workflow in
-waku/graph/workflows/gather.py. Both the CLI and the dashboard's
+jarvis/graph/workflows/gather.py. Both the CLI and the dashboard's
 /api/graph/stream come through build_bound_graph, so there is exactly one
 definition of what a gather is allowed to touch — and a reviewer only has to
 read one function to know.
@@ -24,7 +24,7 @@ from pathlib import Path
 
 from rich.console import Console
 
-from jarvis.app import Waku
+from jarvis.app import Jarvis
 from jarvis.graph import run_graph
 from jarvis.graph.workflows.gather import DIGEST_PROMPT, build_gather_graph
 
@@ -32,8 +32,8 @@ DEFAULT_TOPICS = "AI agent harness loop memory eval"
 
 
 def _github(settings) -> dict:
-    """Open PRs and issues. Calls waku/tools/github.py as a LIBRARY, not through
-    the registry — so a gather works with WAKU_GH_TOOL off. That flag decides
+    """Open PRs and issues. Calls jarvis/tools/github.py as a LIBRARY, not through
+    the registry — so a gather works with JARVIS_GH_TOOL off. That flag decides
     whether the MODEL can reach GitHub; this is our own code asking."""
     from jarvis.tools import github
 
@@ -77,7 +77,7 @@ def _memory(settings) -> str:
     small-model call deciding whether memory is relevant, and for a briefing we
     already know the answer is yes.
 
-    Opens its OWN sqlite connection rather than reusing waku.memory's. A
+    Opens its OWN sqlite connection rather than reusing jarvis.memory's. A
     connection belongs to the thread that made it, and this scan runs in a pool
     thread — the first live gather returned "local DB threading error" for
     exactly that reason, with _safe absorbing it so the digest still shipped
@@ -103,14 +103,14 @@ def _memory(settings) -> str:
             conn.close()
 
 
-def _synthesize(waku, state: dict) -> str:
+def _synthesize(jarvis, state: dict) -> str:
     """One model call, NO tools parameter. That absence is the propose-never-act
     guarantee — a model with no tool schemas cannot call a tool."""
     prompt = DIGEST_PROMPT.format(
         gh_text=state.get("gh_text", ""), web_text=state.get("web_text", ""),
         cal_text=state.get("cal_text", ""), mem_text=state.get("mem_text", ""))
-    resp = waku.client.messages.create(
-        model=waku.settings.model, max_tokens=1500,
+    resp = jarvis.client.messages.create(
+        model=jarvis.settings.model, max_tokens=1500,
         messages=[{"role": "user", "content": prompt}])
     return "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
 
@@ -128,53 +128,53 @@ def _draft(home: Path, state: dict) -> str:
     return str(dest)
 
 
-def build_bound_graph(waku: Waku):
+def build_bound_graph(jarvis: Jarvis):
     """The pure workflow, wired to this machine."""
-    s = waku.settings
+    s = jarvis.settings
     return build_gather_graph(
         github_fn=lambda: _github(s),
         web_fn=lambda: _web(s),
         calendar_fn=lambda: _calendar(s),
         memory_fn=lambda: _memory(s),
-        synth_fn=lambda state: _synthesize(waku, state),
+        synth_fn=lambda state: _synthesize(jarvis, state),
         draft_fn=lambda state: _draft(s.home, state),
     )
 
 
-def run_gather(waku: Waku | None = None, observer=None) -> dict:
+def run_gather(jarvis: Jarvis | None = None, observer=None) -> dict:
     """Run one gather to completion. Returns the final state; never raises.
 
     The observer is composed with the tracer so a gather lands in
     traces/*.jsonl like any turn — which means the dashboard's existing
     /api/events poller animates the topology chart for free.
     """
-    own = waku is None
-    waku = waku or Waku()
+    own = jarvis is None
+    jarvis = jarvis or Jarvis()
     try:
         def notify(kind: str, ev: dict) -> None:
-            waku.tracer.event(kind, ev)
+            jarvis.tracer.event(kind, ev)
             if observer:
                 observer(kind, ev)
 
-        return run_graph(build_bound_graph(waku), {}, observer=notify)
+        return run_graph(build_bound_graph(jarvis), {}, observer=notify)
     finally:
         if own:
-            waku.close()
+            jarvis.close()
 
 
 def main() -> None:
     console = Console()
-    waku = Waku()
+    jarvis = Jarvis()
     try:
         console.print("[dim]gathering — github, web, calendar and memory, together…[/dim]")
-        state = run_gather(waku)
+        state = run_gather(jarvis)
         console.print(state.get("digest") or "(no digest — every source was empty)")
         if state.get("draft_path"):
             console.print(f"[dim]saved to {state['draft_path']}[/dim]")
         for node, err in (state.get("errors") or {}).items():
             console.print(f"[dim]{node}: {err}[/dim]")
     finally:
-        waku.close()
+        jarvis.close()
 
 
 if __name__ == "__main__":

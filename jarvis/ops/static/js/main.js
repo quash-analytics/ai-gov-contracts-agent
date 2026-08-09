@@ -1,4 +1,4 @@
-// waku dashboard — render/refresh loop, resizers/chrome, voice, bootstrap (LOADS LAST).
+// jarvis dashboard — render/refresh loop, resizers/chrome, voice, bootstrap (LOADS LAST).
 // Split out of app.js: classic <script>, shared global scope (no build
 // step, no modules). Load order + rules: static/README.md.
 
@@ -16,7 +16,7 @@ const TITLES = {chat:"Chat & watch", ops:"LLM Ops",
                 // sub-tabs for a single page.
                 compare:"Arena — race models and memory through the same loop",
                 settings:"Behaviour — how a turn runs",
-                database:"Database — everything Waku stores (state.db)"};
+                database:"Database — everything Jarvis stores (state.db)"};
 function render(){
   if (!D) return;
   const [v, subRaw] = (location.hash||"#overview").slice(1).split("/");
@@ -131,7 +131,7 @@ function wireChrome(){
 // ("transcription failed [Errno …]"). WAV is trivially decodable server-side.
 let micCtx = null, micStream = null, micNode = null, micBuf = [], micOn = false;
 const micHint = (msg) => { const i = document.getElementById("dmsg");
-  if (i){ i.placeholder = msg; setTimeout(()=>{ i.placeholder = "Message Waku…"; }, 8000); } };
+  if (i){ i.placeholder = msg; setTimeout(()=>{ i.placeholder = "Message Jarvis…"; }, 8000); } };
 
 async function toggleMic(){
   const btn = document.getElementById("mic");

@@ -1,8 +1,8 @@
-"""Discord gateway — message Waku from a direct message or a server channel.
+"""Discord gateway — message Jarvis from a direct message or a server channel.
 
 READ THIS BEFORE PUTTING THE BOT IN A SHARED SERVER.
 
-This gateway runs YOUR agent: your memory (`.waku/state.db`), your SOUL.md, your
+This gateway runs YOUR agent: your memory (`.jarvis/state.db`), your SOUL.md, your
 tools. Anyone it answers can ask what it remembers about you, and — because the
 chat log feeds consolidation — anything they say can become a permanent fact in
 your memory. A bot sitting in a busy channel is therefore three problems at
@@ -32,7 +32,7 @@ Setup:
                                the bot is @-mentioned. Set "0" at your own risk.
      DISCORD_MAX_TURNS_PER_HOUR  default 30. A hard ceiling across all users; the
                                bot goes quiet once it's hit rather than spending.
-     DISCORD_HOME              a SEPARATE .waku for the bot. Use this whenever
+     DISCORD_HOME              a SEPARATE .jarvis for the bot. Use this whenever
                                the bot serves anyone but you — it gets its own
                                memory, so a community bot can never read or
                                poison your personal one.
@@ -47,7 +47,7 @@ import threading
 import time
 from pathlib import Path
 
-from jarvis.app import Waku
+from jarvis.app import Jarvis
 from jarvis.gateway.cli import _observer
 from jarvis.gateway.runner import GatewayAgentRunner, run_gateway_turn
 from jarvis.integrations import IntegrationState, IntegrationStatus
@@ -107,25 +107,25 @@ def should_answer(*, is_dm: bool, author_id: str, channel_id: str, mentioned: bo
 
 
 def _strip_mention(content: str, bot_id: str) -> str:
-    """Drop the '@Waku Agent' prefix so the model sees the question, not the ping."""
+    """Drop the '@Jarvis Agent' prefix so the model sees the question, not the ping."""
     for form in (f"<@{bot_id}>", f"<@!{bot_id}>"):
         content = content.replace(form, " ")
     return content.strip()
 
 
-def _build_agent() -> Waku:
+def _build_agent() -> Jarvis:
     """The agent behind the bot. DISCORD_HOME gives it a memory of its own —
     the difference between 'a bot in my community' and 'my private assistant,
     exposed'."""
     home = os.getenv("DISCORD_HOME", "").strip()
     if not home:
-        return Waku()
+        return Jarvis()
     from jarvis.config import load_settings
 
     settings = load_settings()
     settings.home = Path(home)
     settings.ensure_home()
-    return Waku(settings=settings)
+    return Jarvis(settings=settings)
 
 
 def _new_runner() -> GatewayAgentRunner:
@@ -183,7 +183,7 @@ def describe_posture() -> str:
     who = f"{len(users)} allowlisted user(s)" if users else "anyone who can DM it"
     where = (f"{len(channels)} allowlisted channel(s), @mention required"
              if channels else "DMs only — no server channel will be answered")
-    home = os.getenv("DISCORD_HOME", "").strip() or ".waku — YOUR personal memory"
+    home = os.getenv("DISCORD_HOME", "").strip() or ".jarvis — YOUR personal memory"
     cap = os.getenv("DISCORD_MAX_TURNS_PER_HOUR", "30")
     return (f"  reachable by: {who}\n"
             f"  answers in:   {where}\n"
@@ -195,7 +195,7 @@ def main() -> None:
     try:
         import discord  # noqa: F401
     except ImportError:
-        raise SystemExit("Discord extra not installed: pip install 'waku-agent[discord]'")
+        raise SystemExit("Discord extra not installed: pip install 'jarvis-agent[discord]'")
 
     token = os.getenv("DISCORD_BOT_TOKEN", "")
     if not token:
@@ -203,7 +203,7 @@ def main() -> None:
     runner = _new_runner()
     try:
         client = _build_client(runner)
-        print("Waku is listening on Discord. Ctrl-C to stop.")
+        print("Jarvis is listening on Discord. Ctrl-C to stop.")
         print(describe_posture())
         client.run(token)
     finally:
@@ -247,7 +247,7 @@ def start_in_background() -> DiscordHandle | None:
         import discord  # noqa: F401
     except ImportError:
         print("(discord) DISCORD_BOT_TOKEN is set but the extra isn't installed — "
-              "pip install 'waku-agent[discord]'")
+              "pip install 'jarvis-agent[discord]'")
         return None
 
     print("(discord) starting:")

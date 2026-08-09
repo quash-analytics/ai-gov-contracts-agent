@@ -19,9 +19,9 @@ from pathlib import Path
 
 import pytest
 
-from evals.helpers import HAS_KEY, ScriptedClient, make_waku, response, text_block, tool_block
+from evals.helpers import HAS_KEY, ScriptedClient, make_jarvis, response, text_block, tool_block
 
-RUN_LIVE_EVALS = os.getenv("WAKU_RUN_LIVE_EVALS") == "1"
+RUN_LIVE_EVALS = os.getenv("JARVIS_RUN_LIVE_EVALS") == "1"
 
 DATASET = [
     json.loads(line)
@@ -38,7 +38,7 @@ def test_create_event_writes_db_and_ics(tmp_path):
         response([tool_block("create_event", {"title": "Coffee with Alex", "start": "2026-07-14T09:00"})], "tool_use"),
         response([text_block("Booked!")]),
     ]
-    app = make_waku(tmp_path / "home", client=ScriptedClient([gate] + turn))
+    app = make_jarvis(tmp_path / "home", client=ScriptedClient([gate] + turn))
     result = app.respond("coffee with alex tuesday 9am")
 
     assert [c["tool"] for c in result.tool_calls] == ["create_event"]
@@ -58,7 +58,7 @@ def test_create_event_is_idempotent(tmp_path):
                   tool_block("create_event", {**args, "start": "2026-07-11T17:00:00"}, "tu_2")], "tool_use"),
         response([text_block("Booked once.")]),
     ]
-    app = make_waku(tmp_path / "home", client=ScriptedClient(script))
+    app = make_jarvis(tmp_path / "home", client=ScriptedClient(script))
     result = app.respond("swim with sergey saturday 5pm")
 
     rows = app.conn.execute("SELECT COUNT(*) FROM calendar_events").fetchone()[0]
@@ -76,7 +76,7 @@ def test_history_records_tool_use(tmp_path):
         response([tool_block("create_event", {"title": "X", "start": "2026-07-14T09:00"})], "tool_use"),
         response([text_block("Done.")]),
     ]
-    app = make_waku(tmp_path / "home", client=ScriptedClient(script))
+    app = make_jarvis(tmp_path / "home", client=ScriptedClient(script))
     app.respond("book X monday 9am")
     assert "[tools used: create_event" in app.session.history[-1]["content"]
 
@@ -86,7 +86,7 @@ def test_no_tool_turn_ends_loop_in_one_iteration(tmp_path):
         response([text_block('{"retrieve": false, "query": "", "reason": "test"}')]),
         response([text_block("Paris.")]),
     ]
-    app = make_waku(tmp_path / "home", client=ScriptedClient(script))
+    app = make_jarvis(tmp_path / "home", client=ScriptedClient(script))
     result = app.respond("capital of france?")
     assert result.reply == "Paris." and result.iterations == 1 and result.tool_calls == []
 
@@ -97,7 +97,7 @@ def test_iteration_guardrail_stops_runaway_loop(tmp_path):
         response([tool_block("save_note", {"subject": "x", "content": "y"}, f"tu_{i}")], "tool_use")
         for i in range(99)
     ]
-    app = make_waku(tmp_path / "home", client=ScriptedClient([gate] + runaway), max_iterations=3)
+    app = make_jarvis(tmp_path / "home", client=ScriptedClient([gate] + runaway), max_iterations=3)
     result = app.respond("loop forever")
     assert result.iterations == 3 and "iteration limit" in result.reply
 
@@ -106,10 +106,10 @@ def test_iteration_guardrail_stops_runaway_loop(tmp_path):
 
 
 @pytest.mark.skipif(not (HAS_KEY and RUN_LIVE_EVALS),
-                    reason="set WAKU_RUN_LIVE_EVALS=1 and configure an API key to run live evals")
+                    reason="set JARVIS_RUN_LIVE_EVALS=1 and configure an API key to run live evals")
 @pytest.mark.parametrize("case", DATASET, ids=[c["id"] for c in DATASET])
 def test_dataset_case(case, tmp_path):
-    app = make_waku(tmp_path / "home")
+    app = make_jarvis(tmp_path / "home")
     if "setup_fact" in case:
         app.memory.facts.add(case["setup_fact"]["subject"], case["setup_fact"]["content"])
 

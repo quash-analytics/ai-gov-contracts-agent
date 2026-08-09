@@ -1,7 +1,7 @@
 ---
 name: review-pr
 description: >
-  Walk Sean through an incoming waku-agent PR or issue and present it his way —
+  Walk Sean through an incoming jarvis-agent PR or issue and present it his way —
   four fixed sections: what this is, why it matters, how HE can test it with you
   as copilot, and are we ready to merge / reply / close and why. Use whenever
   Sean asks to look at, test, triage, or decide on a pull request or an issue,
@@ -10,7 +10,7 @@ description: >
 
 # Deciding on a PR or an issue, Sean's way
 
-Sean maintains waku-agent solo while a community sends PRs against the
+Sean maintains jarvis-agent solo while a community sends PRs against the
 `good first issue` list. He decides fast, without reading diffs, and he is a
 product manager with a technical background — he wants the decision framed for
 him AND he wants to be able to see it with his own eyes.
@@ -30,7 +30,7 @@ Post review comments and change requests freely. Merging is his call.
 
 ## Frontend and TUI changes are HIS to test
 
-If the diff touches the dashboard frontend (anything under `waku/ops/static/` —
+If the diff touches the dashboard frontend (anything under `jarvis/ops/static/` —
 HTML, CSS, JS) or the TUI/CLI experience, **never recommend merge on your own
 testing.** Your screenshots, a clean console and a green suite are not enough
 evidence for these. Stand the PR up on port 7778 so the live 7777 is untouched,
@@ -68,7 +68,7 @@ block. Say what you already ran and what you got, then give him the same command
 so he can confirm it. Include the ONE test that would actually catch a
 regression, not just the green suite. Dashboard PRs run on a second port so 7777
 is untouched:
-    WAKU_DASHBOARD_PORT=7778 .venv/bin/python -m waku.ops.dashboard
+    JARVIS_DASHBOARD_PORT=7778 .venv/bin/python -m jarvis.ops.dashboard
 Say what to look for — the specific visual difference. Offer to drive it with
 him rather than handing him a wall of steps.
 
@@ -89,9 +89,9 @@ not as a literal translation.
    from the main working tree and a branch switch swaps code under a live demo).
    See the `pr-worktree` skill for setup and teardown, including the
    `set_key`-replaces-your-symlinked-`.env` trap that once left a full copy of
-   every API key in `~/Developer/waku-prs/pr18/`.
+   every API key in `~/Developer/jarvis-prs/pr18/`.
 
-   Note: linking `.waku` into the worktree makes
+   Note: linking `.jarvis` into the worktree makes
    `test_runtime_data_is_ignored.py` fail six ways — the gitignore pattern is
    directory-only and does not match a symlink. That failure is your setup, not
    the PR. Skip the link for a test-only pass.
@@ -114,7 +114,7 @@ not as a literal translation.
    owns the SQLite connection). Reviewing from the diff would have merged it.
 
 4. **Run it against real data**, not just the PR's own fixtures — that's how the
-   PR #13 bug surfaced (hardcoded `~/.waku/traces`; the real home is `.waku`
+   PR #13 bug surfaced (hardcoded `~/.jarvis/traces`; the real home is `.jarvis`
    relative to cwd via `load_settings()`).
 
 5. **Check it against the repo's rules** (CLAUDE.md): stdlib + anthropic/openai
@@ -134,10 +134,10 @@ open, with the reason. Two extra habits:
 - **Check who else claimed it** before acting. Issue #67 had three people say
   "I'll take this" and one of them quietly shipped a PR — the other two needed a
   comment so they stopped working.
-- **When an outside analysis criticises waku, verify the criticism against the
+- **When an outside analysis criticises jarvis, verify the criticism against the
   code before agreeing or defending.** Simon Strandgaard's atlas said the
   retrieval gate's accuracy was unmeasured (true — every test is plumbing) and
-  that waku has no correction mechanism (false — `manage_memory` edits and
+  that jarvis has no correction mechanism (false — `manage_memory` edits and
   deletes facts). Conceding the first and correcting the second is what made
   that reply worth reading.
 

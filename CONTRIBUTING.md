@@ -1,6 +1,6 @@
-# Contributing to Waku
+# Contributing to Jarvis
 
-Waku started as a teaching repo you could read in an afternoon, and it's growing toward a
+Jarvis started as a teaching repo you could read in an afternoon, and it's growing toward a
 full local-first assistant — the next Hermes / OpenClaw, with 1/100th the code. Contributions
 are genuinely welcome. The project will get bigger; the one thing it must never do is get
 *muddier*.
@@ -17,20 +17,20 @@ how the system works is what we push back on.
 4. Open a PR. CI runs the same validator.
 
 Anyone can then try your skill instantly:
-`waku skill install <link to your SKILL.md>`
+`jarvis skill install <link to your SKILL.md>`
 
 ## Code contributions
 
 Good places to add real value:
 
-- **Providers** (`waku/loop/models.py`): most models expose an OpenAI- or Anthropic-compatible
+- **Providers** (`jarvis/loop/models.py`): most models expose an OpenAI- or Anthropic-compatible
   endpoint, so a new provider is usually one `PROVIDERS` row — no new wire code. Add a pricing
   row in the dashboard and a case to `evals/deterministic/test_providers.py`.
-- **Gateways** (`waku/gateway/`): receive/send for a new channel (WhatsApp, Discord, Slack,
+- **Gateways** (`jarvis/gateway/`): receive/send for a new channel (WhatsApp, Discord, Slack,
   email). Keep it to one file; the CLI gateway is the reference.
-- **Memory stores** (`waku/memory/semantic/`): match the `add`/`search` interface of
+- **Memory stores** (`jarvis/memory/semantic/`): match the `add`/`search` interface of
   `SqliteFactStore`. The Supabase adapter is the reference.
-- **Tools** (`waku/tools/`): a new capability the agent can call. Follow `calendar.py` and the
+- **Tools** (`jarvis/tools/`): a new capability the agent can call. Follow `calendar.py` and the
   `new-tool` skill — schema, safe execution, honest output, and a deterministic eval.
 
 Two rules that keep contributions safe to merge:
@@ -45,7 +45,7 @@ a key). `make lint` too. CI runs the gate on every PR — it must be green to me
 
 ## Where does my change go? — the footprint ladder
 
-The core is a narrow waist; capability belongs at the edges. Every tool waku
+The core is a narrow waist; capability belongs at the edges. Every tool jarvis
 registers is sent to the model on **every single call**, so the bar for adding
 one is deliberately high. Start at the top of this ladder and only move down
 when the rung above genuinely can't do it:
@@ -55,16 +55,16 @@ when the rung above genuinely can't do it:
 2. **A skill** — `skills/community/<name>/SKILL.md`. Markdown, no Python, no new
    context cost until the model actually needs it. This is the easiest and most
    underrated contribution; see above.
-3. **A CLI + a README.** waku can already run any program on your machine. A
+3. **A CLI + a README.** jarvis can already run any program on your machine. A
    command-line tool with docs beside it costs nothing until it's used.
-4. **A tool behind an extra** — `waku/tools/`, heavy deps gated by
+4. **A tool behind an extra** — `jarvis/tools/`, heavy deps gated by
    `[voice]`/`[notion]`/`[gcal]`-style extras, off by default.
-5. **A gateway** — `waku/gateway/`, one file. Gateways only move text: in via
-   `waku.respond()`, out again. No memory, no tools, no loop logic.
+5. **A gateway** — `jarvis/gateway/`, one file. Gateways only move text: in via
+   `jarvis.respond()`, out again. No memory, no tools, no loop logic.
 6. **A new core tool — last resort.** It has to earn its place in every prompt.
 
 One thing the ladder deliberately has no rung for: **a new top-level package**
-(like `waku/graph/`). That's not a contribution size, it's an architecture
+(like `jarvis/graph/`). That's not a contribution size, it's an architecture
 decision — it needs a written design doc and a maintainer yes before any code
 (see `docs/agent-graphs-design.md` for the precedent and the bar it had to clear).
 
@@ -88,7 +88,7 @@ Concretely, these get declined **even when the code is good**:
   that's what the ladder above is for.
 - **A behavior change with no deterministic eval.** If it can break, pin it.
 - **Hidden network calls, reading `.env` or secrets, or running code at install
-  time.** waku runs on people's own machines with their own keys.
+  time.** jarvis runs on people's own machines with their own keys.
 - **A "fix" that removes the thing it secures** — e.g. sandboxing a tool by
   making it not work.
 - **A rename.** The name is tied to the videos, the PyPI package and the
@@ -97,9 +97,9 @@ Concretely, these get declined **even when the code is good**:
 - **A whiteboard that isn't about this codebase.** See below.
 
 None of this is about the quality of your code. It's about what everyone who
-installs waku has to carry.
+installs jarvis has to carry.
 
-### Whiteboards: only the ones that explain waku
+### Whiteboards: only the ones that explain jarvis
 
 `docs/whiteboards/` holds editable `.excalidraw` sources, and the bar for a new
 one is simple:
@@ -109,10 +109,10 @@ one is simple:
 
 The reason is that the folder had drifted: five of its six charts were about
 *other* projects — Kimi K3, pi, Claude Code — and made up 1.8 MB of a 2 MB
-directory. Someone forking waku to build their own agent has no use for a chart
+directory. Someone forking jarvis to build their own agent has no use for a chart
 about a model they aren't running, and the repo shouldn't ask them to clone it.
 
-Charts that explain waku's own architecture, its loop, or its graph engine are
+Charts that explain jarvis's own architecture, its loop, or its graph engine are
 welcome and genuinely useful. Charts drawn for a video about something else are
 not part of the software.
 
@@ -129,7 +129,7 @@ not part of the software.
 
 ## A note on safety
 
-Because Waku runs on people's own machines with their own keys, PRs must never add hidden
+Because Jarvis runs on people's own machines with their own keys, PRs must never add hidden
 network calls, read or transmit secrets/`.env`, or run code at install time. Keep it local,
 keep it legible.
 

@@ -1,6 +1,6 @@
 """Graph workflows — opt-in structure AROUND the loop, not a fifth pillar.
 
-`waku/loop/agent.py` is one agent turn: the model picks tools until it stops.
+`jarvis/loop/agent.py` is one agent turn: the model picks tools until it stops.
 A graph workflow arranges *steps* around (and to) that loop: nodes that each do
 one job, edges that say what happens next, fan-outs that run at the same time,
 and routers that pick a path. The loop file never changes — a node can simply

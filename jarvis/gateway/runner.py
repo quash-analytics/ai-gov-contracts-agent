@@ -1,6 +1,6 @@
-"""One thread-owned Waku per asynchronous message gateway.
+"""One thread-owned Jarvis per asynchronous message gateway.
 
-Telegram and Discord are async clients, while Waku is deliberately synchronous
+Telegram and Discord are async clients, while Jarvis is deliberately synchronous
 and owns a SQLite connection.  A single-worker executor gives each gateway one
 stable owner thread: the event loop stays responsive, turns remain serialized,
 and SQLite is created, used, and closed on the same thread.
@@ -15,7 +15,7 @@ from collections.abc import Awaitable, Callable
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
-GATEWAY_ERROR_REPLY = "Waku couldn't process that message. Check the dashboard terminal."
+GATEWAY_ERROR_REPLY = "Jarvis couldn't process that message. Check the dashboard terminal."
 
 
 def safe_exception(exc: Exception) -> str:
@@ -127,7 +127,7 @@ async def run_gateway_turn(
             logger(f"({runner.source}) error reply delivery failed: {detail}")
         return None
 
-    logger(f"waku › {result.reply}")
+    logger(f"jarvis › {result.reply}")
     try:
         await send(result.reply or "(no reply)")
     except Exception as exc:

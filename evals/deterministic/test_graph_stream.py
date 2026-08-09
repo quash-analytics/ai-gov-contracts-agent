@@ -32,7 +32,7 @@ def test_an_unknown_workflow_is_refused_without_importing_anything():
     client named' is one careless refactor from 'import whatever string
     arrives', so the refusal is pinned."""
     out, emit = _emitter()
-    for name in ("", "nope", "waku.ops.gather", "os:system", "../../etc/passwd"):
+    for name in ("", "nope", "jarvis.ops.gather", "os:system", "../../etc/passwd"):
         out.clear()
         dashboard.graph_stream({"workflow": name}, emit)
         assert len(out) == 1 and out[0][0] == "done"
@@ -42,10 +42,10 @@ def test_an_unknown_workflow_is_refused_without_importing_anything():
 def test_the_runner_table_maps_names_to_known_targets():
     """Discovered rather than hand-listed since slash commands shipped — a
     hardcoded table beside a command list is two registries of one fact."""
-    assert dashboard.WORKFLOW_RUNNERS()["gather"] == "waku.ops.gather:run_gather"
+    assert dashboard.WORKFLOW_RUNNERS()["gather"] == "jarvis.ops.gather:run_gather"
     for target in dashboard.WORKFLOW_RUNNERS().values():
         module, _, fn = target.partition(":")
-        assert module.startswith("waku.") and fn
+        assert module.startswith("jarvis.") and fn
 
 
 @pytest.fixture

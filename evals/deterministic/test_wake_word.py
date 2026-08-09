@@ -6,26 +6,26 @@ import pytest
 from jarvis.gateway.voice import matches_wake
 
 SHOULD_WAKE = [
-    ("waku waku", "waku waku"),
-    ("Waku, waku!", "waku waku"),            # punctuation
-    ("wakuwaku", "waku waku"),               # whisper drops the space
-    ("so anyway waku waku schedule it", "waku waku"),  # embedded in speech
-    ("walku waku", "waku waku"),             # one-letter mangle → fuzzy match
-    ("Hey Waku", "hey waku"),
+    ("jarvis jarvis", "jarvis jarvis"),
+    ("Jarvis, jarvis!", "jarvis jarvis"),            # punctuation
+    ("jarvisjarvis", "jarvis jarvis"),         # generic: matcher tolerates a dropped space
+    ("so anyway jarvis jarvis schedule it", "jarvis jarvis"),  # embedded in speech
+    ("jarviz jarvis", "jarvis jarvis"),          # generic: matcher tolerates a one-letter mangle
+    ("Hey Jarvis", "hey jarvis"),
     ("hey computer, what's up", "hey computer"),
     # regression from the first live session: whisper wrote the wake word in
     # kana — variants after a comma cover other scripts
-    ("わくわく", "waku waku,わくわく"),
-    ("わくわくわく", "waku waku,わくわく"),
-    ("小助手你好", "waku waku,小助手"),
+    ("わくわく", "jarvis jarvis,わくわく"),
+    ("わくわくわく", "jarvis jarvis,わくわく"),
+    ("小助手你好", "jarvis jarvis,小助手"),
 ]
 
 SHOULD_NOT_WAKE = [
-    ("what a nice day", "waku waku"),
-    ("wake up call at nine", "waku waku"),
-    ("", "waku waku"),
-    ("waku waku", ""),                        # no wake word configured
-    ("walk to work", "waku waku"),
+    ("what a nice day", "jarvis jarvis"),
+    ("wake up call at nine", "jarvis jarvis"),
+    ("", "jarvis jarvis"),
+    ("jarvis jarvis", ""),                        # no wake word configured
+    ("walk to work", "jarvis jarvis"),
 ]
 
 

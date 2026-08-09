@@ -63,7 +63,7 @@ def test_client_uses_provider_specific_base_url(
     provider = PROVIDERS[provider_name]
     monkeypatch.setenv(provider.key_env, "test-key")
     monkeypatch.setenv(base_url_env, selected_url)
-    monkeypatch.delenv("WAKU_BASE_URL", raising=False)
+    monkeypatch.delenv("JARVIS_BASE_URL", raising=False)
     monkeypatch.setitem(
         __import__("sys").modules,
         "anthropic",
@@ -105,10 +105,10 @@ def test_catalog_follows_selected_provider_region(
         return Response(json.dumps({"data": [{"id": "model-one"}]}).encode())
 
     provider = PROVIDERS[provider_name]
-    monkeypatch.setenv("WAKU_PROVIDER", provider_name)
+    monkeypatch.setenv("JARVIS_PROVIDER", provider_name)
     monkeypatch.setenv(provider.key_env, "test-key")
     monkeypatch.setenv(base_url_env, selected_url)
-    monkeypatch.delenv("WAKU_BASE_URL", raising=False)
+    monkeypatch.delenv("JARVIS_BASE_URL", raising=False)
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
     catalog._models_cache.clear()
 
@@ -137,11 +137,11 @@ def test_apply_provider_persists_scoped_base_url_and_clears_legacy_override(
     monkeypatch, tmp_path
 ):
     monkeypatch.chdir(tmp_path)
-    (tmp_path / ".env").write_text("WAKU_BASE_URL='https://legacy.example'\n")
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path / ".waku"))
-    monkeypatch.setenv("WAKU_PROVIDER", "minimax")
+    (tmp_path / ".env").write_text("JARVIS_BASE_URL='https://legacy.example'\n")
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path / ".jarvis"))
+    monkeypatch.setenv("JARVIS_PROVIDER", "minimax")
     monkeypatch.setenv("MINIMAX_API_KEY", "test-key")
-    monkeypatch.setenv("WAKU_BASE_URL", "https://legacy.example")
+    monkeypatch.setenv("JARVIS_BASE_URL", "https://legacy.example")
     monkeypatch.delenv("MINIMAX_BASE_URL", raising=False)
     monkeypatch.setattr(integrations, "_provider_probe", lambda values: None)
 
@@ -157,13 +157,13 @@ def test_apply_provider_persists_scoped_base_url_and_clears_legacy_override(
 
     assert result.ok
     assert os.environ["MINIMAX_BASE_URL"] == "https://api.minimax.io/anthropic"
-    assert os.environ.get("WAKU_BASE_URL", "") == ""
+    assert os.environ.get("JARVIS_BASE_URL", "") == ""
     contents = Path(".env").read_text()
     assert "MINIMAX_BASE_URL='https://api.minimax.io/anthropic'" in contents
 
 
 def test_models_edit_modal_posts_selected_base_url():
-    source = Path("waku/ops/static/js/models.js").read_text()
+    source = Path("jarvis/ops/static/js/models.js").read_text()
 
     assert 'id="pm-base-url"' in source
     assert "payload.base_url = baseUrl" in source
@@ -179,11 +179,11 @@ def test_reusing_saved_provider_endpoint_skips_remote_probe_and_noop_rebuild(
 ):
     """Clicking either modal action with unchanged credentials stays local."""
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path / ".waku"))
-    monkeypatch.setenv("WAKU_PROVIDER", current_provider)
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path / ".jarvis"))
+    monkeypatch.setenv("JARVIS_PROVIDER", current_provider)
     monkeypatch.setenv("MOONSHOT_API_KEY", "saved-key")
     monkeypatch.setenv("MOONSHOT_BASE_URL", "https://api.moonshot.cn/anthropic")
-    monkeypatch.delenv("WAKU_BASE_URL", raising=False)
+    monkeypatch.delenv("JARVIS_BASE_URL", raising=False)
 
     probes = []
     monkeypatch.setattr(integrations, "_provider_probe", lambda values: probes.append(values))
@@ -206,11 +206,11 @@ def test_reusing_saved_provider_endpoint_skips_remote_probe_and_noop_rebuild(
 
 def test_saving_noncurrent_provider_does_not_activate_or_rebuild(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path / ".waku"))
-    monkeypatch.setenv("WAKU_PROVIDER", "minimax")
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path / ".jarvis"))
+    monkeypatch.setenv("JARVIS_PROVIDER", "minimax")
     monkeypatch.setenv("MOONSHOT_API_KEY", "saved-key")
     monkeypatch.setenv("MOONSHOT_BASE_URL", "https://api.moonshot.ai/anthropic")
-    monkeypatch.delenv("WAKU_BASE_URL", raising=False)
+    monkeypatch.delenv("JARVIS_BASE_URL", raising=False)
     monkeypatch.setattr(integrations, "_provider_probe", lambda values: None)
 
     from jarvis.ops import browser_agent
@@ -225,6 +225,6 @@ def test_saving_noncurrent_provider_does_not_activate_or_rebuild(monkeypatch, tm
     )
 
     assert result.ok
-    assert os.environ["WAKU_PROVIDER"] == "minimax"
+    assert os.environ["JARVIS_PROVIDER"] == "minimax"
     assert os.environ["MOONSHOT_BASE_URL"] == "https://api.moonshot.cn/anthropic"
     assert rebuilds == []

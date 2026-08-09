@@ -1,4 +1,4 @@
-// waku dashboard — formatters + chat card renderers + chatlog + streaming + send.
+// jarvis dashboard — formatters + chat card renderers + chatlog + streaming + send.
 // Split out of app.js: classic <script>, shared global scope (no build
 // step, no modules). Load order + rules: static/README.md.
 
@@ -24,11 +24,11 @@ const toolRow = x => `<div class="tool ${x.status||"ok"}">
 // before this was saved, or another gateway) fall back to a plain card.
 function histItem(m){
   if (m.role === "user") return {role:"user", text:m.content};
-  if (m.meta) return {role:"waku", reply:m.content, gate:m.meta.gate,
+  if (m.meta) return {role:"jarvis", reply:m.content, gate:m.meta.gate,
                       graph:m.meta.graph,
                       tools:m.meta.tools, iterations:m.meta.iterations,
                       latency_ms:m.meta.latency_ms, model:m.meta.model};
-  return {role:"waku", reply:m.content, historical:true};
+  return {role:"jarvis", reply:m.content, historical:true};
 }
 
 const turnCard = t => `<div class="card">
@@ -117,7 +117,7 @@ const streamingCard = m => `<div class="card">
      ? `<div class="r" style="margin-top:8px">${renderMarkdown(m.stream)}<span class="caret"></span></div>`
      : `<div class="meta" style="margin:0">thinking&hellip;${m.started?` ${Math.round((Date.now()-m.started)/1000)}s`:""}${
          m.started && Date.now()-m.started > 20000
-         ? `<br>still waiting: slow models (free tiers especially) can queue for a while; this errors out at the WAKU_LLM_TIMEOUT limit instead of hanging forever`
+         ? `<br>still waiting: slow models (free tiers especially) can queue for a while; this errors out at the JARVIS_LLM_TIMEOUT limit instead of hanging forever`
          : ""}</div>`}
 </div>`;
 
@@ -132,7 +132,7 @@ const historicalCard = m => `<div class="card">
 
 function renderChatLog(){
   if (!CHAT.length)
-    return `<div class="empty" style="padding:6px 2px">Message Waku here from any tab. Open Overview to watch it flow through the harness, or the Gateway tab to see every channel's messages together.</div>`;
+    return `<div class="empty" style="padding:6px 2px">Message Jarvis here from any tab. Open Overview to watch it flow through the harness, or the Gateway tab to see every channel's messages together.</div>`;
   return CHAT.map(m => m.role==="user"
       ? `<div class="bubble">${esc(m.text)}</div>`
       : m.pending ? streamingCard(m)
@@ -191,7 +191,7 @@ async function sendChat(fromInput){
   if (!text) return;
   input.value = "";
   CHAT.push({role:"user", text});
-  const pending = {role:"waku", pending:true, stream:"", started: Date.now()};
+  const pending = {role:"jarvis", pending:true, stream:"", started: Date.now()};
   CHAT.push(pending);
   syncChatLogs();
   // tick the elapsed counter while we wait for the first token

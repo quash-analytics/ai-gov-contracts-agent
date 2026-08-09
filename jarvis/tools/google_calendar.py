@@ -2,10 +2,10 @@
 
 Two OAuth-client sources, with the same read-only access:
 
-  DEFAULT   waku's own OAuth client, shipped below. Click, approve in the
+  DEFAULT   jarvis's own OAuth client, shipped below. Click, approve in the
             browser, done. No files to download.
 
-  OVERRIDE  your own `.waku/credentials.json`, when present. This replaces the
+  OVERRIDE  your own `.jarvis/credentials.json`, when present. This replaces the
             OAuth client configuration only; it does not expand permissions.
 
 Why the read client can live in a public repo: for Google's "Desktop app" OAuth
@@ -30,7 +30,7 @@ READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.events.readonly"
 DEFAULT_SCOPES = [READONLY_SCOPE]
 TIMEOUT = 30
 
-# waku's own OAuth client (Desktop app).
+# jarvis's own OAuth client (Desktop app).
 # TODO: Fill in the project-owned Google OAuth client ID and secret before
 # release. Desktop-app client secrets are identifiers, not confidential
 # credentials; every user must still grant access in their own browser.
@@ -48,7 +48,7 @@ _INSTALL_HINT = (
     "Google Calendar support is not installed — run: pip install -e '.[gcal]'"
 )
 _SETUP_HINT = (
-    "Google Calendar is not connected yet. Run `waku connect google` (or click "
+    "Google Calendar is not connected yet. Run `jarvis connect google` (or click "
     "Connect in the dashboard's Connections tab) to sign in — it opens your "
     "browser and takes about ten seconds."
 )
@@ -88,8 +88,8 @@ def connect(home: Path) -> str:
     """Open the browser, get consent, cache the token. The ONE place a browser
     window is allowed to appear — called from the CLI/dashboard, never mid-turn.
 
-    Uses waku's bundled client by default. If you dropped your own
-    `.waku/credentials.json` in place, that OAuth client configuration wins.
+    Uses jarvis's bundled client by default. If you dropped your own
+    `.jarvis/credentials.json` in place, that OAuth client configuration wins.
     Both paths request the same read-only scope."""
     try:
         from google_auth_oauthlib.flow import InstalledAppFlow
@@ -108,7 +108,7 @@ def connect(home: Path) -> str:
             if not bundled.get("client_id") or not bundled.get("client_secret"):
                 return (
                     "Google Calendar's bundled OAuth client is not configured "
-                    "yet. Add .waku/credentials.json to use your own Desktop "
+                    "yet. Add .jarvis/credentials.json to use your own Desktop "
                     "OAuth client."
                 )
             flow = InstalledAppFlow.from_client_config(

@@ -1,16 +1,16 @@
-"""Entrypoints — installed as the `waku` command (and `python -m waku`):
+"""Entrypoints — installed as the `jarvis` command (and `python -m jarvis`):
 
-  waku                       chat in the terminal (default)
-  waku dashboard             the browser cockpit → localhost:7777 (+ Telegram if configured)
-  waku connections           list configured integrations and their health
-  waku voice                 talk to it (needs the [voice] extra)
-  waku telegram              phone → laptop (needs TELEGRAM_BOT_TOKEN)
-  waku discord               Discord → laptop (needs DISCORD_BOT_TOKEN)
-  waku whatsapp              WhatsApp → laptop (needs WHATSAPP_TOKEN, public URL)
-  waku brief                 morning briefing (calendar + mail + memory) — as a LOOP
-  waku gather                same job as a GRAPH: github, web, calendar and
+  jarvis                       chat in the terminal (default)
+  jarvis dashboard             the browser cockpit → localhost:7777 (+ Telegram if configured)
+  jarvis connections           list configured integrations and their health
+  jarvis voice                 talk to it (needs the [voice] extra)
+  jarvis telegram              phone → laptop (needs TELEGRAM_BOT_TOKEN)
+  jarvis discord               Discord → laptop (needs DISCORD_BOT_TOKEN)
+  jarvis whatsapp              WhatsApp → laptop (needs WHATSAPP_TOKEN, public URL)
+  jarvis brief                 morning briefing (calendar + mail + memory) — as a LOOP
+  jarvis gather                same job as a GRAPH: github, web, calendar and
                              memory fetched together, then one digest
-  waku skill install <url>   install a community skill
+  jarvis skill install <url>   install a community skill
 """
 
 from __future__ import annotations

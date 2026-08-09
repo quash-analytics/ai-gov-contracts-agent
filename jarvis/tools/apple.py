@@ -1,6 +1,6 @@
-"""Apple-ecosystem tools (macOS) so Waku can brief you on your real week —
+"""Apple-ecosystem tools (macOS) so Jarvis can brief you on your real week —
 reading your actual Calendar.app (including email-invited events) and Mail, and
-writing Reminders/Notes. Opt-in via WAKU_APPLE_TOOLS=1; first use triggers the
+writing Reminders/Notes. Opt-in via JARVIS_APPLE_TOOLS=1; first use triggers the
 system Automation permission prompts. All AppleScript runs with a timeout and
 returns honest error text so a slow/denied call never hangs a turn.
 
@@ -109,7 +109,7 @@ def _cached(key: str, ttl: int, producer) -> str:
 def read_apple_calendar(days_ahead: int = 7) -> str:
     """Events from Calendar.app between now and days_ahead.
 
-    Set WAKU_APPLE_CALENDARS=Work,Home to name the calendars you actually care
+    Set JARVIS_APPLE_CALENDARS=Work,Home to name the calendars you actually care
     about. That is not just a filter, it is the difference between working and
     timing out: querying one calendar costs ~4 seconds, and a real Mac easily
     has 30+ once holiday and subscribed calendars pile up. Walking all of them
@@ -121,11 +121,11 @@ def read_apple_calendar(days_ahead: int = 7) -> str:
     an instruction.
     """
     def go() -> str:
-        cals = [c.strip() for c in os.getenv("WAKU_APPLE_CALENDARS", "").split(",") if c.strip()]
+        cals = [c.strip() for c in os.getenv("JARVIS_APPLE_CALENDARS", "").split(",") if c.strip()]
         if not cals:
             return (
-                "Calendar not configured. Set WAKU_APPLE_CALENDARS to the calendars you "
-                "actually use (e.g. WAKU_APPLE_CALENDARS=Work,Home) — a typical Mac has "
+                "Calendar not configured. Set JARVIS_APPLE_CALENDARS to the calendars you "
+                "actually use (e.g. JARVIS_APPLE_CALENDARS=Work,Home) — a typical Mac has "
                 "30+ once holiday and subscribed calendars pile up, and reading them all "
                 "takes minutes. Run `osascript -e 'tell application \"Calendar\" to return "
                 "name of every calendar'` to see the names."

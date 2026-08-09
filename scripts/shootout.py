@@ -4,14 +4,14 @@
     make shootout RUNS="kimi:kimi-k3 anthropic:claude-opus-4-8"
 
 For each provider:model pair this runs every case in evals/dataset.jsonl through
-a REAL Waku (fresh isolated home per run, your keys from .env) and scores it the
+a REAL Jarvis (fresh isolated home per run, your keys from .env) and scores it the
 same deterministic way the live eval tier does: did the right tool fire, with
 the right arguments — 0 or 1, no judge involved. Alongside correctness it
 collects what benchmarks usually hide: tokens, estimated dollars (per-model
 pricing, same table the dashboard uses), latency, and loop iterations.
 
 Output: a markdown table on stdout plus a timestamped .md + .json report in
-.waku/shootout/ — publish it, and anyone can re-run it with their own keys.
+.jarvis/shootout/ — publish it, and anyone can re-run it with their own keys.
 That's the point: don't trust the table, reproduce it.
 
 Honesty notes baked in: cost is an ESTIMATE from tokens x list price (cache
@@ -60,7 +60,7 @@ def run_one(provider: str, model: str, cases: list[dict], trials: int = 1) -> di
     fail the next (we watched kimi-k3 do exactly that). One trial is a coin
     flip; N trials per case turns the table into a pass RATE. Each trial gets
     a fresh home so no memory leaks between attempts."""
-    from jarvis.app import Waku
+    from jarvis.app import Jarvis
 
     rows, t_run, resolved_model = [], time.perf_counter(), model
     for case in cases:
@@ -69,7 +69,7 @@ def run_one(provider: str, model: str, cases: list[dict], trials: int = 1) -> di
             home = Path(tempfile.mkdtemp(prefix=f"shootout-{provider}-"))
             settings = Settings(provider=provider, model=model, small_model="",
                                 home=home, apple_calendar=False)
-            app = Waku(settings=settings)
+            app = Jarvis(settings=settings)
             resolved_model = settings.model   # get_client filled the default
             if "setup_fact" in case:
                 app.memory.facts.add(case["setup_fact"]["subject"], case["setup_fact"]["content"])

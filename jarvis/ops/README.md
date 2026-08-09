@@ -1,9 +1,9 @@
-# waku/ops — the Eval/LLM-Ops pillar
+# jarvis/ops — the Eval/LLM-Ops pillar
 
 Everything here answers one of two questions: **what did the agent just do?**
 (tracing, the dashboard) and **is it any good?** (arena, judge, scoring, the
 release gate). Nothing here is part of the agent loop — you can delete this
-whole directory and waku still runs. That's deliberate: ops observes, it never
+whole directory and jarvis still runs. That's deliberate: ops observes, it never
 participates.
 
 `static/` has its own map — see [static/README.md](static/README.md) for the
@@ -14,7 +14,7 @@ frontend.
 | File | Owns |
 |---|---|
 | `dashboard.py` | The stdlib HTTP server: routes, SSE, `collect()`. Serves everything below. |
-| `browser_agent.py` | The ONE shared `Waku` behind the browser gateway + its dated chat session. |
+| `browser_agent.py` | The ONE shared `Jarvis` behind the browser gateway + its dated chat session. |
 | `arena.py` | Racing N models through the same harness, in isolated temp homes. |
 | `catalog.py` | What models a provider can serve + your pinned `provider:model` shortlist. |
 | `pricing.py` | `$/M` rate tables, knowledge cutoffs, and the spend ledger summary. |
@@ -24,7 +24,7 @@ frontend.
 | `scoring.py` | Deterministic completion scoring — did the right tool fire, with the right args? |
 | `coding_eval.py` | The coding battery used when a race has `delegate_task` switched on. |
 | `tracing.py` | The JSONL trace writer every gateway appends to (+ optional OTel). |
-| `show_trace.py` | `waku trace` — reading those files back in the terminal. |
+| `show_trace.py` | `jarvis trace` — reading those files back in the terminal. |
 | `release_gate.py` | `make gate`: deterministic must pass, judge must clear the threshold. |
 | `brief.py` | The morning brief. |
 | `whiteboard/` | Excalidraw generators for the architecture diagrams in `docs/`. |

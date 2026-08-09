@@ -1,7 +1,7 @@
 """The small Settings surface left after Connections owns integrations.
 
 Provider credentials, models, memory backends, search and gateways are managed
-by :mod:`waku.integrations`. This module retains the Experimental and
+by :mod:`jarvis.integrations`. This module retains the Experimental and
 Graph-workflows toggles and the model pin action; catalog remains the sole
 owner of pin persistence.
 """
@@ -57,8 +57,8 @@ def settings_info() -> dict:
     for row in pinned:
         prov_order.setdefault(row["provider"], len(prov_order))
     pinned.sort(key=lambda row: prov_order[row["provider"]])
-    # Resolve the model the same way the loop does. `waku/loop/models.py` fills a
-    # blank WAKU_MODEL from the provider's default at build time, so the agent is
+    # Resolve the model the same way the loop does. `jarvis/loop/models.py` fills a
+    # blank JARVIS_MODEL from the provider's default at build time, so the agent is
     # always running SOMETHING — but this dict is what the nav pill and the Models
     # page render, and reporting "" made a fresh install display `anthropic ·`,
     # a trailing separator with no model name. The display must not claim less
@@ -102,7 +102,7 @@ def apply_settings(payload: dict) -> dict:
     env_path = find_dotenv(usecwd=True) or ".env"
     # NOT `if toggle:` — turning it OFF sends "", which is falsy. Absent (None)
     # means "don't touch"; "" means "switch it off".
-    toggles = (("experimental", "WAKU_EXPERIMENTAL"), ("graph_workflows", "WAKU_GRAPH_WORKFLOWS"))
+    toggles = (("experimental", "JARVIS_EXPERIMENTAL"), ("graph_workflows", "JARVIS_GRAPH_WORKFLOWS"))
     for field, env_name in toggles:
         value = payload.get(field)
         if value is not None:

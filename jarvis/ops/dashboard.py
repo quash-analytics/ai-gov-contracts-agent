@@ -2,7 +2,7 @@
 
     make dashboard        # → http://localhost:7777
 
-One stdlib HTTP server reading the files Waku already writes:
+One stdlib HTTP server reading the files Jarvis already writes:
   loop + harness   traces/*.jsonl   (turns, gate decisions, tool calls, tokens)
   memory           state.db         (facts, episodes, chat log, consolidation)
   tools            state.db + calendar.ics + outbox/
@@ -483,7 +483,7 @@ def collect() -> dict:
         "eval_history": eval_history,
         "graph": {
             # NOTE: `enabled` gates TRIAGE ONLY — the per-message front door.
-            # `waku gather` is a routine you run yourself and ignores this flag
+            # `jarvis gather` is a routine you run yourself and ignores this flag
             # entirely, so the UI must not say "off = no graphs run".
             "enabled": settings.graph_workflows,
             "workflows": [triage_topology(), gather_topology()],
@@ -501,7 +501,7 @@ def collect() -> dict:
 
 
 def _rel_to_home(path, home) -> str:
-    """Path relative to WAKU_HOME if it lives there, else the repo-relative
+    """Path relative to JARVIS_HOME if it lives there, else the repo-relative
     'skills/...' path — either way something reveal_path can open."""
     try:
         return str(path.resolve().relative_to(home.resolve()))
@@ -531,7 +531,7 @@ def session_list(conn) -> list[dict]:
             "SELECT DISTINCT source FROM chat_log WHERE session_id=?", (sid,)).fetchall()]
         preview = ""
         if last:
-            preview = ("you: " if last["role"] == "user" else "waku: ") + last["content"][:80]
+            preview = ("you: " if last["role"] == "user" else "jarvis: ") + last["content"][:80]
         out.append({"id": sid,
                     "title": (first["content"][:60] if first else "(empty)"),
                     "last": preview,
@@ -689,7 +689,7 @@ def transcribe_audio(raw: bytes) -> dict:
 
     with _whisper_lock:
         if _whisper is None:
-            _whisper = WhisperModel(os.getenv("WAKU_WHISPER_MODEL", "base"), compute_type="int8")
+            _whisper = WhisperModel(os.getenv("JARVIS_WHISPER_MODEL", "base"), compute_type="int8")
     # the browser sends WAV (PCM) — Whisper/PyAV decode it reliably (WebM/Opus
     # from MediaRecorder often fails to decode).
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
@@ -755,9 +755,9 @@ def session_action(payload: dict) -> dict:
 
 
 def _editor_cmd() -> list[str] | None:
-    """The user's code editor CLI: $WAKU_EDITOR, then cursor, then code."""
+    """The user's code editor CLI: $JARVIS_EDITOR, then cursor, then code."""
 
-    custom = os.getenv("WAKU_EDITOR")
+    custom = os.getenv("JARVIS_EDITOR")
     if custom and shutil.which(custom):
         return [custom]
     for cli in ("cursor", "code"):
@@ -767,9 +767,9 @@ def _editor_cmd() -> list[str] | None:
 
 
 def reveal_path(rel: str) -> dict:
-    """Open a file/folder under WAKU_HOME — in the user's code editor if one
-    is on PATH (cursor/code/$WAKU_EDITOR), otherwise reveal in Finder.
-    Restricted to paths inside WAKU_HOME."""
+    """Open a file/folder under JARVIS_HOME — in the user's code editor if one
+    is on PATH (cursor/code/$JARVIS_EDITOR), otherwise reveal in Finder.
+    Restricted to paths inside JARVIS_HOME."""
     import subprocess
     import sys
 
@@ -778,7 +778,7 @@ def reveal_path(rel: str) -> dict:
     home = settings.home.resolve()
     target = (home / (rel or ".")).resolve()
     if target != home and home not in target.parents:
-        return {"error": "path is outside the .waku home"}
+        return {"error": "path is outside the .jarvis home"}
     if not target.exists():
         return {"error": f"not found: {target}"}
 
@@ -910,7 +910,7 @@ class Handler(BaseHTTPRequestHandler):
                 q = parse_qs(urlparse(self.path).query)
                 # "see all" asks for ONE store in full. It used to be a link to
                 # the Memory page, which only ever renders sqlite — so clicking
-                # it under mem0 showed you waku's local facts and said nothing.
+                # it under mem0 showed you jarvis's local facts and said nothing.
                 only = (q.get("store", [""])[0] or "").strip()
                 limit = 500 if only else 8
                 self._send(json.dumps(memory_arena.store_contents(limit, only)).encode(),
@@ -921,7 +921,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/api/memory-arena?") or self.path == "/api/memory-arena":
             # The bake-off fixture, so the Arena's Memory tab can show WHAT is
             # being asked before any of it has been run. It lives in evals/,
-            # which a wheel does not ship — a pip-installed Waku answers with
+            # which a wheel does not ship — a pip-installed Jarvis answers with
             # `available: false` instead of 500ing on a file that was never
             # meant to be there.
             from jarvis.ops import memory_arena
@@ -1115,9 +1115,9 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    # Port precedence: WAKU_DASHBOARD_PORT, then the conventional PORT (used by
+    # Port precedence: JARVIS_DASHBOARD_PORT, then the conventional PORT (used by
     # deploy platforms and IDE preview panes), then 7777. If it's taken, walk on.
-    base = int(os.getenv("WAKU_DASHBOARD_PORT") or os.getenv("PORT") or PORT)
+    base = int(os.getenv("JARVIS_DASHBOARD_PORT") or os.getenv("PORT") or PORT)
     for port in range(base, base + 10):  # walk past a busy port instead of crashing
         try:
             server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
@@ -1144,7 +1144,7 @@ def main() -> None:
         register_gateway_status_provider(supervisor.status)
         register_gateway_reloader(supervisor.reconcile)
         supervisor.reconcile()
-        print(f"Waku dashboard → http://localhost:{port}  (Ctrl-C to stop)")
+        print(f"Jarvis dashboard → http://localhost:{port}  (Ctrl-C to stop)")
         try:
             server.serve_forever()
         finally:

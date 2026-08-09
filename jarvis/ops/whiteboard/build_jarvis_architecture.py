@@ -1,7 +1,7 @@
-"""Generate the current Waku architecture whiteboard.
+"""Generate the current Jarvis architecture whiteboard.
 
 Run:
-    python -m waku.ops.whiteboard.build_waku_architecture
+    python -m jarvis.ops.whiteboard.build_jarvis_architecture
 
 The editable Excalidraw document is the source of truth.  A small SVG proxy is
 also written to /tmp so the board can be rendered and visually checked without
@@ -18,8 +18,8 @@ from pathlib import Path
 from . import style as S
 
 ROOT = Path(__file__).resolve().parents[3]
-BOARD = ROOT / "docs" / "whiteboards" / "waku-architecture.excalidraw"
-SVG_PROXY = Path("/tmp/waku-architecture.svg")
+BOARD = ROOT / "docs" / "whiteboards" / "jarvis-architecture.excalidraw"
+SVG_PROXY = Path("/tmp/jarvis-architecture.svg")
 
 
 def _add(elements: list[dict], item) -> None:
@@ -31,22 +31,22 @@ def build_elements() -> list[dict]:
     a = lambda item: _add(e, item)
 
     # Title and identity.
-    a(S.text(60, 36, "Waku — one turn through the whole system", size=S.FS_TITLE))
+    a(S.text(60, 36, "Jarvis — one turn through the whole system", size=S.FS_TITLE))
     a(S.underline(64, 112, 920, color=S.PAL["orange"][1]))
     a(S.text(64, 132, "Harness  ·  Loop  ·  Memory  ·  Eval / LLM Ops",
              size=S.FS_HEADER, color=S.PAL["grey"][1]))
     a(S.socials_block(2050, 40))
 
     # ------------------------------------------------------------------ Harness
-    a(S.boundary(40, 190, 2440, 470, "HARNESS — waku/app.py", color="red"))
+    a(S.boundary(40, 190, 2440, 470, "HARNESS — jarvis/app.py", color="red"))
 
     a(S.pill_header(80, 250, 330, "1  GATEWAYS", color="grey"))
     a(S.labeled_box(80, 320, 330, 210,
-                    "text in / text out\n\nCLI · Dashboard · Voice\nTelegram · Discord\n\nwaku/gateway/ + ops/dashboard.py",
+                    "text in / text out\n\nCLI · Dashboard · Voice\nTelegram · Discord\n\njarvis/gateway/ + ops/dashboard.py",
                     color="grey", size=S.FS_BODY))
 
     a(S.labeled_box(490, 355, 230, 130,
-                    "Waku.respond()\n\nassemble · run\npersist · trace",
+                    "Jarvis.respond()\n\nassemble · run\npersist · trace",
                     color="red", size=S.FS_BODY))
     a(S.labeled_arrow(410, 420, 490, 420, "user text"))
 
@@ -72,7 +72,7 @@ def build_elements() -> list[dict]:
     a(S.annotate(2145, 500, "returns through the\noriginating gateway"))
 
     # ------------------------------------------------------------------- Memory
-    a(S.boundary(40, 710, 1490, 580, "MEMORY — waku/memory/", color="green"))
+    a(S.boundary(40, 710, 1490, 580, "MEMORY — jarvis/memory/", color="green"))
 
     a(S.labeled_box(80, 800, 330, 150,
                     "PROCEDURAL\nSKILL.md files\nkeyword matched — how to act",
@@ -95,7 +95,7 @@ def build_elements() -> list[dict]:
     a(S.labeled_arrow(750, 900, 830, 990, "retrieve"))
 
     a(S.labeled_box(1170, 755, 300, 180,
-                    "state.db — source of truth\n\nchat_log · facts · episodes\ncalendar · notes\n\n.waku/MEMORY.md = mirror",
+                    "state.db — source of truth\n\nchat_log · facts · episodes\ncalendar · notes\n\n.jarvis/MEMORY.md = mirror",
                     color="grey", size=S.FS_BODY))
     a(S.arrow(2290, 470, 1320, 755, color=S.PAL["grey"][1]))
     a(S.annotate(1180, 710, "reply → chat_log"))
@@ -109,7 +109,7 @@ def build_elements() -> list[dict]:
                  "Failure invariant: gate fails open; consolidation failure never marks chat as consolidated."))
 
     # -------------------------------------------------------------- Eval / Ops
-    a(S.boundary(1590, 710, 890, 580, "EVAL / LLM OPS — waku/ops/ + evals/", color="blue"))
+    a(S.boundary(1590, 710, 890, 580, "EVAL / LLM OPS — jarvis/ops/ + evals/", color="blue"))
 
     a(S.labeled_box(1640, 800, 330, 150,
                     "ONE EVENT STREAM\nobserver callbacks\nturn · gate · LLM · tool · reply",
@@ -142,7 +142,7 @@ def build_elements() -> list[dict]:
                  "offline feedback changes prompt / model / config / tools — then re-run the gate"))
 
     a(S.source_label(60, 1330,
-                     "source: waku/app.py, runtime/session.py, loop/agent.py, memory/*, tools/*, ops/* — 2026-07-27"))
+                     "source: jarvis/app.py, runtime/session.py, loop/agent.py, memory/*, tools/*, ops/* — 2026-07-27"))
     a(S.watermark(2200, 1330))
     return e
 

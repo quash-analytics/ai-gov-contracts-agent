@@ -15,7 +15,7 @@ from jarvis.tools import apple, calendar
 
 
 def _isolate(monkeypatch, tmp_path):
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path))
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path))
     monkeypatch.chdir(tmp_path)
     integrations._HEALTH = None
     integrations._reset_import_cache()
@@ -109,8 +109,8 @@ def test_apply_rejects_unknown_and_secret_clear(monkeypatch, tmp_path):
 
 def _configure_google(monkeypatch, tmp_path):
     _isolate(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_GOOGLE_CALENDAR", "1")
-    monkeypatch.setenv("WAKU_GOOGLE_CALENDAR_ID", "team@example.com")
+    monkeypatch.setenv("JARVIS_GOOGLE_CALENDAR", "1")
+    monkeypatch.setenv("JARVIS_GOOGLE_CALENDAR_ID", "team@example.com")
     monkeypatch.setattr(integrations, "_extra_installed", lambda name: True)
 
 
@@ -133,7 +133,7 @@ def test_google_test_connection_records_connected(monkeypatch, tmp_path):
 def _configure_apple(monkeypatch, tmp_path):
     _isolate(monkeypatch, tmp_path)
     monkeypatch.setattr(integrations.sys, "platform", "darwin")
-    monkeypatch.setenv("WAKU_APPLE_CALENDAR", "1")
+    monkeypatch.setenv("JARVIS_APPLE_CALENDAR", "1")
 
 
 def test_apple_test_connection_records_connected(monkeypatch, tmp_path):
@@ -156,7 +156,7 @@ def test_apple_save_probes_before_recording_connected(monkeypatch, tmp_path):
     monkeypatch.setattr(calendar, "probe_apple_calendar", lambda: called.append(True))
 
     result = integrations.apply_integration(
-        "apple_calendar", {"WAKU_APPLE_CALENDAR": "1", "WAKU_APPLE_CALENDARS": ""}
+        "apple_calendar", {"JARVIS_APPLE_CALENDAR": "1", "JARVIS_APPLE_CALENDARS": ""}
     )
 
     assert result.ok
@@ -193,7 +193,7 @@ def test_apple_force_save_records_error_without_probe(monkeypatch, tmp_path):
     monkeypatch.setattr(calendar, "probe_apple_calendar", unexpected_probe)
 
     result = integrations.apply_integration(
-        "apple_calendar", {"WAKU_APPLE_CALENDAR": "1"}, force=True
+        "apple_calendar", {"JARVIS_APPLE_CALENDAR": "1"}, force=True
     )
 
     assert result.ok
@@ -205,7 +205,7 @@ def test_apple_force_save_records_error_without_probe(monkeypatch, tmp_path):
 def _configure_apple_tools(monkeypatch, tmp_path):
     _isolate(monkeypatch, tmp_path)
     monkeypatch.setattr(integrations.sys, "platform", "darwin")
-    monkeypatch.setenv("WAKU_APPLE_TOOLS", "1")
+    monkeypatch.setenv("JARVIS_APPLE_TOOLS", "1")
 
 
 def test_apple_tools_save_probes_and_records_connected(monkeypatch, tmp_path):
@@ -216,12 +216,12 @@ def test_apple_tools_save_probes_and_records_connected(monkeypatch, tmp_path):
     monkeypatch.setattr(apple, "probe_apple_tools", lambda: called.append(True))
 
     result = integrations.apply_integration(
-        "apple_tools", {"WAKU_APPLE_TOOLS": "1"}
+        "apple_tools", {"JARVIS_APPLE_TOOLS": "1"}
     )
 
     assert result.ok
     assert called == [True]
-    assert os.environ["WAKU_APPLE_TOOLS"] == "1"
+    assert os.environ["JARVIS_APPLE_TOOLS"] == "1"
     assert result.view is not None
     assert result.view.status.state is IntegrationState.CONNECTED
     assert result.view.status.checked_at is not None
@@ -259,7 +259,7 @@ def test_apple_tools_force_save_skips_probe(monkeypatch, tmp_path):
     monkeypatch.setattr(apple, "probe_apple_tools", unexpected_probe)
 
     result = integrations.apply_integration(
-        "apple_tools", {"WAKU_APPLE_TOOLS": "1"}, force=True
+        "apple_tools", {"JARVIS_APPLE_TOOLS": "1"}, force=True
     )
 
     assert result.ok
@@ -270,12 +270,12 @@ def test_apple_tools_force_save_skips_probe(monkeypatch, tmp_path):
 
 def test_disabling_apple_clears_connected_health(monkeypatch, tmp_path):
     _configure_apple(monkeypatch, tmp_path)
-    (tmp_path / ".env").write_text("WAKU_APPLE_CALENDAR=1\n")
+    (tmp_path / ".env").write_text("JARVIS_APPLE_CALENDAR=1\n")
     monkeypatch.setattr(browser_agent, "rebuild", lambda: None)
     integrations.record_health("apple_calendar", IntegrationStatus(IntegrationState.CONNECTED))
 
     result = integrations.apply_integration(
-        "apple_calendar", {"WAKU_APPLE_CALENDAR": ""}
+        "apple_calendar", {"JARVIS_APPLE_CALENDAR": ""}
     )
 
     assert result.ok
@@ -297,8 +297,8 @@ def test_google_save_probes_candidate_and_records_connected(monkeypatch, tmp_pat
     result = integrations.apply_integration(
         "google_calendar",
         {
-            "WAKU_GOOGLE_CALENDAR": "1",
-            "WAKU_GOOGLE_CALENDAR_ID": "candidate@example.com",
+            "JARVIS_GOOGLE_CALENDAR": "1",
+            "JARVIS_GOOGLE_CALENDAR_ID": "candidate@example.com",
         },
     )
 
@@ -325,8 +325,8 @@ def test_google_probe_failure_records_error(monkeypatch, tmp_path):
 
 def test_google_save_failure_can_force_without_writing_first(monkeypatch, tmp_path):
     _isolate(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_GOOGLE_CALENDAR", "")
-    monkeypatch.setenv("WAKU_GOOGLE_CALENDAR_ID", "old@example.com")
+    monkeypatch.setenv("JARVIS_GOOGLE_CALENDAR", "")
+    monkeypatch.setenv("JARVIS_GOOGLE_CALENDAR_ID", "old@example.com")
     monkeypatch.setattr(integrations, "_extra_installed", lambda name: True)
     monkeypatch.setattr(
         calendar,
@@ -337,8 +337,8 @@ def test_google_save_failure_can_force_without_writing_first(monkeypatch, tmp_pa
     result = integrations.apply_integration(
         "google_calendar",
         {
-            "WAKU_GOOGLE_CALENDAR": "1",
-            "WAKU_GOOGLE_CALENDAR_ID": "team@example.com",
+            "JARVIS_GOOGLE_CALENDAR": "1",
+            "JARVIS_GOOGLE_CALENDAR_ID": "team@example.com",
         },
     )
 
@@ -346,8 +346,8 @@ def test_google_save_failure_can_force_without_writing_first(monkeypatch, tmp_pa
     assert result.can_force
     assert result.error == "not authorized"
     assert not (tmp_path / ".env").exists()
-    assert os.environ["WAKU_GOOGLE_CALENDAR"] == ""
-    assert os.environ["WAKU_GOOGLE_CALENDAR_ID"] == "old@example.com"
+    assert os.environ["JARVIS_GOOGLE_CALENDAR"] == ""
+    assert os.environ["JARVIS_GOOGLE_CALENDAR_ID"] == "old@example.com"
 
 
 def test_google_force_save_skips_probe_and_records_error(monkeypatch, tmp_path):
@@ -363,8 +363,8 @@ def test_google_force_save_skips_probe_and_records_error(monkeypatch, tmp_path):
     result = integrations.apply_integration(
         "google_calendar",
         {
-            "WAKU_GOOGLE_CALENDAR": "1",
-            "WAKU_GOOGLE_CALENDAR_ID": "team@example.com",
+            "JARVIS_GOOGLE_CALENDAR": "1",
+            "JARVIS_GOOGLE_CALENDAR_ID": "team@example.com",
         },
         force=True,
     )
@@ -378,7 +378,7 @@ def test_google_force_save_skips_probe_and_records_error(monkeypatch, tmp_path):
 def test_disabling_google_skips_probe(monkeypatch, tmp_path):
     _configure_google(monkeypatch, tmp_path)
     (tmp_path / ".env").write_text(
-        "WAKU_GOOGLE_CALENDAR=1\nWAKU_GOOGLE_CALENDAR_ID=team@example.com\n"
+        "JARVIS_GOOGLE_CALENDAR=1\nJARVIS_GOOGLE_CALENDAR_ID=team@example.com\n"
     )
     monkeypatch.setattr(browser_agent, "rebuild", lambda: None)
 
@@ -388,7 +388,7 @@ def test_disabling_google_skips_probe(monkeypatch, tmp_path):
     monkeypatch.setattr(calendar, "probe_google_calendar", unexpected_probe)
 
     result = integrations.apply_integration(
-        "google_calendar", {"WAKU_GOOGLE_CALENDAR": ""}
+        "google_calendar", {"JARVIS_GOOGLE_CALENDAR": ""}
     )
 
     assert result.ok
@@ -396,8 +396,8 @@ def test_disabling_google_skips_probe(monkeypatch, tmp_path):
 
 def test_disabled_google_test_connection_skips_probe(monkeypatch, tmp_path):
     _isolate(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_GOOGLE_CALENDAR", "")
-    monkeypatch.setenv("WAKU_GOOGLE_CALENDAR_ID", "team@example.com")
+    monkeypatch.setenv("JARVIS_GOOGLE_CALENDAR", "")
+    monkeypatch.setenv("JARVIS_GOOGLE_CALENDAR_ID", "team@example.com")
     monkeypatch.setattr(integrations, "_extra_installed", lambda name: True)
 
     def unexpected_probe(home, calendar_id):

@@ -1,4 +1,4 @@
-"""Wiring — builds one Waku from its parts. Gateways call `respond()`.
+"""Wiring — builds one Jarvis from its parts. Gateways call `respond()`.
 
 This file is the assembly diagram in code: config → db → tools → memory →
 session → loop. If you want to understand the repo in one place, start here.
@@ -15,7 +15,7 @@ from jarvis.runtime.session import Session
 from jarvis.tools import build_registry
 
 
-class Waku:
+class Jarvis:
     def __init__(self, settings: Settings | None = None, client=None, conn=None):
         # `client` and `conn` are injectable: evals swap in a scripted model,
         # the dashboard injects a cross-thread connection. Same seam either way.
@@ -64,7 +64,7 @@ class Waku:
         t0 = time.perf_counter()
 
         with self.tracer.turn(user_message):
-            # The graph front door is optional and can NEVER make Waku worse:
+            # The graph front door is optional and can NEVER make Jarvis worse:
             # flag off → this is exactly the old code path; flag on → the triage
             # graph decides quick vs full, and any failure anywhere falls open
             # to the plain loop below (same fail-open rule as the retrieval gate).

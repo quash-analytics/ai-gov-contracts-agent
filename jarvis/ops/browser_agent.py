@@ -1,4 +1,4 @@
-"""The browser gateway's agent — one Waku, shared by every tab.
+"""The browser gateway's agent — one Jarvis, shared by every tab.
 
 The dashboard is a gateway like the CLI or Telegram: it only moves text. But
 unlike those it is multi-threaded (a stdlib ThreadingHTTPServer) and long-lived
@@ -61,7 +61,7 @@ def resume_or_new_session(conn) -> str:
     one. Without this, every server restart minted a brand-new empty thread and
     the visible chat 'vanished' (it was only parked under the old id). An idle
     gap still rotates — that's maybe_rotate_session's job once we're running."""
-    idle_min = int(os.getenv("WAKU_SESSION_IDLE_MINUTES", "60"))
+    idle_min = int(os.getenv("JARVIS_SESSION_IDLE_MINUTES", "60"))
     # Match by source, not id prefix: "+ New chat" makes 's-...' ids, so a
     # 'dashboard-%' filter would orphan those threads on restart. Every dashboard
     # message is tagged source='dashboard' — that's the reliable signal.
@@ -83,12 +83,12 @@ def resume_or_new_session(conn) -> str:
 def get_agent():
     global _agent, _dashboard_session
     if _agent is None:
-        from jarvis.app import Waku
+        from jarvis.app import Jarvis
 
         settings = load_settings()
         settings.ensure_home()
         conn = connect(settings.home, check_same_thread=False)
-        _agent = Waku(settings=settings, conn=conn)
+        _agent = Jarvis(settings=settings, conn=conn)
         # A dashboard run resumes its last recent thread (so a restart/refresh
         # keeps the chat on screen), or starts fresh if that thread is idle.
         # Same id collect() reports, so the dock restores the right conversation.
@@ -99,11 +99,11 @@ def get_agent():
 
 def maybe_rotate_session(agent) -> None:
     """A returning user should get a FRESH thread, not last week's. If the
-    current session's newest message is older than WAKU_SESSION_IDLE_MINUTES
+    current session's newest message is older than JARVIS_SESSION_IDLE_MINUTES
     (default 60), rotate to a new dated session id — the old thread stays one
     click away in History. Live bug: a tester came back days later and their
     new chat landed in a week-old 32-message thread."""
-    idle_min = int(os.getenv("WAKU_SESSION_IDLE_MINUTES", "60"))
+    idle_min = int(os.getenv("JARVIS_SESSION_IDLE_MINUTES", "60"))
     if idle_min <= 0:
         return
     row = agent.conn.execute("SELECT MAX(created_at) FROM chat_log WHERE session_id=?",
@@ -138,14 +138,14 @@ def rebuild() -> str | None:
     with agent_lock:
         old = _agent
         try:
-            from jarvis.app import Waku
+            from jarvis.app import Jarvis
 
             settings = load_settings()
             settings.ensure_home()
             conn = connect(settings.home, check_same_thread=False)
-            fresh = Waku(settings=settings, conn=conn)
+            fresh = Jarvis(settings=settings, conn=conn)
             # Carry the CONVERSATION across the swap. A settings change swaps the
-            # brain, not the thread — but a brand-new Waku starts on the eternal
+            # brain, not the thread — but a brand-new Jarvis starts on the eternal
             # 'default' session, so without this line switching provider silently
             # dumped you into a different chat and your history vanished from the
             # dock. Same resolution get_agent() uses, so both doors agree.

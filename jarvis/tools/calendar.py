@@ -3,14 +3,14 @@ deterministic eval: it either wrote the right row or it didn't.
 
 Where events land:
   always      state.db (the eval asserts here) + calendar.ics (importable file)
-  opt-in      Apple Calendar, in a dedicated "Waku" calendar, via AppleScript —
-              set WAKU_APPLE_CALENDAR=1. First use makes macOS ask permission
+  opt-in      Apple Calendar, in a dedicated "Jarvis" calendar, via AppleScript —
+              set JARVIS_APPLE_CALENDAR=1. First use makes macOS ask permission
               for your terminal to control Calendar; approve once.
-  opt-in      Google Calendar via WAKU_GOOGLE_CALENDAR=1. Local files remain
+  opt-in      Google Calendar via JARVIS_GOOGLE_CALENDAR=1. Local files remain
               authoritative if credentials, the network, or Google fail.
 
 The tool's return string always says exactly where the event went — the model
-relays it, so Waku never over-claims what happened.
+relays it, so Jarvis never over-claims what happened.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from pathlib import Path
 
 from jarvis.tools.registry import Tool
 
-APPLE_CALENDAR_NAME = "Waku"
+APPLE_CALENDAR_NAME = "Jarvis"
 APPLE_CALENDAR_PROBE_TIMEOUT = 15
 GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.events"
 GOOGLE_CALENDAR_TIMEOUT = 30
@@ -50,7 +50,7 @@ def _write_ics(home: Path, title: str, start: str, end: str, attendees: str) -> 
     if ics_path.exists():
         body = ics_path.read_text(encoding="utf-8").replace("END:VCALENDAR\n", "")
     else:
-        body = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//waku-agent//EN\n"
+        body = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//jarvis-agent//EN\n"
     ics_path.write_text(body + event + "END:VCALENDAR\n", encoding="utf-8")
 
 
@@ -121,13 +121,13 @@ def _record_apple_calendar_health(ok: bool, message: str) -> None:
 
 
 def sync_to_apple_calendar(title: str, start: str, end: str, notes: str = "") -> str:
-    """Create the event in Calendar.app under the 'Waku' calendar (created on
+    """Create the event in Calendar.app under the 'Jarvis' calendar (created on
     first use). Returns a short human-readable outcome for the tool output."""
     if sys.platform != "darwin":
         return "Apple Calendar sync skipped (not macOS)."
     safe_title = title.replace("\\", "").replace('"', "'")
     safe_notes = notes.replace("\\", "").replace('"', "'")
-    # Prefer a dedicated "Waku" calendar, but macOS can't create calendars in
+    # Prefer a dedicated "Jarvis" calendar, but macOS can't create calendars in
     # iCloud-only accounts via AppleScript — fall back to the first writable
     # calendar and report which one was actually used.
     script = (
@@ -454,8 +454,8 @@ def make_tool(
             )
         if not apple_calendar and not google_calendar:
             where += (
-                " Not synced to any calendar app (enable with WAKU_APPLE_CALENDAR=1 "
-                "or WAKU_GOOGLE_CALENDAR=1, "
+                " Not synced to any calendar app (enable with JARVIS_APPLE_CALENDAR=1 "
+                "or JARVIS_GOOGLE_CALENDAR=1, "
                 f"or import manually: open {home / 'calendar.ics'})."
             )
         return (
@@ -496,7 +496,7 @@ def make_list_tool(conn: sqlite3.Connection, home: Path | None = None) -> Tool:
 
     Order matters: Google first, because for anyone signed in that IS their real
     schedule; the local SQLite calendar second, because it only ever holds what
-    waku itself created. Every source is LABELLED in the output, so the agent can
+    jarvis itself created. Every source is LABELLED in the output, so the agent can
     say where an answer came from instead of implying it saw everything.
 
     Apple Calendar is deliberately not read here: going through AppleScript to
@@ -540,10 +540,10 @@ def make_list_tool(conn: sqlite3.Connection, home: Path | None = None) -> Tool:
                 if g and not g.startswith(("No Google", "Google Calendar unavailable")):
                     sections.append("From Google Calendar:\n" + g)
 
-        checked.append("waku's local calendar")
+        checked.append("jarvis's local calendar")
         local = local_events(start, end, limit)
         if local:
-            sections.append("From waku's local calendar (events waku created):\n" + local)
+            sections.append("From jarvis's local calendar (events jarvis created):\n" + local)
 
         if sections:
             return "\n\n".join(sections)
@@ -556,7 +556,7 @@ def make_list_tool(conn: sqlite3.Connection, home: Path | None = None) -> Tool:
         name="list_events",
         description=(
             "Read the user's calendar across every connected source (Google Calendar "
-            "when signed in, plus waku's own local calendar). "
+            "when signed in, plus jarvis's own local calendar). "
             "Use whenever the user asks what's on their calendar / schedule for a day, "
             "week, yesterday, etc. Dates are ISO (e.g. 2026-07-10); omit both to list "
             "everything upcoming. For 'yesterday'/'today' resolve the date from the "

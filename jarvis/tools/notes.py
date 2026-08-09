@@ -1,7 +1,7 @@
 """save_note — writes a durable fact into semantic memory, on request.
 
 This is the *explicit* memory path ("remember that Alex prefers mornings").
-The *implicit* path is consolidation (waku/memory/consolidation.py), which
+The *implicit* path is consolidation (jarvis/memory/consolidation.py), which
 distills facts out of chat history without being asked.
 """
 

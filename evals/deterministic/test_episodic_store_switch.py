@@ -83,23 +83,23 @@ def fake_notion(monkeypatch):
 
 
 def test_settings_defaults_to_sqlite(monkeypatch):
-    monkeypatch.delenv("WAKU_EPISODIC_STORE", raising=False)
+    monkeypatch.delenv("JARVIS_EPISODIC_STORE", raising=False)
     assert Settings().episodic_store == "sqlite"
 
 
 def test_settings_reads_episodic_store_env(monkeypatch):
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
     assert Settings().episodic_store == "notion"
 
 
 def test_factory_returns_sqlite_store_by_default(monkeypatch):
-    monkeypatch.delenv("WAKU_EPISODIC_STORE", raising=False)
+    monkeypatch.delenv("JARVIS_EPISODIC_STORE", raising=False)
     store = Memory._make_episode_store(conn=None, settings=Settings())
     assert isinstance(store, SqliteEpisodeStore)
 
 
 def test_factory_returns_notion_store_when_configured(monkeypatch, fake_notion):
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
     store = Memory._make_episode_store(conn=None, settings=Settings())
     from jarvis.memory.episodic.notion_store import NotionEpisodeStore
 
@@ -117,16 +117,16 @@ def test_apply_settings_rejects_unknown_episodic_store(monkeypatch, tmp_path):
 
 
 def _isolated_home(monkeypatch, tmp_path):
-    """Point collect()/memory_action() at a throwaway WAKU_HOME with no network
+    """Point collect()/memory_action() at a throwaway JARVIS_HOME with no network
     warm-up (provider anthropic, no base_url)."""
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path))
-    monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
-    monkeypatch.delenv("WAKU_BASE_URL", raising=False)
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path))
+    monkeypatch.setenv("JARVIS_PROVIDER", "anthropic")
+    monkeypatch.delenv("JARVIS_BASE_URL", raising=False)
 
 
 def test_collect_reads_episodes_from_notion_when_active(monkeypatch, fake_notion, tmp_path):
     _isolated_home(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
 
     from jarvis.memory.episodic.notion_store import NotionEpisodeStore
 
@@ -142,7 +142,7 @@ def test_collect_reads_episodes_from_notion_when_active(monkeypatch, fake_notion
 
 def test_collect_episodes_default_to_sqlite(monkeypatch, tmp_path):
     _isolated_home(monkeypatch, tmp_path)
-    monkeypatch.delenv("WAKU_EPISODIC_STORE", raising=False)
+    monkeypatch.delenv("JARVIS_EPISODIC_STORE", raising=False)
 
     from jarvis.ops.dashboard import collect
 
@@ -154,7 +154,7 @@ def test_collect_episodes_default_to_sqlite(monkeypatch, tmp_path):
 
 def test_memory_action_delete_episode_routes_to_notion(monkeypatch, fake_notion, tmp_path):
     _isolated_home(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
 
     from jarvis.memory.episodic.notion_store import NotionEpisodeStore
 
@@ -169,7 +169,7 @@ def test_memory_action_delete_episode_routes_to_notion(monkeypatch, fake_notion,
 
 def test_collect_episodes_notion_outage_degrades_gracefully(monkeypatch, fake_notion, tmp_path):
     _isolated_home(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
     monkeypatch.delenv("NOTION_TOKEN", raising=False)  # constructor raises ValueError
 
     from jarvis.ops.dashboard import collect
@@ -215,7 +215,7 @@ def test_collect_builds_notion_client_once_across_refreshes(monkeypatch, fake_no
     ONE Notion client and serve the cached result within the TTL — not rebuild
     the client and re-query Notion on every poll."""
     _isolated_home(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
 
     from jarvis.memory.episodic.notion_store import NotionEpisodeStore
 
@@ -236,7 +236,7 @@ def test_collect_builds_notion_client_once_across_refreshes(monkeypatch, fake_no
 
 def test_collect_refetches_after_ttl_but_reuses_client(monkeypatch, fake_notion, tmp_path):
     _isolated_home(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
 
     from jarvis.memory.episodic.notion_store import NotionEpisodeStore
 
@@ -259,7 +259,7 @@ def test_collect_serves_stale_episodes_during_notion_outage(monkeypatch, fake_no
     """House rule: a Notion outage must degrade gracefully — and with a cache
     on hand the tab keeps its last good data instead of going blank."""
     _isolated_home(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
 
     from jarvis.memory.episodic.notion_store import NotionEpisodeStore
 
@@ -280,7 +280,7 @@ def test_collect_serves_stale_episodes_during_notion_outage(monkeypatch, fake_no
 
 def test_delete_episode_busts_the_episodes_cache(monkeypatch, fake_notion, tmp_path):
     _isolated_home(monkeypatch, tmp_path)
-    monkeypatch.setenv("WAKU_EPISODIC_STORE", "notion")
+    monkeypatch.setenv("JARVIS_EPISODIC_STORE", "notion")
 
     from jarvis.memory.episodic.notion_store import NotionEpisodeStore
 

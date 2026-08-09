@@ -1,4 +1,4 @@
-"""DETERMINISTIC EVAL — the ONE Completion scorer (waku.ops.scoring).
+"""DETERMINISTIC EVAL — the ONE Completion scorer (jarvis.ops.scoring).
 
 The CLI shootout and the live arena both score a run through this module, so the
 terminal number and the on-screen number can't drift. These tests pin the

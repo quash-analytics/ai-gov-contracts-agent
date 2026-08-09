@@ -21,8 +21,8 @@ def fake_keys(monkeypatch):
     for provider in PROVIDERS.values():
         monkeypatch.setenv(provider.key_env, "fake-key-for-tests")
     # a stray custom-endpoint override must not leak into these checks
-    monkeypatch.delenv("WAKU_API_KEY", raising=False)
-    monkeypatch.delenv("WAKU_BASE_URL", raising=False)
+    monkeypatch.delenv("JARVIS_API_KEY", raising=False)
+    monkeypatch.delenv("JARVIS_BASE_URL", raising=False)
 
 
 @pytest.mark.parametrize("name", list(PROVIDERS))
@@ -67,9 +67,9 @@ def test_model_listing_falls_back_without_a_catalog(name, monkeypatch):
     (and never make a network call to get them)."""
     from jarvis.ops import catalog
 
-    monkeypatch.setenv("WAKU_PROVIDER", name)
-    monkeypatch.delenv("WAKU_MODEL", raising=False)
-    monkeypatch.delenv("WAKU_SMALL_MODEL", raising=False)
+    monkeypatch.setenv("JARVIS_PROVIDER", name)
+    monkeypatch.delenv("JARVIS_MODEL", raising=False)
+    monkeypatch.delenv("JARVIS_SMALL_MODEL", raising=False)
     result = catalog.list_models()
     assert result["listed"] is False
     ids = [m["id"] for m in result["models"]]
@@ -87,9 +87,9 @@ def test_bad_key_gives_a_fixable_error_not_a_codec_crash(monkeypatch):
     picker to two defaults with a 'latin-1 codec' error.)"""
     from jarvis.ops import catalog
 
-    monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
+    monkeypatch.setenv("JARVIS_PROVIDER", "anthropic")
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-" + "x" * 100 + "→bad")
-    monkeypatch.delenv("WAKU_MODEL", raising=False)
+    monkeypatch.delenv("JARVIS_MODEL", raising=False)
     catalog._models_cache.clear()
     result = catalog.list_models("anthropic")
     assert result["listed"] is False
@@ -119,11 +119,11 @@ def test_catalog_url_is_used_with_both_auth_styles(monkeypatch):
         body.__exit__ = lambda *a: None
         return body
 
-    monkeypatch.setenv("WAKU_PROVIDER", "kimi")
+    monkeypatch.setenv("JARVIS_PROVIDER", "kimi")
     monkeypatch.setenv("MOONSHOT_API_KEY", "fake-key-for-tests")
     monkeypatch.delenv("MOONSHOT_BASE_URL", raising=False)
-    monkeypatch.delenv("WAKU_BASE_URL", raising=False)
-    monkeypatch.delenv("WAKU_MODEL", raising=False)
+    monkeypatch.delenv("JARVIS_BASE_URL", raising=False)
+    monkeypatch.delenv("JARVIS_MODEL", raising=False)
     monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
     catalog._models_cache.clear()
 
@@ -183,7 +183,7 @@ def test_every_priced_model_has_a_knowledge_cutoff():
 
 # --- a model name belongs to the provider it was configured for --------------
 # Found live: `.venv/bin/python examples/tiny_memory_agent.py` under
-# WAKU_PROVIDER=xai printed "gate failed open (BadRequestError)". WAKU_SMALL_MODEL
+# JARVIS_PROVIDER=xai printed "gate failed open (BadRequestError)". JARVIS_SMALL_MODEL
 # is global, so anthropic's gate model was sent to xAI, which 400s. The retrieval
 # gate fails open on error BY DESIGN, so this did not surface as a failure — it
 # surfaced as "retrieve", on every turn, for every non-anthropic model in the
@@ -193,9 +193,9 @@ def test_env_model_names_do_not_leak_into_another_provider(monkeypatch):
     from jarvis.config import Settings
     from jarvis.loop.models import get_client
 
-    monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
-    monkeypatch.setenv("WAKU_MODEL", "claude-fable-5")
-    monkeypatch.setenv("WAKU_SMALL_MODEL", "claude-haiku-4-5-20251001")
+    monkeypatch.setenv("JARVIS_PROVIDER", "anthropic")
+    monkeypatch.setenv("JARVIS_MODEL", "claude-fable-5")
+    monkeypatch.setenv("JARVIS_SMALL_MODEL", "claude-haiku-4-5-20251001")
     monkeypatch.setenv("XAI_API_KEY", "test-key")
 
     settings = Settings(provider="xai")
@@ -214,8 +214,8 @@ def test_an_explicit_model_survives_the_provider_switch(monkeypatch):
     from jarvis.config import Settings
     from jarvis.loop.models import get_client
 
-    monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
-    monkeypatch.setenv("WAKU_MODEL", "claude-fable-5")
+    monkeypatch.setenv("JARVIS_PROVIDER", "anthropic")
+    monkeypatch.setenv("JARVIS_MODEL", "claude-fable-5")
     monkeypatch.setenv("XAI_API_KEY", "test-key")
 
     settings = Settings(provider="xai", model="grok-4.3")
@@ -225,14 +225,14 @@ def test_an_explicit_model_survives_the_provider_switch(monkeypatch):
 
 
 def test_the_env_still_wins_for_its_own_provider(monkeypatch):
-    """The whole point of WAKU_MODEL is to override the default — the fix must
+    """The whole point of JARVIS_MODEL is to override the default — the fix must
     not break the ordinary single-provider case."""
     from jarvis.config import Settings
     from jarvis.loop.models import get_client
 
-    monkeypatch.setenv("WAKU_PROVIDER", "anthropic")
-    monkeypatch.setenv("WAKU_MODEL", "claude-fable-5")
-    monkeypatch.setenv("WAKU_SMALL_MODEL", "claude-haiku-4-5-20251001")
+    monkeypatch.setenv("JARVIS_PROVIDER", "anthropic")
+    monkeypatch.setenv("JARVIS_MODEL", "claude-fable-5")
+    monkeypatch.setenv("JARVIS_SMALL_MODEL", "claude-haiku-4-5-20251001")
     monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
 
     settings = Settings(provider="anthropic")
@@ -243,15 +243,15 @@ def test_the_env_still_wins_for_its_own_provider(monkeypatch):
 
 
 def test_a_foreign_gate_model_is_dropped_even_when_the_env_names_the_provider(monkeypatch):
-    """The case that was actually live in Sean's .env: WAKU_PROVIDER=xai with
-    WAKU_SMALL_MODEL still holding anthropic's gate model. Scoping by "did the
+    """The case that was actually live in Sean's .env: JARVIS_PROVIDER=xai with
+    JARVIS_SMALL_MODEL still holding anthropic's gate model. Scoping by "did the
     caller switch provider" missed this one — the env agreed with itself and was
     still wrong."""
     from jarvis.config import Settings
     from jarvis.loop.models import get_client
 
-    monkeypatch.setenv("WAKU_PROVIDER", "xai")
-    monkeypatch.setenv("WAKU_SMALL_MODEL", "claude-haiku-4-5-20251001")
+    monkeypatch.setenv("JARVIS_PROVIDER", "xai")
+    monkeypatch.setenv("JARVIS_SMALL_MODEL", "claude-haiku-4-5-20251001")
     monkeypatch.setenv("XAI_API_KEY", "test-key")
 
     settings = Settings(provider="xai")
@@ -267,8 +267,8 @@ def test_an_unfamiliar_model_name_is_left_alone(monkeypatch):
     from jarvis.config import Settings
     from jarvis.loop.models import get_client
 
-    monkeypatch.setenv("WAKU_PROVIDER", "kimi")
-    monkeypatch.setenv("WAKU_SMALL_MODEL", "moonshot-v1-8k")
+    monkeypatch.setenv("JARVIS_PROVIDER", "kimi")
+    monkeypatch.setenv("JARVIS_SMALL_MODEL", "moonshot-v1-8k")
     monkeypatch.setenv("MOONSHOT_API_KEY", "test-key")
 
     settings = Settings(provider="kimi")

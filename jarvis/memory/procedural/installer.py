@@ -1,10 +1,10 @@
 """Skill installer — try anyone's skill in one command.
 
-    python -m waku skill install https://github.com/<user>/<repo>/blob/main/skills/foo/SKILL.md
-    python -m waku skill install https://gist.github.com/<user>/<id>
+    python -m jarvis skill install https://github.com/<user>/<repo>/blob/main/skills/foo/SKILL.md
+    python -m jarvis skill install https://gist.github.com/<user>/<id>
 
 Downloads the SKILL.md, validates the frontmatter (same check CI runs on
-community PRs), and drops it in WAKU_HOME/skills/<name>/ where the loader
+community PRs), and drops it in JARVIS_HOME/skills/<name>/ where the loader
 picks it up on next start. Skills are markdown — read what you install.
 """
 
@@ -51,4 +51,4 @@ def install(url: str) -> None:
     tmp.parent.rmdir()
     print(f"Installed '{skill.name}' → {dest}")
     print(f"  {skill.description}")
-    print("It loads next time Waku starts. Read it first — skills are instructions.")
+    print("It loads next time Jarvis starts. Read it first — skills are instructions.")

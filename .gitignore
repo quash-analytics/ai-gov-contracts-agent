@@ -9,18 +9,18 @@ traces/
 dist/
 .pytest_cache/
 .ruff_cache/
-.waku/
-.waku.bak-*/
-.waku.prerename-bak/
+.jarvis/
+.jarvis.bak-*/
+.jarvis.prerename-bak/
 # Any ALTERNATE agent home, not just the default one. DISCORD_HOME gives the
-# bot its own memory (see waku/gateway/discord.py); WAKU_HOME can point anywhere.
-# Without this glob only `.waku/` was covered, so a second home's SOUL.md,
+# bot its own memory (see jarvis/gateway/discord.py); JARVIS_HOME can point anywhere.
+# Without this glob only `.jarvis/` was covered, so a second home's SOUL.md,
 # usage.jsonl and outbox/ were tracked — the exact files you least want pushed.
-.waku-*/
+.jarvis-*/
 .env.prerename-bak
 
 # Delegated coding deliverables (dated run folders + auto-run logs)
-waku_workspace/
+jarvis_workspace/
 
 # Google OAuth: the client file you download from Cloud Console, and any token
 # it produces. Nothing here should ever be committed — belt and braces, because

@@ -1,6 +1,6 @@
 """Cross-model coding eval — pi as the fixed harness, the brain swapped underneath.
 
-The agentic battery (evals/dataset.jsonl) scores whether a model drives Waku's
+The agentic battery (evals/dataset.jsonl) scores whether a model drives Jarvis's
 OWN tools. A coding case is a different animal: it hands a real programming job to
 **pi** (the same sub-agent `delegate_task` uses), but pointed at the CONTESTANT's
 model, then scores by RUNNING the produced code — the `verify` command's exit code
@@ -10,7 +10,7 @@ pi natively speaks every provider we pin, so one harness auditions every brain:
 
     pi --provider <p> --model <m> --api-key <k> -p "<task>"
 
-Waku stays the orchestrator; pi stays the contractor — we just get to compare
+Jarvis stays the orchestrator; pi stays the contractor — we just get to compare
 contractors. Coding cases live in `evals/coding.jsonl` (separate from the agentic
 dataset so they never run through the tool-calling tier by mistake).
 """
@@ -30,7 +30,7 @@ from jarvis.loop.models import PROVIDERS
 
 _CODING = Path(__file__).resolve().parents[2] / "evals" / "coding.jsonl"
 
-# Waku provider id -> pi's built-in provider id (see `pi --list-models`).
+# Jarvis provider id -> pi's built-in provider id (see `pi --list-models`).
 PI_PROVIDER = {
     "anthropic": "anthropic", "openai": "openai", "gemini": "google",
     "kimi": "moonshotai", "xai": "xai", "glm": "zai",

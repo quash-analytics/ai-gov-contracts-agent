@@ -1,4 +1,4 @@
-// waku dashboard — Model arena: race ONE message through several models at once.
+// jarvis dashboard — Model arena: race ONE message through several models at once.
 // Split out of app.js: classic <script>, shared global scope (no build step,
 // no modules). Loads after views.js so it can hang a page onto VIEWS.
 //
@@ -14,14 +14,14 @@ let compareState = { message: "Build a Kanto team around Pikachu — search curr
                      // grade every race by default, with a neutral (non-racing) referee
                      judge: true, judgeModel: "openai:gpt-5.6-sol" };
 try {
-  const saved = JSON.parse(localStorage.getItem("waku_compare") || "null");
+  const saved = JSON.parse(localStorage.getItem("jarvis_compare") || "null");
   if (saved){ compareState.message = saved.message ?? compareState.message;
               compareState.results = saved.results || null;
               // only restore columns that actually finished (drop any stale racing… ones)
               compareState.order = (saved.order || []).filter(s => saved.results && saved.results[s]); }
 } catch(e){}
 function saveCompare(){
-  try { localStorage.setItem("waku_compare", JSON.stringify({
+  try { localStorage.setItem("jarvis_compare", JSON.stringify({
     message: compareState.message, order: compareState.order, results: compareState.results})); } catch(e){}
 }
 
@@ -152,7 +152,7 @@ function toggleCoding(){
   editing = false;
   render();
 }
-// Write to the real Apple Calendar ('Waku' calendar), opt-in. OFF by default so
+// Write to the real Apple Calendar ('Jarvis' calendar), opt-in. OFF by default so
 // a race doesn't spam duplicates — when ON, EVERY racing model writes its own
 // event (one per model). Use with 1-2 models to demo the real integration.
 function toggleApple(){
@@ -415,7 +415,7 @@ function modelArenaView(d){
   return `<div class="card">
     <div class="cmp-controls">
       <span class="meta cmp-blurb">One message, every brain at once — same harness, isolated homes, real receipts (gate · latency · cost · tools). Compare, don't guess.</span>
-      <label class="cmp-judge ${compareState.apple?"on":""}" style="margin-left:auto" title="Write create_event results to your REAL Apple Calendar (the 'Waku' calendar). Off by default so a race doesn't spam duplicates — when on, EACH model writes its own event (use 1-2 models).">
+      <label class="cmp-judge ${compareState.apple?"on":""}" style="margin-left:auto" title="Write create_event results to your REAL Apple Calendar (the 'Jarvis' calendar). Off by default so a race doesn't spam duplicates — when on, EACH model writes its own event (use 1-2 models).">
         <input type="checkbox" ${compareState.apple?"checked":""} onchange="toggleApple()"> write to calendar</label>
       <label class="cmp-judge ${compareState.coding?"on":""}" title="Coding task: enables the delegate_task tool so the loop can hand real coding work to a pi sub-agent on this card's own model — the full harness runs (gate, tools), delegate_task is one of them">
         <input type="checkbox" ${compareState.coding?"checked":""} onchange="toggleCoding()"> coding (pi)</label>
@@ -543,7 +543,7 @@ async function runMemoryArena(){
 // configured, both were silently dropped from every race, and the button
 // cheerfully said "Race 2 stores" as though that were the whole field. A list
 // of backends maintained in two languages drifts the moment one is added;
-// waku/ops/memory_arena.py::_available_backends is now the only one.
+// jarvis/ops/memory_arena.py::_available_backends is now the only one.
 function maBackends(){
   return (memoryArenaFixture && memoryArenaFixture.backends) || ["sqlite"];
 }
@@ -650,7 +650,7 @@ function memoryArenaView(){
   }
   if (memoryArenaFixture === null){
     return `<div class="card empty">The probe file lives in <code>evals/memory_arena.json</code>,
-      which a packaged install does not ship. Run Waku from a clone to see it.</div>`;
+      which a packaged install does not ship. Run Jarvis from a clone to see it.</div>`;
   }
   const track = memoryArenaFixture.tracks[(maTrack && memoryArenaFixture.tracks[maTrack])
     ? maTrack : Object.keys(memoryArenaFixture.tracks)[0]];
@@ -677,7 +677,7 @@ function memoryArenaView(){
           ${maModels().map(m=>`<option value="${esc(m.spec)}" ${
             m.spec===maModelSpec()?"selected":""}>${esc(m.spec)} — $${m.price_in}/$${m.price_out} per M</option>`).join("")}
         </select></label>` : ""}
-      <span class="meta">Drop a JSON file in <code>.waku/probes/</code> to add more.</span>
+      <span class="meta">Drop a JSON file in <code>.jarvis/probes/</code> to add more.</span>
     </div>`;
   const race = `<div class="card">
     ${picker}
@@ -719,8 +719,8 @@ function maStoresHtml(){
         ${s.error ? `<span class="ma-o ma-invented">error</span>`
                   : `<span class="meta">${s.count} fact${s.count===1?"":"s"}</span>`}</div>
       <div class="ma-prov">${s.kind === "live"
-        ? `your live agent &middot; <code>.waku/state.db</code>`
-        : `connected account &middot; only what waku wrote`}${
+        ? `your live agent &middot; <code>.jarvis/state.db</code>`
+        : `connected account &middot; only what jarvis wrote`}${
         s.span ? ` &middot; ${esc(s.span)}` : ""}</div>
       ${s.error ? `<div class="ma-ans">${esc(s.error)}</div>`
         : s.note ? `<div class="ma-ans">${esc(s.note)}</div>`
@@ -734,7 +734,7 @@ function maStoresHtml(){
           : `<div class="meta">empty</div>`}
     </div>`).join("");
   // The warning matters more than the cards. A count next to a count invites
-  // "waku remembers more", when the only thing it shows is that one store has
+  // "jarvis remembers more", when the only thing it shows is that one store has
   // been lived in and the others were connected yesterday.
   return `<h2>What each store is holding</h2>
     <div class="card"><div class="ma-race">${btn}
@@ -767,7 +767,7 @@ function maAsksHtml(track){
             : '<span class="meta">—</span>'}</td></tr>`).join("")}
     </table></div></div>
     <div class="meta" style="margin-top:8px">${memoryArenaFixture.is_example
-      ? `Example probes. Point <code>WAKU_MEMORY_PROBES</code> at your own file.`
+      ? `Example probes. Point <code>JARVIS_MEMORY_PROBES</code> at your own file.`
       : `From <code>${esc(memoryArenaFixture.source)}</code>`}
       &nbsp;·&nbsp; <span class="ma-o ma-pass">pass</span> right
       <span class="ma-o ma-stale">stale</span> gave a superseded answer

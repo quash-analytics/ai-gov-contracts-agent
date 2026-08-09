@@ -1,13 +1,13 @@
 """Generate the two K3 tutorial whiteboards in Sean's style.
 
   Act 1  — the concept LADDER: bag-of-words -> Kimi K3 (intro to hero, 10 min)
-  Act 2  — the GRADING sheet: test each claim live on Waku (10 min)
+  Act 2  — the GRADING sheet: test each claim live on Jarvis (10 min)
 
 Sean's idiom: mostly-WHITE nodes with colored strokes, agents as ellipses,
 labeled arrows carry the logic, blue floating side-notes, colored-stroke
 subsystem boundaries, solid fill only on user-prompt / reply chips.
 
-Run:  python -m waku.ops.whiteboard.build_k3_tutorial
+Run:  python -m jarvis.ops.whiteboard.build_k3_tutorial
 """
 from __future__ import annotations
 
@@ -89,15 +89,15 @@ def act2(standalone=True):
     e = []
     a = lambda x: _add(e, x)
 
-    a(S.text(60, 40, "Testing the Hero -- live, on Waku", size=S.FS_TITLE))
+    a(S.text(60, 40, "Testing the Hero -- live, on Jarvis", size=S.FS_TITLE))
     a(S.underline(64, 120, 760, color=S.PAL["orange"][1]))
     if standalone:
         a(S.socials_block(1640, 44))
 
-    # B1 the rig: prompt chip -> Waku ellipse -> three provider chips
-    a(S.text(80, 170, "B1   The rig = Waku", size=S.FS_HEADER, color=S.PAL["blue"][1]))
+    # B1 the rig: prompt chip -> Jarvis ellipse -> three provider chips
+    a(S.text(80, 170, "B1   The rig = Jarvis", size=S.FS_HEADER, color=S.PAL["blue"][1]))
     a(S.chip(80, 250, 200, 90, "one prompt", color="green"))
-    a(S.ellipse(360, 235, 220, 120, "Waku\n(swap the brain)", color="pink"))
+    a(S.ellipse(360, 235, 220, 120, "Jarvis\n(swap the brain)", color="pink"))
     a(S.labeled_arrow(280, 295, 360, 295, "send"))
     provs = [("Kimi K3", "green"), ("Opus 4.8", "blue"), ("Fable 5", "orange")]
     for i, (name, c) in enumerate(provs):
@@ -112,7 +112,7 @@ def act2(standalone=True):
     cards = [
         ("B2  Pelican", "SVG of a pelican\non a bicycle --\nvisual, instant to judge",
          "grades A7  (raw capability)", "green", "Willison benchmark, Jul 16 2026"),
-        ("B3  Vibecode", "one real \"build me X\"\nthrough Waku,\nK3 vs Opus vs Fable",
+        ("B3  Vibecode", "one real \"build me X\"\nthrough Jarvis,\nK3 vs Opus vs Fable",
          "grades their world", "pink", ""),
         ("B4  1M context", "drop a huge file,\nask a needle-deep\nquestion",
          "grades A9  (the KDA claim)", "orange", ""),

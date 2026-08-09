@@ -25,7 +25,7 @@ Setup (10-20 minutes, free tier available but painful):
      - Without this, anyone who finds your webhook URL can forge requests
 
   5. Set up webhook verification (WHATSAPP_VERIFY_TOKEN):
-     - Pick any random string, e.g. "my-waku-verify-token-123"
+     - Pick any random string, e.g. "my-jarvis-verify-token-123"
      - You'll enter this in Meta's webhook config later
 
   6. Expose your local server publicly:
@@ -99,7 +99,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from jarvis.app import Waku
+from jarvis.app import Jarvis
 from jarvis.gateway.cli import _observer  # mirror gate/tool activity on the laptop terminal
 from jarvis.integrations import IntegrationState, IntegrationStatus
 
@@ -132,16 +132,16 @@ def _build_handler(
 
     ThreadingHTTPServer dispatches requests on worker threads, so we pass
     ``check_same_thread=False`` and use a lock to serialise turns through
-    the same Waku instance."""
+    the same Jarvis instance."""
 
     from jarvis.config import load_settings
     from jarvis.db import connect
 
     s = load_settings()
     s.ensure_home()
-    waku = Waku(settings=s, conn=connect(s.home, check_same_thread=False))
-    waku.session.session_id = "whatsapp"
-    waku_lock = threading.Lock()
+    jarvis = Jarvis(settings=s, conn=connect(s.home, check_same_thread=False))
+    jarvis.session.session_id = "whatsapp"
+    jarvis_lock = threading.Lock()
 
     class Handler(BaseHTTPRequestHandler):
         def _set_json(self, code: int) -> None:
@@ -221,11 +221,11 @@ def _build_handler(
                             continue
 
                         print(f"you › [{sender}] {text}")
-                        with waku_lock:
-                            result = waku.respond(
+                        with jarvis_lock:
+                            result = jarvis.respond(
                                 text, observer=_observer, source="whatsapp"
                             )
-                        print(f"waku › {result.reply}")
+                        print(f"jarvis › {result.reply}")
 
                         _send_message(
                             token, phone_number_id, sender, result.reply or "(no reply)"
@@ -238,7 +238,7 @@ def main() -> None:
     try:
         import httpx  # noqa: F401
     except ImportError:
-        raise SystemExit("WhatsApp extra not installed: pip install 'waku-agent[whatsapp]'")
+        raise SystemExit("WhatsApp extra not installed: pip install 'jarvis-agent[whatsapp]'")
 
     from jarvis.config import load_settings
 
@@ -252,7 +252,7 @@ def main() -> None:
     if not token:
         raise SystemExit(
             "Set WHATSAPP_TOKEN in .env (Meta Cloud API access token). "
-            "See waku/gateway/whatsapp.py docstring for setup instructions."
+            "See jarvis/gateway/whatsapp.py docstring for setup instructions."
         )
     if not phone_number_id:
         raise SystemExit(
@@ -305,7 +305,7 @@ class WhatsAppHandle:
 
 def start_in_background() -> WhatsAppHandle | None:
     """Start the WhatsApp webhook server on a daemon thread — so
-    `waku dashboard` runs the browser cockpit AND WhatsApp from one command.
+    `jarvis dashboard` runs the browser cockpit AND WhatsApp from one command.
     Returns a handle the supervisor can stop/status, None (quietly) if tokens
     aren't set or the extra isn't installed. A bind failure (e.g. port 5000
     busy) raises — the supervisor reports it as the gateway's error status."""
@@ -323,7 +323,7 @@ def start_in_background() -> WhatsAppHandle | None:
         import httpx  # noqa: F401
     except ImportError:
         print("(whatsapp) WHATSAPP_TOKEN is set but the extra isn't installed — "
-              "pip install 'waku-agent[whatsapp]'")
+              "pip install 'jarvis-agent[whatsapp]'")
         return None
 
     allowed = os.getenv("WHATSAPP_ALLOWED_PHONE", "")

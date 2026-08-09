@@ -6,7 +6,7 @@ default (adopted when you switch to it). Live goal Sean asked for: "a default
 model for each api key, the user can choose more models, and the chat switcher
 shows the models already selected in settings."
 
-The shortlist lives in .waku/models.json as {"pinned": ["provider:model", ...]};
+The shortlist lives in .jarvis/models.json as {"pinned": ["provider:model", ...]};
 these tests drive the same helpers the dashboard's /api/pin route calls."""
 
 from __future__ import annotations
@@ -29,15 +29,15 @@ def home(tmp_path, monkeypatch):
     """Point every load_settings() at a throwaway home, run from there so
     apply_settings's find_dotenv writes to a throwaway .env, and clear all
     provider keys so the default shortlist is empty unless a test sets one."""
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path))
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path))
     monkeypatch.chdir(tmp_path)
     (tmp_path / ".env").write_text("")
     for var in PROVIDER_KEYS:
         monkeypatch.delenv(var, raising=False)
     # apply_settings bypasses monkeypatch and writes directly to os.environ,
-    # so WAKU_PROVIDER must also be tracked to prevent leaking into later
+    # so JARVIS_PROVIDER must also be tracked to prevent leaking into later
     # tests (test_tool_trigger would inherit a stale provider and crash).
-    monkeypatch.delenv("WAKU_PROVIDER", raising=False)
+    monkeypatch.delenv("JARVIS_PROVIDER", raising=False)
     return tmp_path
 
 
@@ -91,12 +91,12 @@ def test_switching_provider_adopts_its_pinned_default(home, monkeypatch):
 
     monkeypatch.setattr(browser_agent, "rebuild", lambda: None)
     monkeypatch.setattr(browser_agent, "current", lambda: type("A", (), {"tracer": type("T", (), {"event": lambda *args: None})()})())
-    monkeypatch.setenv("WAKU_PROVIDER", "gemini")
-    monkeypatch.setenv("WAKU_MODEL", "gemini-3.5-flash")
+    monkeypatch.setenv("JARVIS_PROVIDER", "gemini")
+    monkeypatch.setenv("JARVIS_MODEL", "gemini-3.5-flash")
     result = integrations.apply_provider("kimi")
     assert result.ok
-    assert os.getenv("WAKU_PROVIDER") == "kimi"
-    assert os.getenv("WAKU_MODEL") == "kimi-k3"  # not gemini's model
+    assert os.getenv("JARVIS_PROVIDER") == "kimi"
+    assert os.getenv("JARVIS_MODEL") == "kimi-k3"  # not gemini's model
 
 
 def test_pinned_are_grouped_by_provider_for_display(home):
@@ -184,7 +184,7 @@ def test_list_models_honors_provider_override(home, monkeypatch):
     from jarvis.loop.models import PROVIDERS
 
     monkeypatch.delenv("MOONSHOT_BASE_URL", raising=False)
-    monkeypatch.delenv("WAKU_BASE_URL", raising=False)
+    monkeypatch.delenv("JARVIS_BASE_URL", raising=False)
     url = PROVIDERS["kimi"].catalog_url
     # cache tuple is (ts, models, error) — None error means a real listing
     monkeypatch.setattr(catalog, "_models_cache", {url: (time.time(), [{"id": "kimi-k3"}], None)})

@@ -5,7 +5,7 @@ Each episode becomes a page in a database with two properties:
 - Summary (rich_text): the episode summary
 
 Install with the [notion] extra (notion-client >= 2.5, data-sources API):
-    pip install 'waku-agent[notion]'
+    pip install 'jarvis-agent[notion]'
 
 Set environment variables:
     NOTION_TOKEN=<integration token>

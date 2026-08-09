@@ -10,7 +10,7 @@ only moves words in and out (that's the whole point of the gateway box).
   ears   faster-whisper (local Whisper, ~74MB model downloads on first run)
   voice  macOS `say` with a British voice by default (zero setup), or the
          neural Kokoro voice if installed:  pip install kokoro soundfile
-         then set WAKU_TTS=kokoro  (WAKU_VOICE=bm_george / bm_fable / ...)
+         then set JARVIS_TTS=kokoro  (JARVIS_VOICE=bm_george / bm_fable / ...)
 
 Wake-word mode ("hey <name>, ...") is deliberately v2 — see docs/roadmap:
 openWakeWord can train a custom wake word for whatever we name this thing.
@@ -23,7 +23,7 @@ import re
 import subprocess
 import sys
 
-from jarvis.app import Waku
+from jarvis.app import Jarvis
 from jarvis.gateway.cli import _observer  # show gate/tool lines in voice mode too
 
 SAMPLE_RATE = 16000
@@ -51,13 +51,13 @@ class Ears:
         from faster_whisper import WhisperModel
 
         self.model = WhisperModel(
-            model_size or os.getenv("WAKU_WHISPER_MODEL", "base"),
+            model_size or os.getenv("JARVIS_WHISPER_MODEL", "base"),
             compute_type="int8",
         )
 
     def transcribe(self, audio, language: str | None = None) -> str:
         segments, _ = self.model.transcribe(
-            audio, language=language or os.getenv("WAKU_WHISPER_LANG")
+            audio, language=language or os.getenv("JARVIS_WHISPER_LANG")
         )
         return " ".join(seg.text.strip() for seg in segments).strip()
 
@@ -117,8 +117,8 @@ class Mouth:
     (Kokoro-82M, Apache-2.0 — its bm_* voices are the proper British butler)."""
 
     def __init__(self):
-        self.engine = os.getenv("WAKU_TTS", "").strip().lower()
-        self.voice = os.getenv("WAKU_VOICE", "")
+        self.engine = os.getenv("JARVIS_TTS", "").strip().lower()
+        self.voice = os.getenv("JARVIS_VOICE", "")
         if not self.engine:
             # Auto: use the nicer neural voice (Kokoro) if it's installed, else
             # fall back to macOS `say`. So `pip install kokoro soundfile` alone
@@ -150,17 +150,21 @@ class Mouth:
         elif sys.platform == "darwin":
             subprocess.run(["say", "-v", self.voice or "Daniel", text], check=False)
         else:
-            print("(no TTS engine on this platform — set WAKU_TTS=kokoro)")
+            print("(no TTS engine on this platform — set JARVIS_TTS=kokoro)")
 
 
 def matches_wake(text: str, wake_word: str) -> bool:
     """Does a transcript contain the (customizable) wake word?
 
-    Fuzzy on purpose: Whisper hears "waku waku" as "wakuwaku", "Waku, waku!",
-    "walku waku" — or transcribes it as Japanese kana わくわく (the first live
-    test!). So: `wake_word` accepts comma-separated variants across scripts
-    ("waku waku,わくわく"), normalization keeps kana AND CJK, and matching is
-    substring + sliding-window similarity. Pure function → deterministic evals.
+    Fuzzy on purpose: real transcripts drop spaces, mangle a letter, add
+    punctuation, or land in the wrong script — the original "waku waku" phrase
+    came back from Whisper as "wakuwaku", "Waku, waku!", "walku waku", and once
+    as Japanese kana わくわく (the first live test). So: `wake_word` accepts
+    comma-separated variants across scripts ("jarvis jarvis,わくわく" if you want
+    to keep that kana fallback), normalization keeps kana AND CJK, and matching
+    is substring + sliding-window similarity. Pure function → deterministic
+    evals. (The specific mangled forms above are historical evidence for
+    "waku waku"; re-verify against a live mic if you tune JARVIS_WAKE_WORD.)
     """
     import difflib
     import re
@@ -187,9 +191,9 @@ def matches_wake(text: str, wake_word: str) -> bool:
 
 def _mic_threshold() -> float:
     """RMS below this = silence. Mics vary wildly — tune with
-    WAKU_MIC_THRESHOLD (lower if it never hears you, higher if it
+    JARVIS_MIC_THRESHOLD (lower if it never hears you, higher if it
     wakes on room noise)."""
-    return float(os.getenv("WAKU_MIC_THRESHOLD", "0.005"))
+    return float(os.getenv("JARVIS_MIC_THRESHOLD", "0.005"))
 
 
 def record_command(stream, max_seconds: float = 15.0, silence_after: float = 1.2):
@@ -225,7 +229,7 @@ def wait_for_speech(stream, timeout: float) -> bool:
     return False
 
 
-def wake_loop(waku: Waku, mouth: Mouth, wake_word: str) -> None:
+def wake_loop(jarvis: Jarvis, mouth: Mouth, wake_word: str) -> None:
     """Always-listening mode: scan the mic in ~2.5s windows with the tiny
     Whisper model until the wake word shows up, then hand off to the big one.
 
@@ -238,7 +242,7 @@ def wake_loop(waku: Waku, mouth: Mouth, wake_word: str) -> None:
       re-opens the device every 2.5s and can block forever when macOS audio
       routing changes (say/AirPods/etc).
     - The scanner always shows a heartbeat, so "listening" never looks "dead".
-    - The mic buffer is drained after Waku speaks, so it doesn't wake on
+    - The mic buffer is drained after Jarvis speaks, so it doesn't wake on
       the tail of its own voice (the "mm-hmm" self-trigger in the trace).
     """
     import numpy as np
@@ -246,13 +250,13 @@ def wake_loop(waku: Waku, mouth: Mouth, wake_word: str) -> None:
 
     scout = Ears(model_size="tiny")  # cheap, always on
     ears = Ears()                    # accurate, only after wake
-    ack = os.getenv("WAKU_WAKE_ACK", "Yes?")
-    followup = float(os.getenv("WAKU_FOLLOWUP_SECONDS", "8"))  # stay open, Siri-style
+    ack = os.getenv("JARVIS_WAKE_ACK", "Yes?")
+    followup = float(os.getenv("JARVIS_FOLLOWUP_SECONDS", "8"))  # stay open, Siri-style
     block = SAMPLE_RATE // 10
     # Pin the scout's transcription language to match the wake word's script —
-    # otherwise Whisper hears "waku waku" and helpfully writes わくわく, which
+    # otherwise Whisper hears "jarvis jarvis" and helpfully writes わくわく, which
     # a latin wake word never matches. Commands after wake still auto-detect.
-    wake_lang = os.getenv("WAKU_WAKE_LANG") or ("en" if wake_word.isascii() else None)
+    wake_lang = os.getenv("JARVIS_WAKE_LANG") or ("en" if wake_word.isascii() else None)
     print(f'Listening for "{wake_word}" — Ctrl-C to quit.')
 
     def status(msg: str) -> None:
@@ -281,7 +285,7 @@ def wake_loop(waku: Waku, mouth: Mouth, wake_word: str) -> None:
             if not matches_wake(heard_scan, wake_word):
                 status(f'· heard: "{heard_scan}"' if heard_scan else "· listening…")
                 if heard_scan:  # near-misses belong in the trace (wake tuning!)
-                    waku.tracer.event("wake_scan", {"heard": heard_scan, "matched": False})
+                    jarvis.tracer.event("wake_scan", {"heard": heard_scan, "matched": False})
                 continue
 
             print("\n[wake word]")
@@ -289,14 +293,14 @@ def wake_loop(waku: Waku, mouth: Mouth, wake_word: str) -> None:
             drain()  # don't transcribe the ack playing over the mic
 
             # Stay in the conversation after waking: answer, then keep listening
-            # for a follow-up for `followup` seconds — no need to say "waku waku"
+            # for a follow-up for `followup` seconds — no need to say "jarvis jarvis"
             # again (like Siri). A quiet stretch drops back to wake-word mode.
             while True:
                 heard = ears.transcribe(record_command(stream))
                 if heard:
                     print(f"you › {heard}")
-                    result = waku.respond(heard, observer=_observer, source="voice")
-                    print(f"waku › {result.reply}")
+                    result = jarvis.respond(heard, observer=_observer, source="voice")
+                    print(f"jarvis › {result.reply}")
                     mouth.speak(result.reply)
                 else:
                     print("(didn't catch that)")
@@ -313,26 +317,26 @@ def main() -> None:
     except ImportError:
         raise SystemExit("Voice extra not installed: pip install -e '.[voice]'")
 
-    waku = Waku()
-    waku.session.session_id = "voice"   # its own conversation thread in the inbox
+    jarvis = Jarvis()
+    jarvis.session.session_id = "voice"   # its own conversation thread in the inbox
     mouth = Mouth()
 
-    # Hands-free by default: always-listening for "waku waku". The default packs
-    # in the ways the tiny scanner mis-hears it (wakuwaku / waka waka / kana), so
-    # it triggers reliably. Set WAKU_WAKE_WORD="" for push-to-talk instead.
-    wake_word = os.getenv(
-        "WAKU_WAKE_WORD", "waku waku,wakuwaku,waku,waka waka,wako wako,walk walk,わくわく"
-    ).strip()
+    # Hands-free by default: always-listening for "jarvis jarvis". No pre-baked
+    # mishearing variants here (the old "waku waku" ones don't apply to this
+    # phrase, and none have been verified against a live mic yet) — matches_wake's
+    # own substring + sliding-window fuzziness handles minor mangling on its own.
+    # Set JARVIS_WAKE_WORD="" for push-to-talk instead.
+    wake_word = os.getenv("JARVIS_WAKE_WORD", "jarvis jarvis").strip()
     if wake_word:
         try:
-            wake_loop(waku, mouth, wake_word)
+            wake_loop(jarvis, mouth, wake_word)
         except KeyboardInterrupt:
             pass
         print("\nbye — your memory stays in state.db")
         return
 
     ears = Ears()
-    print("Voice Waku ready. Press Enter to talk, Ctrl-C to quit.")
+    print("Voice Jarvis ready. Press Enter to talk, Ctrl-C to quit.")
     while True:
         try:
             input("\npress Enter to talk… ")
@@ -349,8 +353,8 @@ def main() -> None:
             continue
         print(f"you › {heard}")
 
-        result = waku.respond(heard, observer=_observer, source="voice")
-        print(f"waku › {result.reply}")
+        result = jarvis.respond(heard, observer=_observer, source="voice")
+        print(f"jarvis › {result.reply}")
         mouth.speak(result.reply)
 
     print("bye — your memory stays in state.db")

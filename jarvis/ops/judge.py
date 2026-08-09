@@ -1,6 +1,6 @@
 """K3-as-referee quality scoring for the Compare arena.
 
-Completion (waku.ops.scoring) is deterministic — did the right tool fire. Quality
+Completion (jarvis.ops.scoring) is deterministic — did the right tool fire. Quality
 is the other half: *how good was the answer*, for the open-ended part a checklist
 can't see. There's no single right answer, so we do what the market does for that
 axis (MT-Bench / Chatbot-Arena style): an LLM grades the transcript against a
@@ -10,8 +10,8 @@ The referee must be a model that ISN'T racing — otherwise it grades itself, wh
 is neither fair nor credible (you can't test K3 with K3 as the judge). Default is
 **gpt-5.6-sol**: a strong reasoning model that happens to be a poor *contestant*
 here (it can't call tools on the chat endpoint) but a fine *judge* (grading is
-pure text, no tools). Switchable per-race from the arena, or via WAKU_JUDGE_*.
-Any provider works — Waku's OpenAI-compat client exposes the same
+pure text, no tools). Switchable per-race from the arena, or via JARVIS_JUDGE_*.
+Any provider works — Jarvis's OpenAI-compat client exposes the same
 `.messages.create` shape as the anthropic wire, so the judge is provider-agnostic.
 """
 
@@ -25,14 +25,14 @@ import time
 from jarvis.config import Settings, load_settings
 from jarvis.loop.models import get_client
 
-JUDGE_PROVIDER = os.getenv("WAKU_JUDGE_PROVIDER", "openai")
-JUDGE_MODEL = os.getenv("WAKU_JUDGE_MODEL", "gpt-5.6-sol")
+JUDGE_PROVIDER = os.getenv("JARVIS_JUDGE_PROVIDER", "openai")
+JUDGE_MODEL = os.getenv("JARVIS_JUDGE_MODEL", "gpt-5.6-sol")
 
 # A race grades every column at once — 8 judge calls hitting one endpoint
 # simultaneously gets some 429'd, and those columns show "—". Cap how many judge
 # calls run concurrently (shared across the race's threads) so the referee isn't
 # stampeded; the rest queue and still get graded.
-_JUDGE_SEM = threading.Semaphore(int(os.getenv("WAKU_JUDGE_CONCURRENCY", "2")))
+_JUDGE_SEM = threading.Semaphore(int(os.getenv("JARVIS_JUDGE_CONCURRENCY", "2")))
 
 _RUBRIC = """You are a strict, fair judge scoring an AI assistant's reply.
 

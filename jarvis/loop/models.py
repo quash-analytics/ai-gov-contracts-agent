@@ -6,11 +6,11 @@ in, content blocks out). Providers plug in two ways:
   anthropic wire format (native)     → Anthropic, Kimi/Moonshot, GLM/Z.ai, MiniMax
   openai wire format (thin adapter)  → OpenAI, Google Gemini, DeepSeek, OpenRouter
 
-Pick with WAKU_PROVIDER=anthropic|openai|gemini|deepseek|minimax|kimi|glm|openrouter
-and set that provider's API key in .env. Override the model ids with WAKU_MODEL /
-WAKU_SMALL_MODEL if the defaults below age out — they're just strings. This
+Pick with JARVIS_PROVIDER=anthropic|openai|gemini|deepseek|minimax|kimi|glm|openrouter
+and set that provider's API key in .env. Override the model ids with JARVIS_MODEL /
+JARVIS_SMALL_MODEL if the defaults below age out — they're just strings. This
 matters most for openrouter: it's a single key in front of hundreds of models,
-so WAKU_MODEL=<vendor>/<model> (e.g. "google/gemini-3.5-flash") picks whichever
+so JARVIS_MODEL=<vendor>/<model> (e.g. "google/gemini-3.5-flash") picks whichever
 one you want — and its defaults below are $0 ":free" ids, so it works with no
 spend at all (rate-limited). The dashboard Settings tab lists the live catalog.
 """
@@ -54,7 +54,7 @@ class Provider:
     flagship: str = ""
     fast: str = ""
     # Providers with separately-issued regional keys keep their endpoint choice
-    # in a provider-specific env var.  WAKU_BASE_URL remains the global custom
+    # in a provider-specific env var.  JARVIS_BASE_URL remains the global custom
     # override for backwards compatibility, but must not leak across providers.
     base_url_env: str = ""
     endpoints: tuple[ProviderEndpoint, ...] = ()
@@ -84,7 +84,7 @@ PROVIDERS: dict[str, Provider] = {
                           catalog_url="https://api.anthropic.com/v1/models",
                           flagship="claude-opus-4-8", fast="claude-sonnet-5"),
     # The gpt-5.6 REASONING models (luna/sol/terra) can't use function tools on
-    # /v1/chat/completions (they need /v1/responses), so every Waku turn 400s on
+    # /v1/chat/completions (they need /v1/responses), so every Jarvis turn 400s on
     # them. The non-reasoning "chat" line DOES call tools fine; gpt-5.3-chat-latest
     # is the newest concrete one (preferred over the gpt-5-chat-latest alias so a
     # benchmark is reproducible). gpt-4.1-mini is a cheap tool-capable gate.
@@ -117,7 +117,7 @@ PROVIDERS: dict[str, Provider] = {
                           )),
     # K3 is the flagship default; the gate/summarizer stays on cheap K2.6
     # (the live catalog has no plain "kimi-k2.7" — only -code variants; we
-    # checked). Override with WAKU_SMALL_MODEL=kimi-k3 if your key is K3-only.
+    # checked). Override with JARVIS_SMALL_MODEL=kimi-k3 if your key is K3-only.
     "kimi":      Provider("anthropic", "MOONSHOT_API_KEY", "https://api.moonshot.ai/anthropic",
                           "kimi-k3", "kimi-k2.6",
                           catalog_url="https://api.moonshot.ai/v1/models",
@@ -181,7 +181,7 @@ def _no_key_message(name: str, key_env: str) -> str:
     The old message named one env var and pointed at a file that does not exist
     off a git checkout. Three things were missing and each one cost a search:
     the URL to get a key, the absolute path of the .env actually in play, and
-    the fact that Waku speaks to eleven providers, not one.
+    the fact that Jarvis speaks to eleven providers, not one.
     """
     from jarvis.config import DOTENV_PATH
 
@@ -199,7 +199,7 @@ def _no_key_message(name: str, key_env: str) -> str:
     ) + (
         f"  2. {where}\n\n"
         f"Other providers: {', '.join(sorted(PROVIDERS))}\n"
-        f"Switch with WAKU_PROVIDER=<name> and that provider's key."
+        f"Switch with JARVIS_PROVIDER=<name> and that provider's key."
     )
 
 
@@ -237,7 +237,7 @@ def get_client(settings: Settings):
     Returns anything with .messages.create(...) in the Anthropic shape."""
     provider = PROVIDERS.get(settings.provider)
     if provider is None:
-        raise SystemExit(f"Unknown WAKU_PROVIDER '{settings.provider}'. "
+        raise SystemExit(f"Unknown JARVIS_PROVIDER '{settings.provider}'. "
                          f"Pick one of: {', '.join(PROVIDERS)}")
 
     # .strip() so a trailing newline/space from a copy-paste doesn't corrupt the
@@ -253,8 +253,8 @@ def get_client(settings: Settings):
             f"or arrow from a bad paste). Re-paste the key with no spaces or line breaks."
         )
 
-    # A model name belongs to the provider it was configured FOR. WAKU_MODEL and
-    # WAKU_SMALL_MODEL are global, so code that switches provider — the arena
+    # A model name belongs to the provider it was configured FOR. JARVIS_MODEL and
+    # JARVIS_SMALL_MODEL are global, so code that switches provider — the arena
     # races ten of them — carried anthropic's gate model to xAI, which answers
     # `400 Model not found: claude-haiku-4-5-20251001`. The retrieval gate then
     # FAILS OPEN by design, so it retrieved on every single turn for every
@@ -267,7 +267,7 @@ def get_client(settings: Settings):
     # explicitly is kept, because that is a choice, not a leak. The two are
     # distinguishable exactly when the setting still equals the env string.
     for attr in ("model", "small_model"):
-        inherited = os.getenv(f"WAKU_{attr.upper()}", "").strip()
+        inherited = os.getenv(f"JARVIS_{attr.upper()}", "").strip()
         if inherited and getattr(settings, attr) == inherited \
                 and _belongs_elsewhere(inherited, settings.provider):
             setattr(settings, attr, "")
@@ -277,7 +277,7 @@ def get_client(settings: Settings):
     base_url = settings.base_url or provider.configured_base_url()
 
     # a hung network call must never freeze a turn silently
-    timeout = float(os.getenv("WAKU_LLM_TIMEOUT", "120"))
+    timeout = float(os.getenv("JARVIS_LLM_TIMEOUT", "120"))
 
     if provider.kind == "anthropic":
         import anthropic

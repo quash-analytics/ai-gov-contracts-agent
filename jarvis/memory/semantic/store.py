@@ -3,7 +3,7 @@
 The Hermes insight from the whiteboard: "keyword top-k, no embedding". For a
 single user's facts, ranked keyword search (BM25) is fast, fully local, and —
 crucially for teaching — you can read the whole index with sqlite3.
-Want vectors? Set WAKU_SEMANTIC_STORE=supabase (see supabase_store.py).
+Want vectors? Set JARVIS_SEMANTIC_STORE=supabase (see supabase_store.py).
 """
 
 from __future__ import annotations
@@ -44,12 +44,12 @@ def _fts_query(text: str) -> str:
       * every non-Latin script reduced to "" — and an empty query is not a
         no-op. SqliteEpisodeStore.search() reads it as "just give me the recent
         ones", so a user asking about Сергей got an unrelated English episode
-        handed to the model under the heading "Relevant memory". Waku wasn't
+        handed to the model under the heading "Relevant memory". Jarvis wasn't
         skipping memory for those users, it was confidently supplying someone
         else's.
 
     `[^\W_]` is the same set unicode61 keeps. Underscore is excluded because
-    unicode61 treats it as a separator, so `waku_agent` is two terms in the
+    unicode61 treats it as a separator, so `jarvis_agent` is two terms in the
     index and has to be two terms here too, or it matches nothing.
 
     Everything stays lowercased, and that is load-bearing beyond tidiness:

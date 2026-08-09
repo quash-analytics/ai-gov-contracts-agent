@@ -1,8 +1,8 @@
 """GitHub, read-only, through the `gh` CLI you already signed into.
 
-Waku stores no GitHub token. It shells out to `gh`, which keeps its own
+Jarvis stores no GitHub token. It shells out to `gh`, which keeps its own
 credentials in the system keychain — so nothing sensitive lands in `.env`, in
-`.waku/`, or in a config file somebody might commit. If you have never run
+`.jarvis/`, or in a config file somebody might commit. If you have never run
 `gh auth login`, every call here says so in a sentence.
 
 THE SAFETY RULE, and why this file is shaped the way it is:
@@ -35,7 +35,7 @@ import subprocess
 from jarvis.tools.registry import Tool
 
 _TIMEOUT = 20
-# A PR diff is unbounded — waku-agent has had 400-line ones and the wider world
+# A PR diff is unbounded — jarvis-agent has had 400-line ones and the wider world
 # has 40,000-line ones. Truncating in the TOOL rather than at each call site
 # means no caller can forget to, and the model is told plainly that it happened
 # instead of silently reasoning about half a diff.
@@ -62,7 +62,7 @@ _IS_LIST = {"pr list", "issue list"}
 _JSON_FIELDS = "number,title,author,updatedAt,url"
 
 _REFUSAL = (
-    "Waku's GitHub tool is read-only. Allowed commands: "
+    "Jarvis's GitHub tool is read-only. Allowed commands: "
     + ", ".join(sorted(_ALLOWED))
     + ". It cannot merge, comment, close, edit or push — do those yourself."
 )

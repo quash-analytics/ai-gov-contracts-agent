@@ -147,20 +147,20 @@ def _notion_normalize(values: dict[str, str]) -> dict[str, str]:
 
 
 def _darwin(env: Mapping[str, str]) -> bool:
-    return sys.platform == "darwin" and bool(env.get("WAKU_APPLE_CALENDAR"))
+    return sys.platform == "darwin" and bool(env.get("JARVIS_APPLE_CALENDAR"))
 
 
 def _darwin_tools(env: Mapping[str, str]) -> bool:
-    return sys.platform == "darwin" and bool(env.get("WAKU_APPLE_TOOLS"))
+    return sys.platform == "darwin" and bool(env.get("JARVIS_APPLE_TOOLS"))
 
 
 INTEGRATIONS: tuple[Integration, ...] = (
-    Integration("telegram", "Channels", "Telegram", "Lets Waku receive and send Telegram messages.",
+    Integration("telegram", "Channels", "Telegram", "Lets Jarvis receive and send Telegram messages.",
                 (EnvField("TELEGRAM_BOT_TOKEN", "Bot token", required=True, secret=True),
                  EnvField("TELEGRAM_ALLOWED_USER", "Allowed user")), "telegram", "telegram",
                 "https://t.me/BotFather", ReloadMode.GATEWAY,
                 lambda env: bool(env.get("TELEGRAM_BOT_TOKEN")), None),
-    Integration("discord", "Channels", "Discord", "Lets Waku answer in a Discord server.",
+    Integration("discord", "Channels", "Discord", "Lets Jarvis answer in a Discord server.",
                 (EnvField("DISCORD_BOT_TOKEN", "Bot token", required=True, secret=True),
                  EnvField("DISCORD_ALLOWED_USER", "Allowed user"),
                  EnvField("DISCORD_ALLOWED_CHANNEL", "Allowed channel"),
@@ -169,7 +169,7 @@ INTEGRATIONS: tuple[Integration, ...] = (
                  EnvField("DISCORD_HOME", "Workspace directory")), "discord", "discord", "",
                 ReloadMode.GATEWAY, lambda env: bool(env.get("DISCORD_BOT_TOKEN")), None,
                 _positive_int),
-    Integration("whatsapp", "Channels", "WhatsApp", "Lets Waku answer WhatsApp messages via the Meta Cloud API.",
+    Integration("whatsapp", "Channels", "WhatsApp", "Lets Jarvis answer WhatsApp messages via the Meta Cloud API.",
                 (EnvField("WHATSAPP_TOKEN", "Access token", required=True, secret=True),
                  EnvField("WHATSAPP_PHONE_NUMBER_ID", "Phone number ID", required=True),
                  EnvField("WHATSAPP_APP_SECRET", "App secret", required=True, secret=True),
@@ -179,58 +179,58 @@ INTEGRATIONS: tuple[Integration, ...] = (
                 "whatsapp", "httpx", "https://developers.facebook.com/apps",
                 ReloadMode.GATEWAY, lambda env: bool(env.get("WHATSAPP_TOKEN")), None),
     Integration("google_calendar", "Calendar & Productivity", "Google Calendar",
-                "Lets Waku create and update Google Calendar events.",
-                (EnvField("WAKU_GOOGLE_CALENDAR", "Enable Google Calendar", FieldKind.BOOL),
-                 EnvField("WAKU_GOOGLE_CALENDAR_ID", "Calendar ID", default="primary")),
+                "Lets Jarvis create and update Google Calendar events.",
+                (EnvField("JARVIS_GOOGLE_CALENDAR", "Enable Google Calendar", FieldKind.BOOL),
+                 EnvField("JARVIS_GOOGLE_CALENDAR_ID", "Calendar ID", default="primary")),
                 "gcal", "googleapiclient", "https://developers.google.com/calendar/api/quickstart/python",
-                ReloadMode.AGENT, lambda env: bool(env.get("WAKU_GOOGLE_CALENDAR")), None),
+                ReloadMode.AGENT, lambda env: bool(env.get("JARVIS_GOOGLE_CALENDAR")), None),
     Integration("apple_calendar", "Calendar & Productivity", "Apple Calendar",
-                "Lets Waku work with Apple Calendar on this Mac.",
-                (EnvField("WAKU_APPLE_CALENDAR", "Enable Apple Calendar", FieldKind.BOOL),
-                 EnvField("WAKU_APPLE_CALENDARS", "Calendars")), None, None, "", ReloadMode.AGENT,
+                "Lets Jarvis work with Apple Calendar on this Mac.",
+                (EnvField("JARVIS_APPLE_CALENDAR", "Enable Apple Calendar", FieldKind.BOOL),
+                 EnvField("JARVIS_APPLE_CALENDARS", "Calendars")), None, None, "", ReloadMode.AGENT,
                 _darwin, None),
     Integration("apple_tools", "Calendar & Productivity", "Apple Tools",
-                "Lets Waku use Apple Mail and other local Apple tools.",
-                (EnvField("WAKU_APPLE_TOOLS", "Enable Apple tools", FieldKind.BOOL),), None, None,
+                "Lets Jarvis use Apple Mail and other local Apple tools.",
+                (EnvField("JARVIS_APPLE_TOOLS", "Enable Apple tools", FieldKind.BOOL),), None, None,
                 "", ReloadMode.AGENT, _darwin_tools, None),
     Integration("notion", "Memory & Storage", "Notion", "Stores episodic memory in a Notion database.",
-                (EnvField("WAKU_EPISODIC_STORE", "Episodic store", FieldKind.CHOICE,
+                (EnvField("JARVIS_EPISODIC_STORE", "Episodic store", FieldKind.CHOICE,
                           default="sqlite", options=("sqlite", "notion")),
                  EnvField("NOTION_TOKEN", "Integration token", required=True, secret=True),
                  EnvField("NOTION_EPISODES_DATABASE_ID", "Episodes database ID", required=True)),
                 "notion", "notion_client", "https://www.notion.so/my-integrations", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_EPISODIC_STORE") == "notion", None, _notion_normalize),
+                lambda env: env.get("JARVIS_EPISODIC_STORE") == "notion", None, _notion_normalize),
     Integration("mem0", "Memory & Storage", "Mem0", "Stores semantic memory in the Mem0 service.",
-                (EnvField("WAKU_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
+                (EnvField("JARVIS_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
                           default="sqlite", options=("sqlite", "mem0")),
                  EnvField("MEM0_API_KEY", "API key", required=True, secret=True,
                           help="From app.mem0.ai. The adapter sends infer=False so add() always "
                                "stores — a bake-off against it measures retrieval, not Mem0's "
                                "own extraction step."),
-                 EnvField("MEM0_USER_ID", "User id", help="Defaults to 'waku'. Change it only if "
+                 EnvField("MEM0_USER_ID", "User id", help="Defaults to 'jarvis'. Change it only if "
                                                           "several people share one Mem0 account.")),
                 "arena", "mem0", "", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_SEMANTIC_STORE") == "mem0", None),
+                lambda env: env.get("JARVIS_SEMANTIC_STORE") == "mem0", None),
     Integration("zep", "Memory & Storage", "Zep", "Stores semantic memory in a Zep temporal graph.",
-                (EnvField("WAKU_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
+                (EnvField("JARVIS_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
                           default="sqlite", options=("sqlite", "zep")),
                  EnvField("ZEP_API_KEY", "API key", required=True, secret=True,
                           help="From getzep.com. Facts become graph edges with validity dates, so a "
                                "correction supersedes the old value instead of ranking beside it — "
                                "the one backend built for the update test."),
-                 EnvField("ZEP_USER_ID", "User id", help="Defaults to 'waku'. Zep scopes a graph per user."),
+                 EnvField("ZEP_USER_ID", "User id", help="Defaults to 'jarvis'. Zep scopes a graph per user."),
                  EnvField("ZEP_MAX_WAIT_SECONDS", "Max wait (s)",
                           help="Ingestion is asynchronous: graph.add returns in ~0.2s with the episode "
                                "unprocessed, and the text is not searchable until Zep has turned it into "
-                               "nodes and edges. Waku polls until it has, up to this long. Default 120 — "
+                               "nodes and edges. Jarvis polls until it has, up to this long. Default 120 — "
                                "raise it if seeding times out, never lower it to make a benchmark finish.")),
                 "arena", "zep_cloud", "", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_SEMANTIC_STORE") == "zep", None),
+                lambda env: env.get("JARVIS_SEMANTIC_STORE") == "zep", None),
     Integration("langmem", "Memory & Storage", "LangMem",
                 "Stores semantic memory in a LangGraph store via LangMem.",
-                (EnvField("WAKU_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
+                (EnvField("JARVIS_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
                           default="sqlite", options=("sqlite", "langmem")),
-                 EnvField("WAKU_LANGMEM_POSTGRES", "Postgres URL",
+                 EnvField("JARVIS_LANGMEM_POSTGRES", "Postgres URL",
                           help="Optional. Without it LangGraph's InMemoryStore is used, which its own "
                                "docs describe as a reference implementation whose data dies with the "
                                "process — fine for a benchmark run, not a persistence story."),
@@ -238,16 +238,16 @@ INTEGRATIONS: tuple[Integration, ...] = (
                           help="LangMem has no key of its own; it bills through embeddings. Semantic "
                                "search needs this or the store is a plain key-value dict.")),
                 "arena", "langmem", "", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_SEMANTIC_STORE") == "langmem", None),
+                lambda env: env.get("JARVIS_SEMANTIC_STORE") == "langmem", None),
     Integration("supabase", "Memory & Storage", "Supabase", "Stores semantic memory in Supabase pgvector.",
-                (EnvField("WAKU_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
+                (EnvField("JARVIS_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
                           default="sqlite", options=("sqlite", "supabase")),
                  EnvField("SUPABASE_URL", "Project URL", required=True),
                  EnvField("SUPABASE_SERVICE_KEY", "Service key", required=True, secret=True,
                           help="Embeddings also require OPENAI_API_KEY (optionally OPENAI_EMBED_MODEL).")),
                 "supabase", "supabase", "", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_SEMANTIC_STORE") == "supabase", None),
-    Integration("tavily", "Search & Observability", "Tavily", "Lets Waku search the web.",
+                lambda env: env.get("JARVIS_SEMANTIC_STORE") == "supabase", None),
+    Integration("tavily", "Search & Observability", "Tavily", "Lets Jarvis search the web.",
                 (EnvField("TAVILY_API_KEY", "API key", secret=True),), None, None,
                 "https://tavily.com", ReloadMode.LIVE, lambda env: bool(env.get("TAVILY_API_KEY")), None),
     Integration("otel", "Search & Observability", "OpenTelemetry", "Exports traces to an OTLP collector.",
@@ -277,7 +277,7 @@ def registry() -> tuple[Integration, ...]:
     return provider_integrations() + INTEGRATIONS
 
 
-# T2 implementation: the cache path mirrors waku.ops.catalog's .waku storage.
+# T2 implementation: the cache path mirrors jarvis.ops.catalog's .jarvis storage.
 _IMPORT_OK: dict[str, bool] = {}
 _HEALTH: dict[str, IntegrationStatus] | None = None
 _gateway_status_provider: Callable[[str], IntegrationStatus | None] | None = None
@@ -285,7 +285,7 @@ _gateway_reloader: Callable[[set[str]], dict[str, IntegrationStatus]] | None = N
 
 
 def _health_path() -> Path:
-    # Keep CLI and Dashboard aligned with the rest of Waku's runtime files.
+    # Keep CLI and Dashboard aligned with the rest of Jarvis's runtime files.
     from jarvis.config import load_settings
 
     return load_settings().home / "connections_health.json"
@@ -415,9 +415,9 @@ def render_env_example_block() -> str:
     """Render the deterministic Connections section of ``.env.example``."""
     lines = [
         "# BEGIN GENERATED CONNECTIONS",
-        "# Generated by scripts/generate_env_example.py; definitions live in waku/integrations.py",
+        "# Generated by scripts/generate_env_example.py; definitions live in jarvis/integrations.py",
         "",
-        "WAKU_PROVIDER=anthropic",
+        "JARVIS_PROVIDER=anthropic",
     ]
     group = ""
     for integration in registry():
@@ -492,7 +492,7 @@ def _google_calendar_probe(values: Mapping[str, str]) -> None:
 
     calendar.probe_google_calendar(
         load_settings().home,
-        values.get("WAKU_GOOGLE_CALENDAR_ID", "") or "primary",
+        values.get("JARVIS_GOOGLE_CALENDAR_ID", "") or "primary",
     )
 
 
@@ -717,43 +717,43 @@ def apply_provider(provider: str, *, key: str | None = None, model: str | None =
         return ApplyResult(False, error="unknown provider")
     from jarvis.ops import browser_agent, catalog
 
-    previous = os.environ.get("WAKU_PROVIDER", "")
+    previous = os.environ.get("JARVIS_PROVIDER", "")
     selected = PROVIDERS[provider]
     switching = activate and provider != previous
-    updates: dict[str, str] = {"WAKU_PROVIDER": provider} if activate else {}
+    updates: dict[str, str] = {"JARVIS_PROVIDER": provider} if activate else {}
     if model is not None:
-        updates["WAKU_MODEL"] = model
+        updates["JARVIS_MODEL"] = model
     elif switching:
-        updates["WAKU_MODEL"] = catalog.default_model_for(provider)
+        updates["JARVIS_MODEL"] = catalog.default_model_for(provider)
     if small_model is not None:
-        updates["WAKU_SMALL_MODEL"] = small_model
+        updates["JARVIS_SMALL_MODEL"] = small_model
     elif switching:
-        updates["WAKU_SMALL_MODEL"] = ""
+        updates["JARVIS_SMALL_MODEL"] = ""
     if key:
         updates[selected.key_env] = key
     # Regional providers own their endpoint choice.  Keeping it beside that
     # provider's key prevents a MiniMax URL, for example, from leaking into Kimi
-    # after a switch.  A legacy WAKU_BASE_URL for the current provider is
+    # after a switch.  A legacy JARVIS_BASE_URL for the current provider is
     # migrated the next time its endpoint is saved.
     if selected.base_url_env and (base_url is not None or switching):
-        legacy = os.environ.get("WAKU_BASE_URL", "") if provider == previous else ""
+        legacy = os.environ.get("JARVIS_BASE_URL", "") if provider == previous else ""
         selected_base_url = (base_url or legacy or selected.configured_base_url() or "").strip()
         if selected_base_url:
             updates[selected.base_url_env] = selected_base_url
-        updates["WAKU_BASE_URL"] = ""
+        updates["JARVIS_BASE_URL"] = ""
     elif base_url is not None:
-        updates["WAKU_BASE_URL"] = base_url
+        updates["JARVIS_BASE_URL"] = base_url
     if custom_key is not None:
-        updates["WAKU_API_KEY"] = custom_key
+        updates["JARVIS_API_KEY"] = custom_key
     # The modal always submits its selected Base URL.  Compare effective values
     # rather than field presence so reopening and saving an unchanged provider
     # does not perform a synchronous network probe every time.
     current_key = os.environ.get(selected.key_env, "")
-    legacy_base_url = os.environ.get("WAKU_BASE_URL", "") if provider == previous else ""
+    legacy_base_url = os.environ.get("JARVIS_BASE_URL", "") if provider == previous else ""
     current_base_url = legacy_base_url or selected.configured_base_url() or ""
     candidate_base_url = (
         updates.get(selected.base_url_env, current_base_url)
-        if selected.base_url_env else updates.get("WAKU_BASE_URL", current_base_url)
+        if selected.base_url_env else updates.get("JARVIS_BASE_URL", current_base_url)
     )
     key_changed = bool(key and key != current_key)
     base_url_changed = (
@@ -773,17 +773,17 @@ def apply_provider(provider: str, *, key: str | None = None, model: str | None =
         # candidate values for the duration of this non-writing request.
         candidate_key = key or os.environ.get(selected.key_env, "")
         if candidate_key and (key_changed or base_url_changed) and not force:
-            probe_names = {"WAKU_PROVIDER", selected.key_env}
+            probe_names = {"JARVIS_PROVIDER", selected.key_env}
             if selected.base_url_env:
-                probe_names.update({selected.base_url_env, "WAKU_BASE_URL"})
+                probe_names.update({selected.base_url_env, "JARVIS_BASE_URL"})
             probe_before = {name: os.environ.get(name) for name in probe_names}
-            os.environ["WAKU_PROVIDER"] = provider
+            os.environ["JARVIS_PROVIDER"] = provider
             os.environ[selected.key_env] = candidate_key
             if selected.base_url_env and selected.base_url_env in updates:
                 os.environ[selected.base_url_env] = updates[selected.base_url_env]
-                os.environ["WAKU_BASE_URL"] = ""
+                os.environ["JARVIS_BASE_URL"] = ""
             elif base_url is not None:
-                os.environ["WAKU_BASE_URL"] = base_url
+                os.environ["JARVIS_BASE_URL"] = base_url
             try:
                 _provider_probe({selected.key_env: candidate_key})
             finally:
@@ -820,9 +820,9 @@ def apply_provider_disabled(provider: str, *, disabled: bool) -> ApplyResult:
     """
     if provider not in PROVIDERS:
         return ApplyResult(False, error="unknown provider")
-    if disabled and os.environ.get("WAKU_PROVIDER", "") == provider:
+    if disabled and os.environ.get("JARVIS_PROVIDER", "") == provider:
         return ApplyResult(False, error="cannot disable the current provider — switch to another provider first")
-    current = {p.strip() for p in os.environ.get("WAKU_DISABLED_PROVIDERS", "").split(",") if p.strip()}
+    current = {p.strip() for p in os.environ.get("JARVIS_DISABLED_PROVIDERS", "").split(",") if p.strip()}
     updated = (current | {provider}) if disabled else (current - {provider})
-    _write_updates({"WAKU_DISABLED_PROVIDERS": ",".join(sorted(updated))}, ())
+    _write_updates({"JARVIS_DISABLED_PROVIDERS": ",".join(sorted(updated))}, ())
     return ApplyResult(True, _current_view(provider))

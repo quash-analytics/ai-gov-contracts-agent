@@ -32,14 +32,14 @@ def test_triage_is_a_command_and_takes_a_message():
     import inspect
 
     assert "triage" in commands.discover()
-    fn = importlib.import_module("waku.ops.triage").run_triage
+    fn = importlib.import_module("jarvis.ops.triage").run_triage
     assert "message" in inspect.signature(fn).parameters
 
 
 def test_discovery_requires_both_halves():
     """A workflow module is the PURE graph — injected callables, nothing bound
     to this machine, deliberately unrunnable on its own. The binder in
-    waku/ops/ is what makes it runnable, so that is what earns the command."""
+    jarvis/ops/ is what makes it runnable, so that is what earns the command."""
     import pkgutil
 
     import jarvis.graph.workflows as pkg
@@ -48,7 +48,7 @@ def test_discovery_requires_both_halves():
     assert modules >= {"triage", "gather"}
     for name, target in commands.discover().items():
         assert name in modules, f"/{name} has no workflow module"
-        assert target == f"waku.ops.{name}:run_{name}"
+        assert target == f"jarvis.ops.{name}:run_{name}"
 
 
 def test_the_runner_table_and_the_commands_cannot_drift():
@@ -102,7 +102,7 @@ def test_the_dashboard_no_longer_says_you_never_pick_a_mode():
     and a UI that contradicts the feature is worse than no copy at all."""
     import pathlib
 
-    js = pathlib.Path(__file__).resolve().parents[2] / "waku/ops/static/js/views.js"
+    js = pathlib.Path(__file__).resolve().parents[2] / "jarvis/ops/static/js/views.js"
     assert "never pick a mode" not in js.read_text()
 
 
@@ -113,7 +113,7 @@ def test_a_runner_without_a_message_parameter_is_not_given_one():
     import importlib
     import inspect
 
-    fn = importlib.import_module("waku.ops.gather").run_gather
+    fn = importlib.import_module("jarvis.ops.gather").run_gather
     assert "message" not in inspect.signature(fn).parameters
 
 

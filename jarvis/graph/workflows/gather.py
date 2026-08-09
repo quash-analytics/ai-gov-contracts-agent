@@ -116,7 +116,7 @@ def build_gather_graph(*, github_fn: Callable[[], dict],
                        draft_fn: Callable[[dict], str]) -> Graph:
     """Callables injected exactly as triage does it: evals script them with
     lambdas, gather_topology() passes stubs to describe the shape without
-    running it, and waku/ops/gather.py binds the real ones."""
+    running it, and jarvis/ops/gather.py binds the real ones."""
     g = Graph("gather")
 
     g.add_node(Node("scan_github", lambda s: _safe(

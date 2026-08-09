@@ -1,6 +1,6 @@
 """Pricing — what a call cost, in dollars a human can feel.
 
-The loop writes a permanent ledger (`.waku/usage.jsonl`): one line per API call
+The loop writes a permanent ledger (`.jarvis/usage.jsonl`): one line per API call
 with provider, model, and token counts. It deliberately does NOT store a price.
 Prices change; tokens don't. So cost is derived HERE, at read time, from the
 current tables — which means fixing a wrong rate silently corrects every past

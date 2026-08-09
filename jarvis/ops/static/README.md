@@ -1,6 +1,6 @@
 # Dashboard frontend — the map
 
-Plain static files served as-is by `waku/ops/dashboard.py` (a stdlib HTTP
+Plain static files served as-is by `jarvis/ops/dashboard.py` (a stdlib HTTP
 server). **No build step, no framework, no bundler, no dependencies.** Edit these
 files to change the UI; edit `dashboard.py` to change the server/API.
 
@@ -45,7 +45,7 @@ Data flows one way: `refresh()` (main.js) fetches `/api/data` into the global
 - **The graph chart is data-driven — never hand-edit a topology.** `graphSVG`
   renders `Graph.describe()` served in `/api/data`, so the picture is provably
   what the engine runs (`test_graph_topology_payload.py` pins it). To change the
-  chart's shape, change the workflow in `waku/graph/workflows/`. Graph ids are
+  chart's shape, change the workflow in `jarvis/graph/workflows/`. Graph ids are
   namespaced `g-<node>` / `g-<src>-<dst>` so they can never collide with archSVG's.
 - **No build step / no framework / no new dependencies.** If you reach for one,
   stop — the whole point is that this reads and runs with nothing installed.

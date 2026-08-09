@@ -1,5 +1,5 @@
 """A DeepEval judge model backed by the same Anthropic-compatible endpoint
-Waku itself uses — no separate OpenAI key needed for judging.
+Jarvis itself uses — no separate OpenAI key needed for judging.
 
 DeepEval calls generate() with an optional pydantic schema when it wants
 structured verdicts; we ask the model for JSON and validate it back.

@@ -6,8 +6,8 @@ cosine similarity instead of keyword BM25. Uses the exact schema and
 (github.com/ShenSeanChen/launch-agentic-rag) — if you followed those videos,
 this is the same table. Run sql/init_supabase.sql on a fresh project, then:
 
-    pip install 'waku-agent[supabase]'
-    WAKU_SEMANTIC_STORE=supabase  SUPABASE_URL=...  SUPABASE_SERVICE_KEY=...
+    pip install 'jarvis-agent[supabase]'
+    JARVIS_SEMANTIC_STORE=supabase  SUPABASE_URL=...  SUPABASE_SERVICE_KEY=...
     OPENAI_API_KEY=...   # embeddings only (text-embedding-3-small, 1536d)
 
 When is this worth it over FTS5? When phrasing diverges from wording:

@@ -24,15 +24,15 @@ from jarvis.memory.semantic.store import SqliteFactStore
 
 
 def bundled_skill_dirs() -> list[Path]:
-    """Where the skills that SHIP with Waku live — and why there are two answers.
+    """Where the skills that SHIP with Jarvis live — and why there are two answers.
 
     Contributors add skills to `skills/` at the repo root: that is what
     CONTRIBUTING.md documents, what CI validates, and what a checkout has. But
-    the wheel only packages the `waku/` directory, so a `pip install waku-agent`
+    the wheel only packages the `jarvis/` directory, so a `pip install jarvis-agent`
     would have found nothing there and silently started with zero skills —
     procedural memory, one of the four pillars, quietly missing. (It did, until
     2026-07-31.) pyproject force-includes the same folder into the wheel at
-    `waku/skills`, so an installed Waku finds it next to the code.
+    `jarvis/skills`, so an installed Jarvis finds it next to the code.
 
     Exactly one of these exists at a time — the package copy only in a built
     wheel, the repo copy only in a checkout — so returning both is not a
@@ -165,7 +165,7 @@ class Memory:
 
     def export_markdown(self) -> None:
         """Mirror memory to a human-readable MEMORY.md next to state.db — so the
-        whiteboard's `~/.waku/MEMORY.md` box is literally real, and "your memory
+        whiteboard's `~/.jarvis/MEMORY.md` box is literally real, and "your memory
         is a file you can open" is true. state.db stays the queryable source of
         truth; this file is a generated view, refreshed after each turn."""
         facts = self.conn.execute(
@@ -175,9 +175,9 @@ class Memory:
             "SELECT happened_at, summary FROM episodes ORDER BY happened_at DESC, id DESC"
         ).fetchall()
         lines = [
-            "# Waku memory",
+            "# Jarvis memory",
             "",
-            ("_A human-readable mirror of what Waku remembers. The source of truth is "
+            ("_A human-readable mirror of what Jarvis remembers. The source of truth is "
             "`state.db` (the `facts` and `episodes` tables, keyword-searchable via FTS5); "
             "this file is regenerated after every turn._"),
             "",

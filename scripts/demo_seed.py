@@ -1,10 +1,10 @@
-"""Reset .waku to a clean, curated state for a demo / recording.
+"""Reset .jarvis to a clean, curated state for a demo / recording.
 
     python scripts/demo_seed.py                 # clean slate, KEEPS the spend ledger
     python scripts/demo_seed.py --reset-spend   # also wipe usage.jsonl (money/tokens)
 
 What it does (your old state is backed up first, never just deleted):
-  1. moves the current .waku aside to .waku.bak-<timestamp>
+  1. moves the current .jarvis aside to .jarvis.bak-<timestamp>
   2. creates a fresh state.db + calendar.ics
   3. seeds a small, clean memory (a few facts + one episode) and ONE calendar
      event — Sergey's standing Saturday 5 PM swim
@@ -100,13 +100,13 @@ def main(reset_spend: bool = False) -> None:
         print("  CLEARED: usage.jsonl (money/token spend) — you approved this.")
     else:
         print("  KEPT: SOUL.md and usage.jsonl (your real spend — pass --reset-spend to wipe).")
-    print("  Run `waku dashboard` and start filming.")
+    print("  Run `jarvis dashboard` and start filming.")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Reset .waku to a clean demo state.")
+    parser = argparse.ArgumentParser(description="Reset .jarvis to a clean demo state.")
     parser.add_argument("--yes", "-y", action="store_true",
-                        help="required confirmation: yes, wipe .waku (it is backed up first)")
+                        help="required confirmation: yes, wipe .jarvis (it is backed up first)")
     parser.add_argument("--reset-spend", action="store_true",
                         help="also wipe usage.jsonl (the money/token spend ledger)")
     args = parser.parse_args()
@@ -114,7 +114,7 @@ if __name__ == "__main__":
         # Safety gate: this destroys live memory/calendar/traces. Refuse unless the
         # human explicitly confirms with --yes. See CLAUDE.md ("Never wipe runtime
         # data without asking first"). It backs up, but restoring is a hassle.
-        print("REFUSING to run: demo_seed clears .waku (memory, calendar, chat, traces"
+        print("REFUSING to run: demo_seed clears .jarvis (memory, calendar, chat, traces"
               + (", AND spend" if args.reset_spend else "") + ").")
         print("This is destructive. If you truly mean it, re-run with --yes:")
         print("    python scripts/demo_seed.py --yes"

@@ -4,7 +4,7 @@ Setup (2 minutes, free):
   1. In Telegram, message @BotFather → /newbot → copy the token
   2. Put TELEGRAM_BOT_TOKEN=... in .env
   3. Set TELEGRAM_ALLOWED_USER=<your numeric id> (message @userinfobot to get
-     it) so ONLY you can talk to your Waku. Comma-separate for several people.
+     it) so ONLY you can talk to your Jarvis. Comma-separate for several people.
      LEAVING THIS UNSET MEANS ANYONE WHO FINDS YOUR BOT CAN USE IT — and this
      bot answers out of YOUR memory, with YOUR tools, on YOUR API key. The
      startup banner tells you which posture you are in; read it.
@@ -21,7 +21,7 @@ import asyncio
 import os
 import threading
 
-from jarvis.app import Waku
+from jarvis.app import Jarvis
 from jarvis.gateway.cli import _observer  # mirror gate/tool activity on the laptop terminal
 from jarvis.gateway.runner import GatewayAgentRunner, run_gateway_turn
 from jarvis.integrations import IntegrationState, IntegrationStatus
@@ -45,13 +45,13 @@ def posture() -> str:
 
 def _new_runner() -> GatewayAgentRunner:
     return GatewayAgentRunner(
-        Waku, session_id="telegram", source="telegram", observer=_observer
+        Jarvis, session_id="telegram", source="telegram", observer=_observer
     )
 
 
 def _build_app(token: str, allowed: str = "", runner: GatewayAgentRunner | None = None):
     """Build the polling app + message handler. Shared by the standalone
-    gateway and the background poller `waku dashboard` starts.
+    gateway and the background poller `jarvis dashboard` starts.
 
     `allowed` is accepted for backwards compatibility; the allowlist is read
     from the environment so a single id and a comma-separated list behave the
@@ -64,7 +64,7 @@ def _build_app(token: str, allowed: str = "", runner: GatewayAgentRunner | None 
 
     async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if allowed_ids and str(update.effective_user.id) not in allowed_ids:
-            await update.message.reply_text("This Waku serves someone else. Run your own!")
+            await update.message.reply_text("This Jarvis serves someone else. Run your own!")
             return
         await run_gateway_turn(runner, update.message.text, update.message.reply_text)
 
@@ -77,7 +77,7 @@ def main() -> None:
     try:
         import telegram  # noqa: F401
     except ImportError:
-        raise SystemExit("Telegram extra not installed: pip install 'waku-agent[telegram]'")
+        raise SystemExit("Telegram extra not installed: pip install 'jarvis-agent[telegram]'")
 
     from jarvis.config import load_settings
 
@@ -87,7 +87,7 @@ def main() -> None:
     runner = _new_runner()
     try:
         app = _build_app(token, runner=runner)
-        print("Waku is listening on Telegram — message your bot. Ctrl-C to stop.")
+        print("Jarvis is listening on Telegram — message your bot. Ctrl-C to stop.")
         print(posture())
         app.run_polling()
     finally:
@@ -129,7 +129,7 @@ class TelegramHandle:
 
 
 def start_in_background() -> TelegramHandle | None:
-    """Start the Telegram poller on a daemon thread — so `waku dashboard` runs
+    """Start the Telegram poller on a daemon thread — so `jarvis dashboard` runs
     the browser cockpit AND Telegram from one command. Returns True if started,
     False (quietly) if there's no token or the extra isn't installed. Never
     raises: a gateway problem must not take down the dashboard."""
@@ -142,7 +142,7 @@ def start_in_background() -> TelegramHandle | None:
         import telegram  # noqa: F401
     except ImportError:
         print("(telegram) TELEGRAM_BOT_TOKEN is set but the extra isn't installed — "
-              "pip install 'waku-agent[telegram]'")
+              "pip install 'jarvis-agent[telegram]'")
         return None
 
     print("(telegram) starting:")
@@ -161,7 +161,7 @@ def start_in_background() -> TelegramHandle | None:
         if isinstance(exc, Conflict) and not warned["conflict"]:
             warned["conflict"] = True
             print("(telegram) another instance is already running this bot — the dashboard's "
-                  "Telegram stays idle. Stop the other `waku telegram` and restart to use it here.")
+                  "Telegram stays idle. Stop the other `jarvis telegram` and restart to use it here.")
 
     loop = asyncio.new_event_loop()
     runner = _new_runner()

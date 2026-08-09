@@ -3,7 +3,7 @@
     /gather      run the morning gather
     /graphs      list what is available
 
-Two kinds of graph ship in Waku and conflating them made the UI say something
+Two kinds of graph ship in Jarvis and conflating them made the UI say something
 false. `triage` is a ROUTER: it runs itself on every message and you should
 never think about it. `gather` is a PROCEDURE: a named shape you ask for. The
 dashboard used to claim "you never pick a mode", which was true until the
@@ -13,13 +13,13 @@ A graph is a pre-determined workflow. If the shape is known in advance, being
 able to name it is the natural interface — so anything with a binder gets a
 slash command, automatically.
 
-DISCOVERY, and why it is shaped this way: a module in waku/graph/workflows/ is
+DISCOVERY, and why it is shaped this way: a module in jarvis/graph/workflows/ is
 the PURE graph — injected callables, no client, no filesystem, nothing bound to
 this machine. It cannot be run on its own, by design, because that is what
-makes it testable. What makes a workflow runnable is its BINDER in waku/ops/,
+makes it testable. What makes a workflow runnable is its BINDER in jarvis/ops/,
 where real callables meet the pure shape.
 
-So the rule is: `waku/graph/workflows/<name>.py` plus `waku/ops/<name>.py`
+So the rule is: `jarvis/graph/workflows/<name>.py` plus `jarvis/ops/<name>.py`
 exposing `run_<name>` gives you `/<name>`. Drop in both halves and the command
 appears; ship only the pure half and it stays a shape the dashboard can draw
 but nobody can invoke.
@@ -50,7 +50,7 @@ def discover() -> dict[str, str]:
         name = mod.name
         if name.startswith("_"):
             continue
-        binder = f"waku.ops.{name}"
+        binder = f"jarvis.ops.{name}"
         try:
             module = importlib.import_module(binder)
         except Exception:  # noqa: S112 — one broken optional workflow must not

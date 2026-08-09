@@ -70,7 +70,7 @@ def test_probe_apple_calendar_reports_timeout_and_applescript_errors(monkeypatch
 
 
 def test_apple_sync_success_and_failure_update_connection_health(monkeypatch, tmp_path):
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path))
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path))
     monkeypatch.setattr(calendar.sys, "platform", "darwin")
     monkeypatch.setattr(integrations, "_HEALTH", None)
 
@@ -104,7 +104,7 @@ def test_apple_sync_success_and_failure_update_connection_health(monkeypatch, tm
     [subprocess.TimeoutExpired("osascript", 30), OSError("osascript missing")],
 )
 def test_apple_sync_runtime_exceptions_record_error(monkeypatch, tmp_path, failure):
-    monkeypatch.setenv("WAKU_HOME", str(tmp_path))
+    monkeypatch.setenv("JARVIS_HOME", str(tmp_path))
     monkeypatch.setattr(calendar.sys, "platform", "darwin")
     monkeypatch.setattr(integrations, "_HEALTH", None)
     monkeypatch.setattr(
