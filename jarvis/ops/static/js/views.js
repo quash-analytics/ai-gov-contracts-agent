@@ -436,6 +436,7 @@ const VIEWS = {
         [money(u.total_cost),"spent · all-time","money"],[secs(s.latency_avg),"avg turn",""],
         [s.turns,"turns",""],[s.tool_calls,"tool calls",""],
         [d.facts.length,"facts",""],[d.calendar.length,"events",""],
+        [d.bd_opportunities_count,"BD opportunities scanned",""],[d.emails_drafted_count,"emails drafted",""],
       ].map(([v,l,c])=>`<div class="tile"><b class="${c}">${v}</b><span>${l}</span></div>`).join("");
     return `<div class="tiles">${tiles}</div>
     <h2>Retrieval gate — the hero decision</h2>${gateSplit(s)}
@@ -477,6 +478,9 @@ const VIEWS = {
         ignores the flag entirely. The four scans have no dependencies on each other, so the engine
         runs them in ONE WAVE: together, not in turn. It proposes and never acts; the digest lands
         in the outbox for you to read.`,
+      bd_scan: `<b>Runs when you start it</b> — <code>make bd-scan</code> — and ignores the flag
+        entirely. SAM.gov, Tango, and USAspending scan in ONE WAVE, then one model call scores and
+        ranks the hit list. It proposes and never acts; the ranked digest lands in the outbox.`,
     };
     (g.workflows || []).forEach(w => {
       if (!w) return;

@@ -10,6 +10,8 @@
   jarvis brief                 morning briefing (calendar + mail + memory) — as a LOOP
   jarvis gather                same job as a GRAPH: github, web, calendar and
                              memory fetched together, then one digest
+  jarvis bd_scan                BD hit-list scan: SAM.gov + Tango + USAspending,
+                             then a ranked digest
   jarvis skill install <url>   install a community skill
 """
 
@@ -56,6 +58,10 @@ def main() -> None:
         from jarvis.ops.gather import main as gather_main
 
         gather_main()
+    elif args[0] == "bd_scan":
+        from jarvis.ops.bd_scan import main as bd_scan_main
+
+        bd_scan_main()
     elif args[0] == "skill" and len(args) >= 3 and args[1] == "install":
         from jarvis.memory.procedural.installer import install
 

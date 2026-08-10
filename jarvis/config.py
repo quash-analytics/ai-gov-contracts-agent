@@ -136,6 +136,17 @@ class Settings:
         default_factory=lambda: os.getenv("JARVIS_GRAPH_WORKFLOWS", "") in ("1", "true", "yes")
     )
 
+    # --- BD hit-list scan (bd_scan graph workflow)
+    # NAICS codes to filter SAM.gov/Tango/USAspending against. Defaults are
+    # Quash's own registered codes (IT/professional services + telecom).
+    naics_codes: tuple[str, ...] = field(default_factory=lambda: tuple(
+        c.strip() for c in os.getenv(
+            "JARVIS_NAICS_CODES", "541511,541512,541519,541611,541690,518210"
+        ).split(",") if c.strip()
+    ))
+    sam_api_key: str = field(default_factory=lambda: os.getenv("JARVIS_SAM_API_KEY", ""))
+    tango_api_key: str = field(default_factory=lambda: os.getenv("JARVIS_TANGO_API_KEY", ""))
+
     # --- Optional gateway
     telegram_token: str = field(default_factory=lambda: os.getenv("TELEGRAM_BOT_TOKEN", ""))
     whatsapp_token: str = field(default_factory=lambda: os.getenv("WHATSAPP_TOKEN", ""))

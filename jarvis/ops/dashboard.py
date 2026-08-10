@@ -396,6 +396,14 @@ def collect() -> dict:
 
     outbox = [{"name": p.name, "text": p.read_text(encoding="utf-8")[:400]}
               for p in sorted((home / "outbox").glob("*.txt"), reverse=True)[:20]]
+    # Stat tiles for the two background agents — counted straight from what
+    # they actually wrote, same "no separate registry" rule as the graph
+    # topology charts: the number can't drift from the file/row it describes.
+    emails_drafted_count = len(list((home / "outbox").glob("*-email-*.txt")))
+    try:
+        bd_opportunities_count = conn.execute("SELECT COUNT(*) FROM bd_opportunities").fetchone()[0]
+    except Exception:
+        bd_opportunities_count = 0
 
     # --- state.db introspection: the actual SQLite tables, so the persistence
     # layer is visible (not just its contents). Table names are hard-coded, so
@@ -426,6 +434,7 @@ def collect() -> dict:
 
     # --- graph workflows: topology straight from the engine (never hand-drawn,
     # so the picture can't drift) + quick/full split from the trace events
+    from jarvis.graph.workflows.bd_scan import bd_scan_topology
     from jarvis.graph.workflows.gather import gather_topology
     from jarvis.graph.workflows.triage import triage_topology
     graph_routes = [e.get("target") for e in events if e.get("type") == "route"]
@@ -478,6 +487,8 @@ def collect() -> dict:
         "consolidate_every": settings.consolidate_every,
         "calendar": rows('SELECT title, start, "end", attendees, created_at FROM calendar_events ORDER BY start'),
         "outbox": outbox,
+        "emails_drafted_count": emails_drafted_count,
+        "bd_opportunities_count": bd_opportunities_count,
         "skills": skills,
         "eval_report": eval_report,
         "eval_history": eval_history,
@@ -486,7 +497,7 @@ def collect() -> dict:
             # `jarvis gather` is a routine you run yourself and ignores this flag
             # entirely, so the UI must not say "off = no graphs run".
             "enabled": settings.graph_workflows,
-            "workflows": [triage_topology(), gather_topology()],
+            "workflows": [triage_topology(), gather_topology(), bd_scan_topology()],
             "runs": graph_runs,
             "stats": {"quick": sum(1 for t in graph_routes if t == "quick_reply"),
                       "full": sum(1 for t in graph_routes if t == "full_agent")},
@@ -587,7 +598,7 @@ def tools_info() -> dict:
         # Display-only: same tools minus MCP (building the real registry would
         # start MCP servers, which we don't want on a 5-second poll).
         from jarvis.memory import Memory
-        from jarvis.tools import calendar, memory_admin, messages, notes, search
+        from jarvis.tools import calendar, email, memory_admin, notes, search
 
         conn = connect(settings.home)
         try:
@@ -611,7 +622,10 @@ def tools_info() -> dict:
                      google_calendar_id=settings.google_calendar_id,
                  ),
                  calendar.make_list_tool(conn),
-                 notes.make_tool(conn), messages.make_tool(settings.home),
+                 notes.make_tool(conn), email.make_tool(settings.home),
+                 # Display-only listing: no real client needed, this tool's fn
+                 # is never invoked here — only its name/description/schema show.
+                 email.make_compose_email_tool(settings.home, None, settings.small_model),
                  search.make_tool(),
                  memory_admin.make_update_soul_tool(settings)]
         if mem is not None:

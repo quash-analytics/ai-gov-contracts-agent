@@ -73,6 +73,23 @@ CREATE TABLE IF NOT EXISTS chat_log (
     session_id TEXT DEFAULT 'default',
     created_at TEXT DEFAULT (datetime('now'))
 );
+
+-- BD hit-list history: one row per opportunity ever scored, keyed by SAM.gov's
+-- own noticeId so an amendment re-post updates the row instead of duplicating
+-- it. Lets bd_scan compare today's scan against what it already knew, and
+-- makes trend-tracking (which agencies post most, how often a type repeats)
+-- possible later without re-scoring from scratch every run.
+CREATE TABLE IF NOT EXISTS bd_opportunities (
+    notice_id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    agency TEXT DEFAULT '',
+    naics TEXT DEFAULT '',
+    response_deadline TEXT DEFAULT '',
+    link TEXT DEFAULT '',
+    rationale TEXT DEFAULT '',      -- synthesize_hitlist's one-line ranking reason
+    first_seen_at TEXT DEFAULT (datetime('now')),
+    last_seen_at TEXT DEFAULT (datetime('now'))
+);
 """
 
 

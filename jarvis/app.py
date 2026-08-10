@@ -28,7 +28,7 @@ class Jarvis:
         from jarvis.memory import Memory
 
         self.memory = Memory(self.conn, self.settings, self.client)
-        self.tools = build_registry(self.conn, self.settings, self.memory)
+        self.tools = build_registry(self.conn, self.settings, self.memory, client=self.client)
         self.mcp_bridge = getattr(self.tools, "mcp_bridge", None)
         self.session = Session(self.settings, memory=self.memory)
         self.tracer = Tracer(self.settings)
