@@ -48,8 +48,8 @@
   <p class="sub">Tracking against the Jarvis implementation instructions (Waku → Jarvis rebrand + BD/email agents) · updated 2026-08-09</p>
 
   <div class="progress-wrap">
-    <div class="progress-label"><span>Overall progress</span><span>1 / 7 sections complete</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:14%"></div></div>
+    <div class="progress-label"><span>Overall progress</span><span>2 / 7 sections complete</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:29%"></div></div>
   </div>
 
   <section>
@@ -69,14 +69,17 @@
   </section>
 
   <section>
-    <h2>2. Model tiering + Ollama provider <span class="badge todo">not started</span></h2>
+    <h2>2. Model tiering + Ollama provider <span class="badge done">done</span></h2>
     <ul>
-      <li class="todo"><span class="box"></span> Rename <code>small_model</code> → <code>chat_model</code> throughout loop/graph/dashboard</li>
-      <li class="todo"><span class="box"></span> Add new <code>agent_model</code> field to <code>Settings</code> (<code>JARVIS_AGENT_MODEL</code>, falls back to <code>model</code>)</li>
-      <li class="todo"><span class="box"></span> Add <code>ollama</code> entry to <code>PROVIDERS</code> in <code>loop/models.py</code></li>
-      <li class="todo"><span class="box"></span> Add <code>OLLAMA_API_KEY</code> placeholder + <code>KEY_URLS</code> entry</li>
-      <li class="todo"><span class="box"></span> Verify Ollama catalog endpoint against a live install</li>
-      <li class="todo"><span class="box"></span> (optional) Trim Arena / Apple+Google Calendar / Telegram+WhatsApp for bare-bones scope</li>
+      <li class="done"><span class="box">✓</span> Scoped per Sean's direction: kept <code>small_model</code> name as-is (no <code>chat_model</code> rename)</li>
+      <li class="done"><span class="box">✓</span> Added <code>large_model</code> field to <code>Settings</code> (<code>JARVIS_LARGE_MODEL</code>, falls back to <code>model</code>) instead of <code>agent_model</code></li>
+      <li class="done"><span class="box">✓</span> Added <code>ollama</code> entry to <code>PROVIDERS</code> in <code>loop/models.py</code> (gemma4:e4b / gemma4:e2b, localhost:11434)</li>
+      <li class="done"><span class="box">✓</span> <code>OLLAMA_API_KEY</code> placeholder (default="ollama") + <code>KEY_URLS</code> entry</li>
+      <li class="done"><span class="box">✓</span> Registered in <code>PRICING</code> ($0, local) + logo + anti-leak guard, so it doesn't fall through the 3 places a provider must appear</li>
+      <li class="done"><span class="box">✓</span> 3 new regression tests (large_model fallback, explicit override, ollama client resolution)</li>
+      <li class="note">Not done: live install verification of the Ollama catalog endpoint (needs a real local Ollama server to test against).</li>
+      <li class="note">Skipped by choice: Arena / Apple+Google Calendar / Telegram+WhatsApp trims (doc marked these optional).</li>
+      <li class="note">Committed <code>259e510</code> · pushed to <code>origin/main</code> · 570 passed, 51 skipped.</li>
     </ul>
   </section>
 
@@ -85,7 +88,7 @@
     <ul>
       <li class="todo"><span class="box"></span> Rename <code>tools/messages.py</code> → <code>tools/email.py</code></li>
       <li class="todo"><span class="box"></span> Add <code>compose_email</code> tool (to / subject / body)</li>
-      <li class="todo"><span class="box"></span> Route through <code>agent_model</code> via an <code>agent_node</code> / graph workflow</li>
+      <li class="todo"><span class="box"></span> Route through <code>large_model</code> via an <code>agent_node</code> / graph workflow</li>
       <li class="todo"><span class="box"></span> Draft-only into <code>.jarvis/outbox/</code> — no send capability added</li>
     </ul>
   </section>
@@ -122,7 +125,7 @@
   <section>
     <h2>7. Config additions <span class="badge todo">not started</span></h2>
     <ul>
-      <li class="todo"><span class="box"></span> <code>JARVIS_AGENT_MODEL</code></li>
+      <li class="todo"><span class="box"></span> <code>JARVIS_LARGE_MODEL</code></li>
       <li class="todo"><span class="box"></span> <code>JARVIS_NAICS_CODES</code> (default: 541511,541512,541519,541611,541690,518210)</li>
       <li class="todo"><span class="box"></span> <code>JARVIS_SAM_API_KEY</code></li>
       <li class="todo"><span class="box"></span> <code>JARVIS_TANGO_API_KEY</code></li>
