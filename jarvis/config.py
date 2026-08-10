@@ -52,6 +52,11 @@ class Settings:
     model: str = field(default_factory=lambda: os.getenv("JARVIS_MODEL", ""))
     # Cheap model used by the retrieval gate and the consolidation summarizer.
     small_model: str = field(default_factory=lambda: os.getenv("JARVIS_SMALL_MODEL", ""))
+    # Heavyweight model reserved for background agents (email drafting, BD hit-
+    # list scoring) that need more reasoning than the interactive loop. Falls
+    # back to `model` when unset (get_client fills this in), so nothing breaks
+    # for anyone who hasn't configured it — it's an upgrade, never a requirement.
+    large_model: str = field(default_factory=lambda: os.getenv("JARVIS_LARGE_MODEL", ""))
     # Providers the user turned off in the dashboard (comma-separated ids).
     # Disabled providers are hidden from pickers/switchers; the ACTIVE provider
     # can't be disabled (guarded in integrations.apply_provider_disabled).

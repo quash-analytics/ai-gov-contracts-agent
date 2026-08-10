@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jarvis build checklist</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --border:#262b36; --text:#e6e8ec;
+    --muted:#8b93a3; --done:#3ecf8e; --done-soft:#123626;
+    --todo:#f5a623; --todo-soft:#3a2c10; --blocked:#6b7280; --blocked-soft:#22252c;
+    --accent:#7aa2ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    padding:32px 20px 80px}
+  main{max-width:820px;margin:0 auto}
+  h1{font-size:26px;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 28px;font-size:14px}
+  .progress-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:14px 16px;margin-bottom:28px}
+  .progress-bar{height:8px;border-radius:5px;background:var(--blocked-soft);overflow:hidden;margin-top:8px}
+  .progress-fill{height:100%;background:var(--done);border-radius:5px 0 0 5px}
+  .progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+  section{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:18px 20px;margin-bottom:14px}
+  section h2{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+  .badge{font-size:11px;font-weight:600;padding:2px 9px;border-radius:99px;letter-spacing:.02em}
+  .badge.done{background:var(--done-soft);color:var(--done)}
+  .badge.todo{background:var(--todo-soft);color:var(--todo)}
+  .badge.blocked{background:var(--blocked-soft);color:var(--blocked)}
+  ul{list-style:none;margin:0;padding:0}
+  li{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:14px}
+  li .box{flex:0 0 16px;width:16px;height:16px;border-radius:4px;margin-top:2px;
+    border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px}
+  li.done .box{background:var(--done);border-color:var(--done);color:#0f1115;font-weight:700}
+  li.todo .box{border-color:var(--todo)}
+  li.note{color:var(--muted);font-size:13px;padding-left:26px}
+  code{background:#1e222c;border:1px solid var(--border);border-radius:4px;padding:1px 6px;
+    font-size:12.5px;color:var(--accent)}
+  footer{color:var(--muted);font-size:12.5px;margin-top:30px;text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <h1>Jarvis build checklist</h1>
+  <p class="sub">Tracking against the Jarvis implementation instructions (Waku → Jarvis rebrand + BD/email agents) · updated 2026-08-09</p>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Overall progress</span><span>1 / 7 sections complete</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:14%"></div></div>
+  </div>
+
+  <section>
+    <h2>1. Rebrand: Waku → Jarvis <span class="badge done">done</span></h2>
+    <ul>
+      <li class="done"><span class="box">✓</span> Package renamed <code>waku/</code> → <code>jarvis/</code>, all imports updated</li>
+      <li class="done"><span class="box">✓</span> <code>pyproject.toml</code>: name + <code>[project.scripts]</code> entry updated</li>
+      <li class="done"><span class="box">✓</span> Env vars <code>WAKU_*</code> → <code>JARVIS_*</code> across code, tests, docs, <code>.env.example</code></li>
+      <li class="done"><span class="box">✓</span> Display strings (index.html title/brand/placeholder)</li>
+      <li class="done"><span class="box">✓</span> Whiteboard generator + <code>.excalidraw</code> renamed and regenerated</li>
+      <li class="done"><span class="box">✓</span> Runtime dir <code>.waku/</code> → <code>.jarvis/</code></li>
+      <li class="done"><span class="box">✓</span> Voice wake-word default cleaned (stale "waku waku" mishearing variants removed) + tests fixed</li>
+      <li class="done"><span class="box">✓</span> README.md / CLAUDE.md clean</li>
+      <li class="note">Left as-is: 5 unrelated teaching whiteboards (k3 / pi-agent comparisons) that reference "waku" as historical/measured fact, not branding.</li>
+      <li class="note">Committed <code>26ecbc4</code> · pushed to <code>origin/main</code> · 564 passed, 51 skipped.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>2. Model tiering + Ollama provider <span class="badge todo">not started</span></h2>
+    <ul>
+      <li class="todo"><span class="box"></span> Rename <code>small_model</code> → <code>chat_model</code> throughout loop/graph/dashboard</li>
+      <li class="todo"><span class="box"></span> Add new <code>agent_model</code> field to <code>Settings</code> (<code>JARVIS_AGENT_MODEL</code>, falls back to <code>model</code>)</li>
+      <li class="todo"><span class="box"></span> Add <code>ollama</code> entry to <code>PROVIDERS</code> in <code>loop/models.py</code></li>
+      <li class="todo"><span class="box"></span> Add <code>OLLAMA_API_KEY</code> placeholder + <code>KEY_URLS</code> entry</li>
+      <li class="todo"><span class="box"></span> Verify Ollama catalog endpoint against a live install</li>
+      <li class="todo"><span class="box"></span> (optional) Trim Arena / Apple+Google Calendar / Telegram+WhatsApp for bare-bones scope</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>3. Email agent <span class="badge todo">not started</span></h2>
+    <ul>
+      <li class="todo"><span class="box"></span> Rename <code>tools/messages.py</code> → <code>tools/email.py</code></li>
+      <li class="todo"><span class="box"></span> Add <code>compose_email</code> tool (to / subject / body)</li>
+      <li class="todo"><span class="box"></span> Route through <code>agent_model</code> via an <code>agent_node</code> / graph workflow</li>
+      <li class="todo"><span class="box"></span> Draft-only into <code>.jarvis/outbox/</code> — no send capability added</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4. BD hit-list workflow <span class="badge todo">not started</span></h2>
+    <ul>
+      <li class="todo"><span class="box"></span> New <code>graph/workflows/bd_scan.py</code> (SAM.gov + Tango + USAspending → synthesize → draft)</li>
+      <li class="todo"><span class="box"></span> <code>Settings.naics_codes</code> (<code>JARVIS_NAICS_CODES</code>)</li>
+      <li class="todo"><span class="box"></span> SQLite persistence for scan history, keyed by <code>noticeId</code></li>
+      <li class="todo"><span class="box"></span> Register in <code>graph/workflows/__init__.py</code> + <code>make bd-scan</code> target</li>
+      <li class="todo"><span class="box"></span> Propose-only discipline (no tools on synthesize, honest per-branch failure)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>5. Email-writing skill <span class="badge todo">not started</span></h2>
+    <ul>
+      <li class="todo"><span class="box"></span> <code>skills/email-writing/SKILL.md</code> authored per template</li>
+      <li class="todo"><span class="box"></span> Wired to load specifically for <code>compose_email</code> / email-agent calls</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>6. Overview / diagram wiring <span class="badge blocked">blocked</span></h2>
+    <ul>
+      <li class="todo"><span class="box"></span> <code>diagram.js</code> <code>archSVG</code> draws BD + email agent boxes</li>
+      <li class="todo"><span class="box"></span> <code>bd_scan.py</code> + email graph node implement <code>describe()</code></li>
+      <li class="todo"><span class="box"></span> New stat tiles in <code>overview(d)</code></li>
+      <li class="note">Depends on sections 3 and 4 existing first.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>7. Config additions <span class="badge todo">not started</span></h2>
+    <ul>
+      <li class="todo"><span class="box"></span> <code>JARVIS_AGENT_MODEL</code></li>
+      <li class="todo"><span class="box"></span> <code>JARVIS_NAICS_CODES</code> (default: 541511,541512,541519,541611,541690,518210)</li>
+      <li class="todo"><span class="box"></span> <code>JARVIS_SAM_API_KEY</code></li>
+      <li class="todo"><span class="box"></span> <code>JARVIS_TANGO_API_KEY</code></li>
+      <li class="todo"><span class="box"></span> <code>OLLAMA_API_KEY=ollama</code> placeholder</li>
+      <li class="todo"><span class="box"></span> Regenerate via <code>scripts/generate_env_example.py</code> (don't hand-edit)</li>
+    </ul>
+  </section>
+
+  <footer>Generated from the session's progress report · re-run the same audit commands to refresh this file.</footer>
+</main>
+</body>
+</html>

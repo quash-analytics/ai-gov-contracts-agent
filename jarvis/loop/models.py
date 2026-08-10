@@ -153,6 +153,13 @@ PROVIDERS: dict[str, Provider] = {
     "opencode_go":  Provider("openai", "OPENCODE_GO_API_KEY",
                                "https://opencode.ai/zen/go/v1",
                                "deepseek-v4-flash", "deepseek-v4-flash"),
+    # Local Ollama, no cloud call, $0. Ollama serves an OpenAI-compatible
+    # endpoint on localhost, so this reuses the openai wire adapter rather than
+    # needing a third one. OLLAMA_API_KEY is a placeholder only — Ollama itself
+    # doesn't check it, but the openai client requires a non-empty string.
+    "ollama":    Provider("openai", "OLLAMA_API_KEY", "http://localhost:11434/v1",
+                          "gemma4:e4b", "gemma4:e2b",
+                          catalog_url="http://localhost:11434/v1/models"),
 }
 
 
@@ -172,6 +179,7 @@ KEY_URLS = {
     "xai": "https://console.x.ai",
     "opencode_zen": "https://opencode.ai/zen",
     "opencode_go": "https://opencode.ai/zen",
+    "ollama": "https://ollama.com/download",
 }
 
 
@@ -266,7 +274,7 @@ def get_client(settings: Settings):
     # (the provider's own default fills in below); a value the caller passed
     # explicitly is kept, because that is a choice, not a leak. The two are
     # distinguishable exactly when the setting still equals the env string.
-    for attr in ("model", "small_model"):
+    for attr in ("model", "small_model", "large_model"):
         inherited = os.getenv(f"JARVIS_{attr.upper()}", "").strip()
         if inherited and getattr(settings, attr) == inherited \
                 and _belongs_elsewhere(inherited, settings.provider):
@@ -274,6 +282,9 @@ def get_client(settings: Settings):
 
     settings.model = settings.model or provider.model
     settings.small_model = settings.small_model or provider.small_model
+    # No provider default for large_model — it's an upgrade slot for background
+    # agents, not a per-provider concept. Falls back to the main model.
+    settings.large_model = settings.large_model or settings.model
     base_url = settings.base_url or provider.configured_base_url()
 
     # a hung network call must never freeze a turn silently

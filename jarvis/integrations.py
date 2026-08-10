@@ -257,7 +257,15 @@ INTEGRATIONS: tuple[Integration, ...] = (
 
 
 def _integration_from_provider(name: str, provider: Provider) -> Integration:
-    fields = (EnvField(provider.key_env, "API Key", secret=True),)
+    # Ollama runs locally and never checks this value — but the openai-
+    # compatible client requires a non-empty string, so ship a working
+    # placeholder instead of an empty field nobody would think to fill in.
+    key_field = (
+        EnvField(provider.key_env, "API Key", secret=True, default="ollama",
+                 help="Local only — Ollama doesn't check this key, but the client needs a non-empty string.")
+        if name == "ollama" else EnvField(provider.key_env, "API Key", secret=True)
+    )
+    fields = (key_field,)
     if provider.base_url_env and provider.endpoints:
         fields += (EnvField(provider.base_url_env, "Base URL", FieldKind.CHOICE,
                             default=provider.base_url or "",

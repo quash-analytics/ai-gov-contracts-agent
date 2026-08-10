@@ -33,6 +33,55 @@ def test_openai_default_is_tool_capable(tmp_path):
     assert PROVIDERS["openai"].default_pair() == ["gpt-5.3-chat-latest", "gpt-4.1-mini"]
 
 
+def test_large_model_falls_back_to_model_when_unset(monkeypatch, tmp_path):
+    """large_model is an upgrade slot for background agents (email, BD scan),
+    not a provider concept — unset, it must silently mirror the main model
+    rather than leave the two callers of settings.large_model with an empty
+    string (which would send model="" straight to the client)."""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    settings = Settings(provider="anthropic", api_key="", base_url=None, model="",
+                        small_model="", home=tmp_path)
+    assert settings.large_model == ""
+    models.get_client(settings)
+    assert settings.large_model == settings.model == "claude-sonnet-5"
+
+
+def test_large_model_explicit_value_is_kept(monkeypatch, tmp_path):
+    """An explicit JARVIS_LARGE_MODEL is a deliberate choice and must survive
+    get_client — mirrors the model/small_model contract right above it."""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    settings = Settings(provider="anthropic", api_key="", base_url=None, model="",
+                        small_model="", large_model="claude-opus-4-8", home=tmp_path)
+    models.get_client(settings)
+    assert settings.large_model == "claude-opus-4-8"
+    assert settings.model == "claude-sonnet-5"
+
+
+def test_ollama_provider_uses_local_endpoint_and_placeholder_key(monkeypatch, tmp_path):
+    """Ollama runs locally with no real credential; the openai-compatible
+    client still requires a non-empty key string, so JARVIS_HOME users are
+    told to set any placeholder (see .env.example's default="ollama")."""
+    from jarvis.loop.models import PROVIDERS
+
+    captured = {}
+
+    class StubOpenAICompatClient:
+        def __init__(self, *, api_key, base_url, timeout):
+            captured.update(api_key=api_key, base_url=base_url, timeout=timeout)
+
+    monkeypatch.setenv("OLLAMA_API_KEY", "ollama")
+    monkeypatch.setattr(models, "OpenAICompatClient", StubOpenAICompatClient)
+    settings = Settings(provider="ollama", api_key="", base_url=None, model="",
+                        small_model="", home=tmp_path)
+
+    client = models.get_client(settings)
+
+    assert isinstance(client, StubOpenAICompatClient)
+    assert captured["base_url"] == "http://localhost:11434/v1"
+    assert settings.model == PROVIDERS["ollama"].model == "gemma4:e4b"
+    assert settings.small_model == PROVIDERS["ollama"].small_model == "gemma4:e2b"
+
+
 def test_gemini_thought_signature_round_trips():
     """Gemini thinking models attach a thought_signature to each tool call and
     REQUIRE it echoed back next turn, or the follow-up 400s. The OpenAI-compat
