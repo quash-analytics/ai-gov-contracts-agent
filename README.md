@@ -13,8 +13,6 @@ Built by [seanchen.io](https://seanchen.io).
 - **Watch it think.** A local dashboard lights up every message as it flows through the harness.
 - **Eval built in.** Deterministic tests *and* LLM-as-judge, side by side, with a release gate.
 
-![jarvis-agent architecture — the whiteboard](docs/architecture-whiteboard.png)
-
 
 
 ## Quickstart
