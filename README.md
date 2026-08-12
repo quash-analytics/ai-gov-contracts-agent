@@ -15,8 +15,6 @@ Built by [seanchen.io](https://seanchen.io).
 
 ![jarvis-agent architecture — the whiteboard](docs/architecture-whiteboard.png)
 
-> The system-design whiteboard from the series.
-> Every box maps to a file — see [the whiteboard maps to the code](#the-whiteboard-maps-to-the-code).
 
 
 ## Quickstart
