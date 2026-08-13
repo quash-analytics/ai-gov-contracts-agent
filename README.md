@@ -6,6 +6,12 @@ Meet **Jarvis** — a local-first personal assistant that shows the four pillars
 serious agent: **Harness · Loop · Memory · Eval/LLM-Ops**. No frameworks hiding the good parts.
 Built by [seanchen.io](https://seanchen.io).
 
+> **This fork.** Built on top of [Waku](https://github.com/ShenSeanChen/waku-agent) (Sean Chen's
+> original teaching repo), extended for Quash Analytics with BD hit-list scanning (SAM.gov +
+> USAspending), an email-drafting agent, a local Ollama provider, and multi-model routing
+> (small / large model tiers). The four-pillar harness/loop/memory/eval architecture is Sean's;
+> the additions above are this fork's.
+
 - **Local-first.** Your memory is one SQLite file. Open it. Read it. It's yours.
 - **Memory is the hero.** Semantic + episodic + procedural — with a gate that decides *whether*
   to remember, and a pass that decides *what* to keep.
